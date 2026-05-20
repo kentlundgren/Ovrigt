@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kapacitetskalkylator – Laddboxar 63 A | Långkatekesens Samfällighetsförening</title>
+
+    <!--
+    ================================================================
+    KALKYLATOR.HTML
+    Kapacitetskalkylator för elbilsladdning i samfällighet
+    ----------------------------------------------------------------
+    Syfte:
+      Visar hur stor laddeffekt varje elbil kan få när ett givet
+      antal bilar delar på en 63 A trefassäkring (43,5 kW totalt).
+
+    Teknisk grund:
+      P_total = √3 × U × I = 1,732 × 400 V × 63 A ≈ 43 670 W ≈ 43,5 kW
+      Effekt per bil = P_total / antal bilar (statisk likadelning)
+
+    Beroenden:
+      Chart.js 4.4.1 (laddas från cdnjs.cloudflare.com)
+
+    Skapad:  2026-05-21
+    Projekt: Långkatekesens Samfällighetsförening – laddboxar
+    Källa:   github.com/kentlundgren/Ovrigt/Hemma/laddboxar
+    ================================================================
+    -->
+
+    <!--
+        Chart.js för stapeldiagrammet.
+        Integrity-hash är avsiktligt borttagen — den varierar mellan CDN-versioner
+        och orsakar att webbläsaren blockerar skriptet om hashen inte stämmer exakt.
+        För GitHub-användning är detta den säkraste lösningen.
+    -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+    <style>
+        /* ============================================================
+           GLOBALA STILAR OCH ÅTERSTÄLLNING
+           ============================================================ */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #f0f4f8;
+            color: #2d3748;
+            line-height: 1.65;
+            padding: 20px 16px 40px;
+        }
+
+        /* ============================================================
+           LAYOUT – CENTRERAD CONTAINER
+           ============================================================ */
+        .container {
+            max-width: 920px;
+            margin: 0 auto;
+        }
+
+        /* ============================================================
+           SIDOHUVUD (header)
+           ============================================================ */
+        header {
+            background: linear-gradient(135deg, #1a56db 0%, #0e4baf 100%);
+            color: white;
+            padding: 28px 32px;
+            border-radius: 14px;
+            margin-bottom: 22px;
+            box-shadow: 0 4px 16px rgba(26, 86, 219, 0.25);
+        }
+
+        header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        header p {
+            opacity: 0.88;
+            font-size: 0.92rem;
+        }
+
+        header a {
+            color: #a5c8ff;
+            text-decoration: none;
+        }
+
+        header a:hover {
+            text-decoration: underline;
+        }
+
+        /* ============================================================
+           KORTKOMPONENT – används för alla sektioner
+           ============================================================ */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 22px 26px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+        }
+
+        .card h2 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: #718096;
+            margin-bottom: 14px;
+        }
+
+        /* Blå kant till vänster på info-kort */
+        .card--info {
+            border-left: 5px solid #1a56db;
+        }
+
+        /* ============================================================
+           PARAMETER-GRID – visar fasta värden (säkring, kW, etc.)
+           ============================================================ */
+        .param-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .param-item {
+            background: #ebf4ff;
+            border-radius: 10px;
+            padding: 14px 10px;
+            text-align: center;
+        }
+
+        .param-item .value {
+            /* Det stora talet, t.ex. "63 A" */
+            display: block;
+            font-size: 1.55rem;
+            font-weight: 800;
+            color: #1a56db;
+            line-height: 1.2;
+        }
+
+        .param-item .label {
+            /* Beskrivande text under värdet */
+            display: block;
+            font-size: 0.78rem;
+            color: #718096;
+            margin-top: 3px;
+        }
+
+        .formula-note {
+            font-size: 0.78rem;
+            color: #a0aec0;
+            margin-top: 4px;
+        }
+
+        /* ============================================================
+           SLIDERS – justerbara indata
+           ============================================================ */
+        .slider-group {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+
+        .slider-group label {
+            /* Etikett till vänster om slidern */
+            min-width: 200px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            min-width: 140px;
+            accent-color: #1a56db;   /* Färgar tummen och spåret i moderna webbläsare */
+            height: 6px;
+            cursor: pointer;
+        }
+
+        .slider-value {
+            /* Visar det numeriska värdet bredvid slidern */
+            min-width: 70px;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #1a56db;
+            text-align: right;
+        }
+
+        .slider-note {
+            font-size: 0.78rem;
+            color: #a0aec0;
+            margin-top: -6px;
+            margin-bottom: 4px;
+        }
+
+        /* ============================================================
+           RESULTATRUTA – visar aktuellt val
+           ============================================================ */
+        .result-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+            text-align: center;
+        }
+
+        .result-label {
+            font-size: 0.9rem;
+            color: #718096;
+            margin-bottom: 6px;
+        }
+
+        .power-display {
+            /* Stor siffra för effekt per bil */
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 6px;
+            transition: color 0.3s;
+        }
+
+        .power-unit {
+            font-size: 1rem;
+            color: #718096;
+        }
+
+        /* Statusbadge (grön/gul/röd) */
+        .status-badge {
+            display: inline-block;
+            padding: 7px 20px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.92rem;
+            margin: 10px 0;
+        }
+
+        .badge-green  { background: #c6f6d5; color: #22543d; }
+        .badge-yellow { background: #fefcbf; color: #7b6000; }
+        .badge-red    { background: #fed7d7; color: #822727; }
+
+        .charge-time-info {
+            font-size: 0.87rem;
+            color: #4a5568;
+            margin-top: 8px;
+        }
+
+        /* ============================================================
+           DIAGRAM
+           ============================================================ */
+        .chart-wrapper {
+            position: relative;
+            height: 240px;          /* Fast höjd för diagrammet */
+        }
+
+        /* ============================================================
+           TABELL
+           ============================================================ */
+        .table-scroll {
+            overflow-x: auto;       /* Horisontell scrollning på smala skärmar */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+        }
+
+        thead th {
+            background: #f7fafc;
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.82rem;
+            color: #4a5568;
+            border-bottom: 2px solid #e2e8f0;
+            white-space: nowrap;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #f0f4f8;
+            transition: background 0.12s;
+        }
+
+        tbody tr:hover {
+            background: #f7fafc;
+        }
+
+        /* Markerad rad = aktuellt valt antal bilar i slidern */
+        tbody tr.active-row {
+            background: #ebf4ff;
+        }
+
+        tbody tr.active-row td {
+            font-weight: 700;
+        }
+
+        tbody td {
+            padding: 9px 12px;
+        }
+
+        /* Trafikljusprick bredvid statustext */
+        .dot {
+            display: inline-block;
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            margin-right: 6px;
+            vertical-align: middle;
+            flex-shrink: 0;
+        }
+
+        .dot-green  { background: #48bb78; }
+        .dot-yellow { background: #ed8936; }
+        .dot-red    { background: #f56565; }
+
+        /* ============================================================
+           FÖRKLARINGSSEKTION (legend)
+           ============================================================ */
+        .legend-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 0.87rem;
+        }
+
+        .legend-dot {
+            /* Lite större prick i förklaringstexten */
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 3px;
+        }
+
+        /* ============================================================
+           KÄLLFÖRTECKNING / FOOTER
+           ============================================================ */
+        footer {
+            font-size: 0.78rem;
+            color: #a0aec0;
+            padding: 18px 0 6px;
+            border-top: 1px solid #e2e8f0;
+            line-height: 1.8;
+        }
+
+        footer a {
+            color: #1a56db;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        footer strong {
+            color: #718096;
+        }
+
+        /* ============================================================
+           RESPONSIV ANPASSNING FÖR SMALA SKÄRMAR
+           ============================================================ */
+        @media (max-width: 600px) {
+            header h1  { font-size: 1.3rem; }
+            .power-display { font-size: 2.2rem; }
+            .slider-group label { min-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- ================================================================
+         SIDOHUVUD
+         ================================================================ -->
+    <header>
+        <h1>⚡ Kapacitetskalkylator – Laddboxar 63 A</h1>
+        <p>
+            Långkatekesens Samfällighetsförening &nbsp;|&nbsp;
+            Visar tillgänglig laddeffekt per elbil vid given mätarsäkring
+            &nbsp;|&nbsp; <a href="index.html">↩ Tillbaka till startsidan</a>
+        </p>
+    </header>
+
+
+    <!-- ================================================================
+         FASTA PARAMETRAR (hämtade från Kraftringen-offert 3541)
+         ================================================================ -->
+    <div class="card card--info">
+        <h2>Fasta parametrar – Kraftringen offert 3541</h2>
+
+        <!-- Fyra faktarutor med nyckeltal -->
+        <div class="param-grid">
+            <div class="param-item">
+                <span class="value">63 A</span>
+                <span class="label">Ny mätarsäkring</span>
+            </div>
+            <div class="param-item">
+                <span class="value">400 V</span>
+                <span class="label">Nätspänning (trefas)</span>
+            </div>
+            <div class="param-item">
+                <span class="value">43,5 kW</span>
+                <span class="label">Total tillgänglig effekt</span>
+            </div>
+            <div class="param-item">
+                <span class="value">23 st</span>
+                <span class="label">Garage i samfälligheten</span>
+            </div>
+        </div>
+
+        <!-- Formelvisning -->
+        <p class="formula-note">
+            Beräkning: P<sub>total</sub> = √3 × U × I
+            = 1,732 × 400 V × 63 A = 43 670 W ≈ <strong>43,5 kW</strong>.
+            Effekt per bil vid statisk likadelning: P<sub>per bil</sub> = 43,5 kW / antal bilar.
+        </p>
+    </div>
+
+
+    <!-- ================================================================
+         INTERAKTIVA KONTROLLER – sliders
+         ================================================================ -->
+    <div class="card">
+        <h2>Justera parametrar</h2>
+
+        <!--
+            SLIDER 1: Antal bilar
+            Styr hur effekten delas upp.
+            Intervall: 1–15 bilar, standardvärde 10.
+        -->
+        <div class="slider-group">
+            <label for="sliderCars">Antal bilar som laddar simultant:</label>
+            <input type="range" id="sliderCars" min="1" max="15" value="10" step="1"
+                   aria-label="Antal bilar som laddar simultant">
+            <span class="slider-value" id="displayCars">10 bilar</span>
+        </div>
+
+        <!--
+            SLIDER 2: Daglig körsträcka
+            Används för att beräkna hur mycket energi som behöver laddas per dag.
+            Antag 0,20 kWh/km (typvärde för moderna elbilar).
+        -->
+        <div class="slider-group">
+            <label for="sliderKm">Daglig körsträcka (km):</label>
+            <input type="range" id="sliderKm" min="20" max="150" value="50" step="10"
+                   aria-label="Daglig körsträcka i kilometer">
+            <span class="slider-value" id="displayKm">50 km</span>
+        </div>
+
+        <p class="slider-note">
+            Energiförbrukning beräknas på 0,20 kWh/km — typvärde för moderna elbilar
+            (IEA, 2023). Batteristorlek för laddtidsberäkning: 60 kWh (halvfull → full = 30 kWh).
+        </p>
+    </div>
+
+
+    <!-- ================================================================
+         AKTUELLT RESULTAT – uppdateras dynamiskt via JavaScript
+         ================================================================ -->
+    <div class="result-card" id="resultCard">
+
+        <p class="result-label">Med <strong id="resultCars">10 bilar</strong> laddar varje bil med:</p>
+
+        <!-- Stor effektsiffra -->
+        <div class="power-display" id="powerPerCar">4,35 kW</div>
+        <p class="power-unit">per bil</p>
+
+        <!-- Statusbadge med trafikljusfärg -->
+        <span class="status-badge badge-yellow" id="statusBadge">⚡ OK – tillräckligt för daglig pendling</span>
+
+        <!-- Laddtidsinformation -->
+        <p class="charge-time-info" id="chargeTimeInfo">Laddar… beräknar…</p>
+    </div>
+
+
+    <!-- ================================================================
+         STAPELDIAGRAM – effekt per bil för 1–15 bilar
+         Chart.js renderar diagrammet i <canvas>-elementet.
+         ================================================================ -->
+    <div class="card">
+        <h2>Diagram – effekt per bil vid 1–15 bilar (63 A, 43,5 kW totalt)</h2>
+        <div class="chart-wrapper">
+            <canvas id="powerChart" aria-label="Stapeldiagram – effekt per bil"></canvas>
+        </div>
+        <p style="font-size:0.78rem; color:#a0aec0; margin-top:10px;">
+            Den aktuellt valda kolumnen markeras med heldragen färg.
+            Grönt ≥ 7 kW &nbsp;|&nbsp; Orange 3,6–6,9 kW &nbsp;|&nbsp; Rött &lt; 3,6 kW.
+        </p>
+    </div>
+
+
+    <!-- ================================================================
+         DETALJERAD TABELL – 1 till 15 bilar
+         Genereras dynamiskt av JavaScript nedan.
+         ================================================================ -->
+    <div class="card">
+        <h2>Tabell – effekt och laddtid för 1–15 bilar</h2>
+
+        <div class="table-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Antal bilar</th>
+                        <th>Effekt per bil (kW)</th>
+                        <th>Ström per bil (A)</th>
+                        <th>Laddtid dagskörning *</th>
+                        <th>Laddtid halvfull→full **</th>
+                        <th>Bedömning</th>
+                    </tr>
+                </thead>
+                <!-- Tabellrader skapas i JavaScript -->
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+
+        <p style="font-size:0.75rem; color:#a0aec0; margin-top:10px; line-height:1.8;">
+            * Daglig körsträcka enligt slidern ovan, 0,20 kWh/km.<br>
+            ** Halvfullt till fullt batteri = 30 kWh (typisk 60 kWh-bil, t.ex. Tesla Model 3).<br>
+            Markerad rad = aktuellt valt antal bilar i slidern.
+        </p>
+    </div>
+
+
+    <!-- ================================================================
+         FÖRKLARINGSSEKTION – trafikljusskalan
+         ================================================================ -->
+    <div class="card">
+        <h2>Hur tolkar man resultaten?</h2>
+
+        <!-- Grön -->
+        <div class="legend-item">
+            <div class="legend-dot dot-green"></div>
+            <div>
+                <strong>Grön (≥ 7 kW per bil):</strong>
+                Snabb laddning. En bil med 60 kWh-batteri laddas från tomt på under 9 timmar.
+                Fullt jämförbart med vanlig laddbox på 11 kW — utmärkt för nattladdning.
+            </div>
+        </div>
+
+        <!-- Gul -->
+        <div class="legend-item">
+            <div class="legend-dot dot-yellow"></div>
+            <div>
+                <strong>Orange/gul (3,6–6,9 kW per bil):</strong>
+                OK för typisk dagspendling. En dagssträcka på 50 km (10 kWh) laddas på
+                1,5–3 timmar. Nattladdning på 8 timmar ger 30–55 kWh — tillräckligt
+                för de flesta pendlare. <em>Detta är det optimala intervallet för
+                en 63 A-säkring med smart lastbalansering och 8–10 anslutna bilar.</em>
+            </div>
+        </div>
+
+        <!-- Röd -->
+        <div class="legend-item">
+            <div class="legend-dot dot-red"></div>
+            <div>
+                <strong>Rött (&lt; 3,6 kW per bil):</strong>
+                Kan räcka för korta dagssträckor men är otillräckligt för bilar med
+                stort batteri vid intensiv användning. Mer än 12 bilar simultant
+                är inte rekommenderat utan uppgradering av mätarsäkringen.
+            </div>
+        </div>
+
+        <!-- Viktig not om smart lastbalansering -->
+        <div style="background:#f7fafc; border-radius:8px; padding:14px; margin-top:14px; font-size:0.87rem; color:#4a5568;">
+            <strong>💡 Viktigt om smart lastbalansering:</strong>
+            Tabellen visar <em>statisk likadelning</em> — alla bilar får lika mycket.
+            Med <em>dynamisk lastbalansering</em> (t.ex. via Zaptec Portal, Easee Cloud
+            eller liknande EMS-system) fördelas effekten intelligentare: bilar med
+            lågt batteri prioriteras, och bilar som laddar på nätterna på 6–8 timmar
+            behöver inte maxeffekt från start. I praktiken kan man ansluta fler än 10
+            laddboxar till en 63 A-säkring utan att säkringen löser ut
+            (Wevo Energy, 2024; IEA, 2023).
+        </div>
+    </div>
+
+
+    <!-- ================================================================
+         KÄLLFÖRTECKNING (Harvardstil)
+         ================================================================ -->
+    <footer>
+        <p><strong>Källor (Harvardstil):</strong></p>
+        <p>
+            IEA (2023) <em>Global EV Outlook 2023.</em>
+            International Energy Agency, Paris.
+            Tillgänglig:
+            <a href="https://www.iea.org/reports/global-ev-outlook-2023"
+               target="_blank" rel="noopener">
+                https://www.iea.org/reports/global-ev-outlook-2023
+            </a>
+        </p>
+        <p>
+            Kraftringen (2026) <em>Offert 3541 – Säkringsändring, Långkatekesen 15,
+            Hjalmar Gullbergs Väg 2–46, 22466 Lund.</em>
+            Kraftringen Nät AB. Daterad 2026-04-27.
+        </p>
+        <p>
+            Wevo Energy (2024) <em>EV Charging Load Balancing: All About Load Management.</em>
+            Tillgänglig:
+            <a href="https://wevo.energy/blog/ev-load-balancing-explained/"
+               target="_blank" rel="noopener">
+                https://wevo.energy/blog/ev-load-balancing-explained/
+            </a>
+        </p>
+        <p>
+            Zaptec (2025) <em>Introducing Zaptec Go 2: Redefining EV charging.</em>
+            Tillgänglig:
+            <a href="https://www.zaptec.com/info-hub/inside-zaptec/zaptec-go-2"
+               target="_blank" rel="noopener">
+                https://www.zaptec.com/info-hub/inside-zaptec/zaptec-go-2
+            </a>
+        </p>
+        <p style="margin-top:10px; color:#cbd5e0;">
+            Skapad 2026-05-21 &nbsp;|&nbsp;
+            Formel: P = √3 × 400 V × 63 A ≈ 43,5 kW &nbsp;|&nbsp;
+            <a href="index.html">↩ Startsida</a>
+        </p>
+    </footer>
+
+</div><!-- /.container -->
+
+
+<!-- ================================================================
+     JAVASCRIPT – all interaktivitet och beräkningar
+     ================================================================
+
+     Struktur:
+       1. Konstanter och beräkningsparametrar
+       2. Hjälpfunktioner (status, tidsformatering)
+       3. Diagraminitiering (Chart.js)
+       4. Tabellfunktion (buildTable)
+       5. Uppdateringsfunktion (updateAll)
+       6. Event listeners för sliders
+       7. Initiering vid sidladdning
+
+     ================================================================ -->
+<script>
+    /* ----------------------------------------------------------
+       1. KONSTANTER OCH BERÄKNINGSPARAMETRAR
+       ---------------------------------------------------------- */
+
+    // Fysikaliska konstanter
+    const SQRT3       = Math.sqrt(3);          // √3 ≈ 1,7321
+    const VOLTAGE_V   = 400;                   // Nätspänning i Volt (trefas Sverige)
+    const FUSE_A      = 63;                    // Mätarsäkring i Ampere
+
+    // Beräknad total tillgänglig effekt: P = √3 × U × I
+    const TOTAL_KW    = (SQRT3 * VOLTAGE_V * FUSE_A) / 1000;
+    // TOTAL_KW ≈ 43,5 kW — stämmer med Kraftringen-offert
+
+    // Tabellens övre gräns (antal bilar att visa)
+    const MAX_CARS    = 15;
+
+    // Energiförbrukning per kilometer (kWh/km)
+    // Källvärde: IEA Global EV Outlook 2023 — typvärde för moderna elbilar
+    const KWH_PER_KM  = 0.20;
+
+    // Standardvärden för sliders
+    const DEFAULT_CARS = 10;
+    const DEFAULT_KM   = 50;
+
+
+    /* ----------------------------------------------------------
+       2. HJÄLPFUNKTIONER
+       ---------------------------------------------------------- */
+
+    /**
+     * getStatus(kw)
+     * Returnerar ett objekt med CSS-klasser och etikett baserat
+     * på effekten i kW per bil.
+     *
+     * Gränsvärden:
+     *   ≥ 7,0 kW  → Grön  (snabb laddning, som hemmaladdbox)
+     *   ≥ 3,6 kW  → Gul   (OK för dagspendling, nattladdning)
+     *   < 3,6 kW  → Röd   (kan vara otillräckligt vid intensiv körning)
+     *
+     * 3,6 kW = lägsta standard enfas-laddning (16 A × 230 V)
+     * 7,0 kW = normal enfas-laddbox (32 A × 230 V)
+     *
+     * @param   {number} kw  – Effekt i kilowatt
+     * @returns {object}     – { dotCls, badgeCls, badgeLabel, barColor, barColorActive }
+     */
+    function getStatus(kw) {
+        if (kw >= 7.0) {
+            return {
+                dotCls:          'dot-green',
+                badgeCls:        'badge-green',
+                badgeLabel:      '✅ Snabb laddning (≥ 7 kW)',
+                barColor:        'rgba(72, 187, 120, 0.55)',
+                barColorActive:  'rgba(34, 139, 34, 0.90)'
+            };
+        } else if (kw >= 3.6) {
+            return {
+                dotCls:          'dot-yellow',
+                badgeCls:        'badge-yellow',
+                badgeLabel:      '⚡ OK – tillräckligt för daglig pendling',
+                barColor:        'rgba(237, 137, 54, 0.55)',
+                barColorActive:  'rgba(200, 100, 0, 0.90)'
+            };
+        } else {
+            return {
+                dotCls:          'dot-red',
+                badgeCls:        'badge-red',
+                badgeLabel:      '⚠️ Kan vara otillräckligt vid intensiv körning',
+                barColor:        'rgba(245, 101, 101, 0.55)',
+                barColorActive:  'rgba(180, 50, 50, 0.90)'
+            };
+        }
+    }
+
+    /**
+     * formatTime(energyKwh, powerKw)
+     * Beräknar och formaterar laddtid som "X h Y min".
+     *
+     * @param   {number} energyKwh  – Energimängd att ladda (kWh)
+     * @param   {number} powerKw    – Tillgänglig effekt (kW)
+     * @returns {string}            – Formaterad tidsträng, t.ex. "2 h 18 min"
+     */
+    function formatTime(energyKwh, powerKw) {
+        const totalHours = energyKwh / powerKw;
+        const h = Math.floor(totalHours);
+        const m = Math.round((totalHours - h) * 60);
+        if (h === 0) return `${m} min`;
+        if (m === 0) return `${h} h`;
+        return `${h} h ${m} min`;
+    }
+
+    /**
+     * formatKw(kw)
+     * Formaterar ett kW-värde med svenska decimaler (komma).
+     *
+     * @param   {number} kw  – Effekt i kW
+     * @returns {string}     – T.ex. "4,35 kW"
+     */
+    function formatKw(kw) {
+        return kw.toFixed(2).replace('.', ',') + ' kW';
+    }
+
+
+    /* ----------------------------------------------------------
+       3. DIAGRAM – initiering med Chart.js
+       ---------------------------------------------------------- */
+
+    // Bygger x-axelns etiketter: ["1", "2", ..., "15"]
+    const chartLabels = Array.from({ length: MAX_CARS }, (_, i) => String(i + 1));
+
+    // Beräknar effektvärden för alla 1–15 bilar
+    const chartData   = chartLabels.map((_, i) => parseFloat((TOTAL_KW / (i + 1)).toFixed(3)));
+
+    // Basflärger för staplarna (halvtransparenta, justeras när en rad markeras)
+    const baseColors  = chartData.map(kw => getStatus(kw).barColor);
+
+    // Hämtar canvas-elementet och skapar Chart.js-instansen.
+    // Om Chart.js av någon anledning inte laddats visas ett felmeddelande
+    // i diagramytan, men tabellen och resultatrutan fungerar ändå.
+    if (typeof Chart === 'undefined') {
+        document.getElementById('powerChart').parentElement.innerHTML =
+            '<p style="color:#e53e3e; padding:20px; text-align:center;">'
+            + '⚠️ Diagrammet kunde inte laddas. Kontrollera internetanslutningen. '
+            + 'Tabellen och beräkningarna nedan fungerar ändå.</p>';
+    }
+
+    const chartCtx = typeof Chart !== 'undefined'
+        ? document.getElementById('powerChart').getContext('2d')
+        : null;
+
+    const powerChart = chartCtx ? new Chart(chartCtx, {
+        type: 'bar',
+        data: {
+            labels: chartLabels,
+            datasets: [{
+                label: 'Effekt per bil (kW)',
+                data: chartData,
+                backgroundColor: [...baseColors],  // Kopia (muteras vid markering)
+                borderColor:     baseColors.map(c => c.replace('0.55', '1.0')),
+                borderWidth: 1,
+                borderRadius: 5,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,  // Respekterar .chart-wrapper-höjden
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        // Anpassad tooltip-text som visar kW och bedömning
+                        label: function(ctx) {
+                            const kw = ctx.raw;
+                            const st = getStatus(kw);
+                            return [
+                                `Effekt per bil: ${formatKw(kw)}`,
+                                st.badgeLabel
+                            ];
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Antal bilar som laddar simultant',
+                        font: { size: 11 }
+                    },
+                    grid: { display: false }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Effekt per bil (kW)',
+                        font: { size: 11 }
+                    },
+                    beginAtZero: true,
+                    // Övre gräns: lite över 11 kW (maxeffekt per laddbox på 16 A)
+                    max: 12,
+                    grid: { color: '#f0f4f8' }
+                }
+            }
+        }
+    }) : null;
+    // Notera: ternär avslutas med ") : null;" — powerChart är null om Chart.js ej laddades.
+
+    /**
+     * highlightBar(activeCars)
+     * Markerar den aktiva stapeln i diagrammet med heldragen färg.
+     * Övriga staplar tonas ner (halvtransparenta basfärger).
+     * Gör ingenting om powerChart är null (Chart.js ej laddat).
+     *
+     * @param {number} activeCars – 1-baserat index för vald bil-count
+     */
+    function highlightBar(activeCars) {
+        if (!powerChart) return;   // Avbryt om diagrammet inte skapades
+        const newColors = chartData.map((kw, i) => {
+            const st = getStatus(kw);
+            // Den aktiva kolumnen får sin "active"-färg, övriga basfärg
+            return i === activeCars - 1 ? st.barColorActive : st.barColor;
+        });
+        powerChart.data.datasets[0].backgroundColor = newColors;
+        powerChart.update('none');  // 'none' = ingen animation (snabbare respons)
+    }
+
+
+    /* ----------------------------------------------------------
+       4. TABELLFUNKTION
+       ---------------------------------------------------------- */
+
+    /**
+     * buildTable(activeCars, dailyKm)
+     * Genererar alla 15 tabellrader dynamiskt.
+     * Raden för "activeCars" markeras med klassen "active-row".
+     *
+     * @param {number} activeCars – Valt antal bilar (1–15)
+     * @param {number} dailyKm    – Daglig körsträcka i km
+     */
+    function buildTable(activeCars, dailyKm) {
+        const dailyKwh = dailyKm * KWH_PER_KM;     // Energi för daglig körning (kWh)
+        const tbody    = document.getElementById('tableBody');
+        tbody.innerHTML = '';                         // Töm gamla rader
+
+        for (let n = 1; n <= MAX_CARS; n++) {
+            // Beräkningar för n bilar
+            const kw         = TOTAL_KW / n;                 // Effekt per bil (kW)
+            const ampPerCar  = (FUSE_A / n).toFixed(1);      // Förenklad strömdelning (A)
+            const st         = getStatus(kw);
+
+            // Laddtider
+            const timeDaily  = formatTime(dailyKwh, kw);     // Dagskörning
+            const timeHalf   = formatTime(30, kw);            // Halvfull → full (30 kWh)
+
+            // Skapa tabellrad
+            const row = document.createElement('tr');
+            if (n === activeCars) row.classList.add('active-row');
+
+            row.innerHTML = `
+                <td>${n} bil${n > 1 ? 'ar' : ''} ${n === activeCars ? '◀' : ''}</td>
+                <td>${formatKw(kw)}</td>
+                <td>${ampPerCar} A</td>
+                <td>${timeDaily}</td>
+                <td>${timeHalf}</td>
+                <td>
+                    <span class="dot ${st.dotCls}" aria-hidden="true"></span>${st.badgeLabel.replace(/^[^\s]+\s/, '')}
+                </td>
+            `;
+            tbody.appendChild(row);
+        }
+
+        // Scrolla aktiv rad till synlig vy (om användaren ändrat slider snabbt)
+        const activeRow = tbody.querySelector('.active-row');
+        if (activeRow) {
+            activeRow.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+    }
+
+
+    /* ----------------------------------------------------------
+       5. UPPDATERINGSFUNKTION – kör vid varje slider-ändring
+       ---------------------------------------------------------- */
+
+    /**
+     * updateAll(cars, dailyKm)
+     * Uppdaterar resultatrutan, diagrammet och tabellen
+     * baserat på aktuella slider-värden.
+     *
+     * @param {number} cars     – Antal bilar (1–15)
+     * @param {number} dailyKm  – Daglig körsträcka (km)
+     */
+    function updateAll(cars, dailyKm) {
+        const kw         = TOTAL_KW / cars;           // Effekt per bil
+        const st         = getStatus(kw);
+        const dailyKwh   = dailyKm * KWH_PER_KM;
+
+        /* --- Resultatrutan --- */
+        // Antal bilar-text
+        document.getElementById('resultCars').textContent =
+            `${cars} bil${cars > 1 ? 'ar' : ''}`;
+
+        // Stor effektsiffra + färg
+        const powerEl = document.getElementById('powerPerCar');
+        powerEl.textContent = formatKw(kw);
+        // Färgkoda siffran enligt trafikljus
+        if (kw >= 7.0) {
+            powerEl.style.color = '#22543d';   // Grön
+        } else if (kw >= 3.6) {
+            powerEl.style.color = '#7b6000';   // Gulbrun
+        } else {
+            powerEl.style.color = '#822727';   // Röd
+        }
+
+        // Statusbadge
+        const badgeEl = document.getElementById('statusBadge');
+        badgeEl.textContent = st.badgeLabel;
+        badgeEl.className   = `status-badge ${st.badgeCls}`;
+
+        // Laddtidsinformation
+        const timeDaily = formatTime(dailyKwh, kw);
+        const timeHalf  = formatTime(30, kw);
+        document.getElementById('chargeTimeInfo').innerHTML =
+            `Laddtid för <strong>${dailyKm} km</strong> (${dailyKwh.toFixed(0)} kWh): `
+            + `<strong>${timeDaily}</strong> &nbsp;|&nbsp; `
+            + `Halvfull → full (30 kWh): <strong>${timeHalf}</strong>`;
+
+        /* --- Diagram --- */
+        highlightBar(cars);
+
+        /* --- Tabell --- */
+        buildTable(cars, dailyKm);
+    }
+
+
+    /* ----------------------------------------------------------
+       6. EVENT LISTENERS – sliders reagerar på användarinmatning
+       ---------------------------------------------------------- */
+
+    document.getElementById('sliderCars').addEventListener('input', function () {
+        const cars = parseInt(this.value);
+        const km   = parseInt(document.getElementById('sliderKm').value);
+
+        // Uppdatera etikett bredvid slidern
+        document.getElementById('displayCars').textContent = `${cars} bilar`;
+
+        // Kör all uppdatering
+        updateAll(cars, km);
+    });
+
+    document.getElementById('sliderKm').addEventListener('input', function () {
+        const km   = parseInt(this.value);
+        const cars = parseInt(document.getElementById('sliderCars').value);
+
+        // Uppdatera etikett bredvid slidern
+        document.getElementById('displayKm').textContent = `${km} km`;
+
+        // Kör all uppdatering
+        updateAll(cars, km);
+    });
+
+
+    /* ----------------------------------------------------------
+       7. INITIERING – kör direkt när sidan laddas
+       ---------------------------------------------------------- */
+
+    // Sätt standardvärden och bygg initialt innehåll
+    updateAll(DEFAULT_CARS, DEFAULT_KM);
+
+    // Synka slider-etiketter med standardvärdena
+    document.getElementById('displayCars').textContent = `${DEFAULT_CARS} bilar`;
+    document.getElementById('displayKm').textContent   = `${DEFAULT_KM} km`;
+
+</script>
+</body>
+</html>

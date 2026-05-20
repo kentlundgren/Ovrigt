@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laddboxar – Långkatekesens Samfällighetsförening</title>
+
+    <!--
+    ================================================================
+    INDEX.HTML
+    Startsida / översikt – Laddboxar i samfällighet
+    ----------------------------------------------------------------
+    Syfte:
+      Samlar information och resurser om utredningen av elbilsladdning
+      för Långkatekesens Samfällighetsförening (23 garage).
+
+    Innehåll:
+      - Projektöversikt
+      - Länk till kapacitetskalkylator (kalkylator.html)
+      - Nyckeltal och parametrar
+      - Sammanfattning av V2G och laddarmodeller
+      - Källförteckning (Harvardstil)
+
+    Skapad:  2026-05-21
+    Projekt: Långkatekesens Samfällighetsförening – laddboxar
+    Källa:   github.com/kentlundgren/Ovrigt/Hemma/laddboxar
+    ================================================================
+    -->
+
+    <style>
+        /* ============================================================
+           GLOBALA STILAR
+           ============================================================ */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #f0f4f8;
+            color: #2d3748;
+            line-height: 1.7;
+            padding: 20px 16px 50px;
+        }
+
+        /* ============================================================
+           LAYOUT
+           ============================================================ */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* ============================================================
+           SIDOHUVUD
+           ============================================================ */
+        header {
+            background: linear-gradient(135deg, #1a56db 0%, #0e4baf 100%);
+            color: white;
+            padding: 32px 36px;
+            border-radius: 14px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(26, 86, 219, 0.28);
+        }
+
+        header .badge {
+            /* Liten tagg som visar status */
+            display: inline-block;
+            background: rgba(255,255,255,0.18);
+            border: 1px solid rgba(255,255,255,0.35);
+            border-radius: 999px;
+            padding: 3px 14px;
+            font-size: 0.78rem;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+        }
+
+        header h1 {
+            font-size: 1.9rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        header p {
+            opacity: 0.88;
+            font-size: 0.95rem;
+            max-width: 620px;
+        }
+
+        /* ============================================================
+           CALL-TO-ACTION – länk till kalkylatorn
+           ============================================================ */
+        .cta-box {
+            background: white;
+            border-radius: 14px;
+            padding: 28px 30px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .cta-icon {
+            /* Stort ikon-emoji */
+            font-size: 3rem;
+            flex-shrink: 0;
+        }
+
+        .cta-text h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #1a3a8f;
+            margin-bottom: 5px;
+        }
+
+        .cta-text p {
+            font-size: 0.9rem;
+            color: #4a5568;
+            margin-bottom: 12px;
+        }
+
+        .btn {
+            /* Knappstil – används för länken till kalkylatorn */
+            display: inline-block;
+            background: #1a56db;
+            color: white;
+            text-decoration: none;
+            padding: 11px 26px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.92rem;
+            transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 2px 8px rgba(26,86,219,0.25);
+        }
+
+        .btn:hover {
+            background: #1347c0;
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* ============================================================
+           KORTKOMPONENT
+           ============================================================ */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px 28px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+
+        .card h2 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #1a3a8f;
+            margin-bottom: 14px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #ebf4ff;
+        }
+
+        .card p {
+            font-size: 0.9rem;
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+
+        .card p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* ============================================================
+           NYCKELTAL-GRID
+           ============================================================ */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .stat-item {
+            background: #ebf4ff;
+            border-radius: 10px;
+            padding: 14px 12px;
+            text-align: center;
+        }
+
+        .stat-item .val {
+            display: block;
+            font-size: 1.45rem;
+            font-weight: 800;
+            color: #1a56db;
+            line-height: 1.2;
+        }
+
+        .stat-item .lbl {
+            display: block;
+            font-size: 0.76rem;
+            color: #718096;
+            margin-top: 3px;
+        }
+
+        /* ============================================================
+           LADDARJÄMFÖRELSE – tabellkort
+           ============================================================ */
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.87rem;
+            margin-top: 14px;
+        }
+
+        .compare-table thead th {
+            background: #f7fafc;
+            padding: 9px 12px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: #4a5568;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .compare-table tbody tr {
+            border-bottom: 1px solid #f0f4f8;
+        }
+
+        .compare-table tbody tr:hover {
+            background: #f7fafc;
+        }
+
+        .compare-table tbody td {
+            padding: 9px 12px;
+            vertical-align: top;
+        }
+
+        /* Grön bock / röd kryss */
+        .yes  { color: #38a169; font-weight: 700; }
+        .no   { color: #e53e3e; font-weight: 700; }
+        .part { color: #dd6b20; font-weight: 700; }
+
+        /* ============================================================
+           V2G-INFOSEKTION
+           ============================================================ */
+        .v2g-box {
+            background: #f0fff4;
+            border: 1px solid #c6f6d5;
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin-top: 14px;
+            font-size: 0.88rem;
+            color: #276749;
+        }
+
+        .v2g-box strong {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+        }
+
+        .warning-box {
+            background: #fffbeb;
+            border: 1px solid #fef08a;
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-top: 14px;
+            font-size: 0.87rem;
+            color: #7b6000;
+        }
+
+        /* ============================================================
+           TIDSPLAN / STATUSLISTA
+           ============================================================ */
+        .status-list {
+            list-style: none;
+            margin-top: 12px;
+        }
+
+        .status-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f4f8;
+            font-size: 0.88rem;
+        }
+
+        .status-list li:last-child {
+            border-bottom: none;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 5px;
+        }
+
+        .dot-blue   { background: #1a56db; }
+        .dot-green  { background: #48bb78; }
+        .dot-orange { background: #ed8936; }
+        .dot-gray   { background: #cbd5e0; }
+
+        /* ============================================================
+           FOOTER / KÄLLFÖRTECKNING
+           ============================================================ */
+        footer {
+            font-size: 0.78rem;
+            color: #a0aec0;
+            padding: 20px 0 6px;
+            border-top: 1px solid #e2e8f0;
+            line-height: 1.9;
+        }
+
+        footer a {
+            color: #1a56db;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        footer strong {
+            color: #718096;
+        }
+
+        /* ============================================================
+           RESPONSIVITET
+           ============================================================ */
+        @media (max-width: 600px) {
+            header h1  { font-size: 1.4rem; }
+            .cta-box   { flex-direction: column; gap: 12px; }
+            .cta-icon  { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- ================================================================
+         SIDOHUVUD
+         ================================================================ -->
+    <header>
+        <div class="badge">📍 Lund, Sverige &nbsp;|&nbsp; Utredning pågår 2026</div>
+        <h1>⚡ Laddboxar för Långkatekesens Samfällighetsförening</h1>
+        <p>
+            Utredning av elbilsladdning för 23 garage. Projektet utreder
+            tekniska lösningar, kapacitet, lastbalansering och V2G-beredskap.
+        </p>
+    </header>
+
+
+    <!-- ================================================================
+         CALL-TO-ACTION – direktlänk till kalkylatorn
+         ================================================================ -->
+    <div class="cta-box">
+        <div class="cta-icon">🔢</div>
+        <div class="cta-text">
+            <h2>Kapacitetskalkylator – 63 A trefas</h2>
+            <p>
+                Hur många bilar kan ladda simultant? Se effekt per bil, laddtider
+                och trafikljusbedömning för 1–15 bilar på en 63 A mätarsäkring.
+            </p>
+            <a class="btn" href="kalkylator.html">Öppna kalkylatorn →</a>
+        </div>
+    </div>
+
+
+    <!-- ================================================================
+         NYCKELTAL
+         ================================================================ -->
+    <div class="card">
+        <h2>Nyckeltal – projektet i siffror</h2>
+
+        <div class="stat-grid">
+            <div class="stat-item">
+                <span class="val">23</span>
+                <span class="lbl">Garage i samfälligheten</span>
+            </div>
+            <div class="stat-item">
+                <span class="val">2</span>
+                <span class="lbl">Laddboxar behövs nu (maj 2026)</span>
+            </div>
+            <div class="stat-item">
+                <span class="val">63 A</span>
+                <span class="lbl">Ny mätarsäkring (offert)</span>
+            </div>
+            <div class="stat-item">
+                <span class="val">43,5 kW</span>
+                <span class="lbl">Total tillgänglig effekt</span>
+            </div>
+            <div class="stat-item">
+                <span class="val">~10</span>
+                <span class="lbl">Bilar simultant (optimal gräns)</span>
+            </div>
+            <div class="stat-item">
+                <span class="val">3 st</span>
+                <span class="lbl">Offerter inhämtade</span>
+            </div>
+        </div>
+
+        <p style="margin-top:16px; font-size:0.82rem; color:#a0aec0;">
+            Beräkningsformel: P<sub>total</sub> = √3 × 400 V × 63 A = 43 670 W ≈ 43,5 kW.
+            Källa: Kraftringen offert 3541 (2026-04-27).
+        </p>
+    </div>
+
+
+    <!-- ================================================================
+         PROJEKTBAKGRUND
+         ================================================================ -->
+    <div class="card">
+        <h2>Bakgrund och förutsättningar</h2>
+
+        <p>
+            Långkatekesens Samfällighetsförening (fastighet LÅNGKATEKESEN 15,
+            Hjalmar Gullbergs Väg 2–46, 22466 Lund) utreder installation av
+            laddboxar för elbil i de 23 garageplatser som tillhör samfälligheten.
+        </p>
+        <p>
+            I dag har samfälligheten en mätarsäkring på <strong>16 A (11 kW)</strong>.
+            En offert från Kraftringen Nät AB (offert 3541, april 2026) avser uppgradering
+            till <strong>63 A (43,5 kW)</strong> till en anslutningsavgift på
+            28 700 kr exkl. moms (35 875 kr inkl. moms).
+        </p>
+        <p>
+            Behovet är idag begränsat till <strong>2 laddboxar</strong>, men bedömningen
+            är att antalet kommer att öka successivt. Projektet syftar till att välja
+            en framtidssäker lösning som är skalbar, stödjer smart lastbalansering
+            och är förberedd för V2G (fordon-till-nät).
+        </p>
+
+        <!-- Status för utredningen -->
+        <ul class="status-list">
+            <li>
+                <div class="status-dot dot-green"></div>
+                <span><strong>Klart:</strong> Offert från Kraftringen Nät AB (säkringsändring 16 A → 63 A)</span>
+            </li>
+            <li>
+                <div class="status-dot dot-green"></div>
+                <span><strong>Klart:</strong> Offerter från Elento och Laddboxkillarna AB inhämtade</span>
+            </li>
+            <li>
+                <div class="status-dot dot-green"></div>
+                <span><strong>Klart:</strong> V2G-beredskap och laddarmodeller utredda</span>
+            </li>
+            <li>
+                <div class="status-dot dot-orange"></div>
+                <span><strong>Pågår:</strong> Kapacitetsanalys och val av lösning</span>
+            </li>
+            <li>
+                <div class="status-dot dot-gray"></div>
+                <span><strong>Planerat:</strong> Beslut och upphandling</span>
+            </li>
+        </ul>
+    </div>
+
+
+    <!-- ================================================================
+         LADDARJÄMFÖRELSE – Zaptec Go 2 vs Easee Charge Pro vs Easee Charge Max
+         ================================================================ -->
+    <div class="card">
+        <h2>Jämförelse av aktuella laddboxmodeller</h2>
+
+        <p>
+            Nedan jämförs de tre modeller som är mest aktuella för projektet,
+            med fokus på V2G-beredskap, certifieringar och lämplighet för
+            flerfamiljsinstallationer/samfälligheter.
+        </p>
+
+        <div style="overflow-x:auto; margin-top:14px;">
+            <table class="compare-table">
+                <thead>
+                    <tr>
+                        <th>Egenskap</th>
+                        <th>Zaptec Go 2</th>
+                        <th>Easee Charge Pro</th>
+                        <th>Easee Charge Max</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Maxeffekt</strong></td>
+                        <td>22 kW (3-fas)</td>
+                        <td>22 kW (3-fas)</td>
+                        <td>22 kW (3-fas)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>V2G-redo (HW)</strong></td>
+                        <td><span class="yes">✓ Ja</span> – ISO 15118-20</td>
+                        <td><span class="yes">✓ Ja</span></td>
+                        <td><span class="yes">✓ Ja</span> (M02-variant)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>V2G kommersiellt tillgängligt (2026)</strong></td>
+                        <td><span class="part">≈ Ej ännu</span> – kräver bil + aggregator</td>
+                        <td><span class="part">≈ Ej ännu</span></td>
+                        <td><span class="part">≈ Ej ännu</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>OCPP-stöd</strong></td>
+                        <td><span class="yes">✓ Ja</span> (OCPP 1.6/2.0)</td>
+                        <td><span class="yes">✓ Ja</span></td>
+                        <td><span class="no">✗ Nej</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>MID-certifierad mätare</strong></td>
+                        <td><span class="yes">✓ Ja</span></td>
+                        <td><span class="yes">✓ Ja</span> (import + export)</td>
+                        <td><span class="part">≈ M01: import. M02: import+export</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Smart lastbalansering</strong></td>
+                        <td><span class="yes">✓ Ja</span> (via Zaptec Portal)</td>
+                        <td><span class="yes">✓ Ja</span> (inbyggd + Easee Cloud)</td>
+                        <td><span class="part">≈ Begränsad (för hemmabruk)</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Lämplig för samfällighet</strong></td>
+                        <td><span class="yes">✓ Ja</span> – designad för flerfamiljshus</td>
+                        <td><span class="yes">✓ Ja</span> – professionell installation</td>
+                        <td><span class="part">≈ Begränsad skalbarhet</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Målgrupp</strong></td>
+                        <td>Hem och flerfamiljshus</td>
+                        <td>Kommersiell/stor installation</td>
+                        <td>Hem (1–3 laddare)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- V2G-förtydligande -->
+        <div class="v2g-box">
+            <strong>🔋 Om V2G – vehicle-to-grid</strong>
+            Alla tre modeller är <em>V2G-förberedda på hårdvarunivå</em>, vilket innebär att
+            de kan hantera dubbelriktat elflöde när mjukvara, bilkompatibilitet och
+            nationella regelverk är på plats. I Sverige och övriga Europa är V2G ännu
+            inte kommersiellt tillgängligt för konsumenter (maj 2026), men marknaden
+            förväntas mogna inom 2–4 år. Investering i V2G-redo laddboxar nu innebär att
+            samfälligheten slipper byta hårdvara när tekniken är redo
+            (Easee, 2025b; Zaptec, 2025b).
+        </div>
+
+        <!-- Offert-OBS -->
+        <div class="warning-box">
+            <strong>⚠️ Notera om Kraftringen-offerten</strong>
+            Offert 3541 daterades 2026-04-27 med en giltighetstid på 1 månad
+            (dvs. giltig till ca 2026-05-27). Ta kontakt med Kraftringen för att
+            förnya eller bekräfta offerten om beslutet dröjer.
+        </div>
+    </div>
+
+
+    <!-- ================================================================
+         VÄGLEDNING – central styrning och per-garage
+         ================================================================ -->
+    <div class="card">
+        <h2>Rekommenderad systemarkitektur</h2>
+
+        <p><strong>Centralt (samfälligheten gemensamt):</strong></p>
+        <p>
+            En <em>energistyrningsenhet</em> (EMS – Energy Management System) installeras
+            vid mätarsäkringen och kommunicerar i realtid med alla laddboxar via WiFi
+            eller Ethernet. EMS:et mäter total strömförbrukning och fördelar tillgänglig
+            effekt dynamiskt mellan de bilar som för tillfället laddar. Exempel på sådana
+            system är Zaptec Portal, Easee Cloud och liknande.
+        </p>
+        <p>
+            Viktigt: välj ett system som stöder <em>OCPP</em> (Open Charge Point Protocol)
+            för att inte bli låst till en enda tillverkares ekosystem.
+        </p>
+
+        <p style="margin-top:12px;"><strong>Per garage (varje laddbox):</strong></p>
+        <p>
+            Varje laddbox ska stödja dynamisk effektreglering (kan sänka sitt effektuttag
+            på order från EMS), ha WiFi/Ethernet-kommunikation, och vara MID-certifierad
+            om individuell debiterning ska ske. Kabeltyp Type 2 (Mennekes) är standard
+            i Sverige och EU (IEC 62196-2).
+        </p>
+        <p>
+            <strong>Gör-redo-principen ("Make-Ready"):</strong> Dra kabel och rörinfrastruktur
+            till alla 23 garage redan vid första installationen. Kostnadsskillnaden är liten
+            jämfört med att gräva upp igen. Installera laddboxar successivt när behovet uppstår.
+        </p>
+    </div>
+
+
+    <!-- ================================================================
+         RESURSER – filer i detta repository
+         ================================================================ -->
+    <div class="card">
+        <h2>Filer i detta projekt</h2>
+        <ul class="status-list">
+            <li>
+                <div class="status-dot dot-blue"></div>
+                <span>
+                    <strong><a href="kalkylator.html">kalkylator.html</a></strong> –
+                    Interaktiv kapacitetskalkylator: effekt per bil, laddtider, trafikljusbedömning.
+                </span>
+            </li>
+            <li>
+                <div class="status-dot dot-blue"></div>
+                <span>
+                    <strong>offerter/Offert-3541 kraftringen.pdf</strong> –
+                    Offert från Kraftringen Nät AB, säkringsändring 16 A → 63 A.
+                </span>
+            </li>
+            <li>
+                <div class="status-dot dot-blue"></div>
+                <span>
+                    <strong>offerter/Offert från Elento_...</strong> –
+                    Offert från Elento, installation laddsystem 23 garage.
+                </span>
+            </li>
+            <li>
+                <div class="status-dot dot-blue"></div>
+                <span>
+                    <strong>offerter/Offert från Laddboxkillarna AB (x2)</strong> –
+                    Offerter för Zaptec Pro i garage respektive på stolpe.
+                </span>
+            </li>
+        </ul>
+    </div>
+
+
+    <!-- ================================================================
+         KÄLLFÖRTECKNING (Harvardstil)
+         ================================================================ -->
+    <footer>
+        <p><strong>Källor (Harvardstil):</strong></p>
+
+        <p>
+            Easee (2025a) <em>Vilka är skillnaderna mellan Easee-laddarna?</em>
+            Easee Help Center, Stavanger.
+            Tillgänglig:
+            <a href="https://support.easee.com/hc/sv/articles/15915437771921"
+               target="_blank" rel="noopener">
+                https://support.easee.com/hc/sv/articles/15915437771921
+            </a>
+        </p>
+
+        <p>
+            Easee (2025b) <em>V2G at Easee – What it means in practice.</em>
+            Easee Help Center, Stavanger.
+            Tillgänglig:
+            <a href="https://support.easee.com/hc/en-gb/articles/43469673525905"
+               target="_blank" rel="noopener">
+                https://support.easee.com/hc/en-gb/articles/43469673525905
+            </a>
+        </p>
+
+        <p>
+            IEA (2023) <em>Global EV Outlook 2023.</em>
+            International Energy Agency, Paris.
+            Tillgänglig:
+            <a href="https://www.iea.org/reports/global-ev-outlook-2023"
+               target="_blank" rel="noopener">
+                https://www.iea.org/reports/global-ev-outlook-2023
+            </a>
+        </p>
+
+        <p>
+            Kraftringen (2026) <em>Offert 3541 – Säkringsändring, Långkatekesen 15,
+            Hjalmar Gullbergs Väg 2–46, 22466 Lund.</em>
+            Kraftringen Nät AB, Lund. Daterad 2026-04-27.
+        </p>
+
+        <p>
+            Wevo Energy (2024) <em>EV Charging Load Balancing: All About Load Management.</em>
+            Tillgänglig:
+            <a href="https://wevo.energy/blog/ev-load-balancing-explained/"
+               target="_blank" rel="noopener">
+                https://wevo.energy/blog/ev-load-balancing-explained/
+            </a>
+        </p>
+
+        <p>
+            Zaptec (2025a) <em>Introducing Zaptec Go 2: Redefining EV charging.</em>
+            Zaptec AS, Stavanger.
+            Tillgänglig:
+            <a href="https://www.zaptec.com/info-hub/inside-zaptec/zaptec-go-2"
+               target="_blank" rel="noopener">
+                https://www.zaptec.com/info-hub/inside-zaptec/zaptec-go-2
+            </a>
+        </p>
+
+        <p>
+            Zaptec (2025b) <em>Zaptec launches UK's first V2G-Ready AC Charger.</em>
+            Zaptec AS, Stavanger.
+            Tillgänglig:
+            <a href="https://www.zaptec.com/en-uk/info-hub/industry-news/zaptec-launches-uk-first-v2g-ready-ac-charger"
+               target="_blank" rel="noopener">
+                https://www.zaptec.com/en-uk/info-hub/industry-news/zaptec-launches-uk-first-v2g-ready-ac-charger
+            </a>
+        </p>
+
+        <p style="margin-top:10px; color:#cbd5e0;">
+            Skapad: 2026-05-21 &nbsp;|&nbsp;
+            Projekt: github.com/kentlundgren/Ovrigt/Hemma/laddboxar &nbsp;|&nbsp;
+            <a href="kalkylator.html">⚡ Till kalkylatorn</a>
+        </p>
+    </footer>
+
+</div><!-- /.container -->
+
+</body>
+</html>
