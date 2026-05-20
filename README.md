@@ -3,6 +3,7 @@
 _Version 1.0, 2026-05-21_
 
 ---
+Test att ögga till en rad, för att se om jag kan pusha över detta till GitHub
 
 ## Innehåll i detta repo
 
