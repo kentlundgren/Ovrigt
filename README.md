@@ -1,15 +1,15 @@
 # Ovrigt – Kent Lundgrens övriga projekt
 
-_Version 1.0, 2026-05-21_
+_Version 1.1, 2026-05-21_
 
 ---
-Test att ögga till en rad, för att se om jag kan pusha över detta till GitHub
 
 ## Innehåll i detta repo
 
-| Mapp | Projekt |
-| ---- | ------- |
+| Mapp / Fil | Projekt |
+| ---------- | ------- |
 | `Hemma/laddboxar/` | Utredning av elbilsladdning – Långkatekesens Samfällighetsförening |
+| `main_has_no_remote_branch.html` | Biprojekt: Git & GitHub-guide – koppla Cursor till GitHub |
 
 ---
 
@@ -44,6 +44,23 @@ AI-verktyg (Claude/Cursor) har använts som assistent för struktur, beräkninga
 
 ---
 
+## Biprojekt – Git & GitHub-guide
+
+### Live-sida (GitHub Pages)
+
+| Sida | URL |
+| ---- | --- |
+| Git & GitHub – koppla Cursor till GitHub | [main_has_no_remote_branch.html – live](https://kentlundgren.github.io/Ovrigt/main_has_no_remote_branch.html) |
+
+### Om biprojektet
+
+Referensdokument skapat parallellt med laddboxar-projektet. Förklarar:
+- Vad felmeddelandena **"main has no remote branch"** och **"Can't push refs to remote"** betyder
+- Hela processen att koppla ett lokalt Cursor-projekt till GitHub och sätta upp GitHub Pages
+- Problemet med `.git` på flera nivåer i mappträdet och hur man löser det i Cursor
+
+---
+
 ## GitHub
 
 Repo: [kentlundgren/Ovrigt](https://github.com/kentlundgren/Ovrigt)
@@ -52,4 +69,4 @@ Commit och push är alltid användarens (Kents) ansvar.
 
 ---
 
-_README v1.0, 2026-05-21_
+_README v1.1, 2026-05-21_
