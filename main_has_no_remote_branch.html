@@ -484,8 +484,76 @@ git push                           # Skicka upp till GitHub</pre>
         </tbody>
     </table>
 
+    <hr>
+
+    <!-- =====================================================================
+         PROBLEM: .GIT PÅ FLERA NIVÅER
+         ===================================================================== -->
+    <h2>Problem – .git på flera nivåer (nested repos)</h2>
+
+    <div class="info-box">
+        <strong>Kents mappstruktur:</strong><br>
+        <code>C:\Users\kentl\OneDrive\AI\Claude\</code> ← har egen <code>.git</code> (rotnivå)<br>
+        <code>C:\Users\kentl\OneDrive\AI\Claude\ArbetenSokta\</code> ← har egen <code>.git</code><br>
+        <code>C:\Users\kentl\OneDrive\AI\Claude\ClaudeCowork\</code> ← har egen <code>.git</code><br>
+        <code>C:\Users\kentl\OneDrive\AI\Claude\Ovrigt\</code> ← har egen <code>.git</code>
+    </div>
+
+    <h3>Vad problemet är</h3>
+    <p>När Cursor öppnar ett projekt (t.ex. <code>Ovrigt</code>) letar den automatiskt efter
+    git-repos – inte bara i projektmappen utan även i <strong>överordnade mappar</strong>.
+    Den hittar då <em>både</em> <code>Ovrigt/.git</code> och <code>Claude/.git</code>.</p>
+
+    <p>Eftersom <code>Claude/.git</code> inte har någon remote (ingen koppling till GitHub)
+    kan Cursor råka välja <em>fel repo</em> när du klickar Push/Sync i Source Control-panelen.
+    Resultatet blir felmeddelandet:</p>
+
+    <div class="error-box">
+        <div class="msg">Can't push refs to remote. Try running "Pull" first to integrate your changes.</div>
+        <div class="forklaring">Egentligen: Cursor försöker pusha från ett repo som saknar remote – inte ett konflikproblem.</div>
+    </div>
+
+    <h3>Varför fungerar det i terminalen men inte i Cursors UI?</h3>
+    <p>I terminalen kör du kommandona i rätt mapp (<code>cd Ovrigt</code>) – då används alltid
+    <code>Ovrigt/.git</code>. Cursors UI-knapp vet inte alltid vilken av de två repon du menar.</p>
+
+    <div class="fix-box">
+        <div class="label">✅ Lösning – ändra en Cursor-inställning (görs en gång för alla)</div>
+        <p>Inställningen <code>git.openRepositoryInParentFolders</code> styr om Cursor ska leta
+        efter git-repos i överordnade mappar. Sätt den till <code>"never"</code>:</p>
+        <pre>// Cursor Settings → settings.json
+"git.openRepositoryInParentFolders": "never"</pre>
+
+        <p><strong>Så här gör du:</strong></p>
+        <ol style="padding-left:20px; margin-top:6px;">
+            <li>Öppna <strong>View → Command Palette</strong> (eller <code>Ctrl+Shift+P</code> om det inte är omdefinierat)</li>
+            <li>Sök efter <strong>Open User Settings (JSON)</strong> och öppna filen</li>
+            <li>Lägg till raden: <code>"git.openRepositoryInParentFolders": "never"</code></li>
+            <li>Spara filen</li>
+            <li>Ladda om Cursor: <strong>Help → Reload Window</strong></li>
+        </ol>
+    </div>
+
+    <div class="warn-box">
+        <strong>⚠️ Viktigt efter omladdning:</strong> Cursors Source Control-panel visar nu bara
+        <em>ett</em> repo (projektets eget). Push/Sync-knappen fungerar då korrekt direkt från UI:n
+        utan att behöva terminalen.
+    </div>
+
+    <h3>Hur man ser vilka repos Cursor hittar</h3>
+    <p>Titta i Source Control-panelens rubrik – om det står ett reponamn med en pil/dropdown
+    och du kan välja mellan flera repos, har Cursor hittat fler än ett. Efter inställningsändringen
+    ska bara projektets eget repo synas.</p>
+
+    <h3>Påverkar detta ArbetenSokta och ClaudeCowork?</h3>
+    <p>Nej – inställningen gäller bara Cursors <em>automatiska sökning uppåt</em> i mappträdet.
+    Varje projektmapp med sin egen <code>.git</code> och konfigurerad remote fungerar precis
+    som förut. Du jobbar fortfarande med separata repos för varje projekt.</p>
+
+    <hr>
+
     <footer>
-        Referensdokument · Kent Lundgren · Version 1.0 · 2026-05-21
+        Referensdokument · Kent Lundgren · Version 1.1 · 2026-05-21
     </footer>
 
 </div>
