@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git & GitHub – Koppla Cursor till GitHub</title>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #f5f7fa;
+            color: #1a202c;
+            line-height: 1.75;
+            padding: 24px 16px 60px;
+        }
+
+        .container { max-width: 860px; margin: 0 auto; }
+
+        h1 {
+            font-size: 1.9rem;
+            color: #1a365d;
+            border-bottom: 3px solid #3182ce;
+            padding-bottom: 10px;
+            margin-bottom: 6px;
+        }
+
+        .subtitle { color: #4a5568; font-size: 0.95rem; margin-bottom: 32px; }
+
+        h2 {
+            font-size: 1.25rem;
+            color: #2c5282;
+            margin: 36px 0 10px;
+            padding-left: 10px;
+            border-left: 4px solid #3182ce;
+        }
+
+        h3 {
+            font-size: 1.05rem;
+            color: #2d3748;
+            margin: 20px 0 6px;
+        }
+
+        p { margin-bottom: 10px; }
+
+        /* ---- Felmeddelande-boxar ---- */
+        .error-box {
+            background: #fff5f5;
+            border: 1px solid #fc8181;
+            border-left: 4px solid #e53e3e;
+            border-radius: 6px;
+            padding: 14px 18px;
+            margin: 12px 0 18px;
+        }
+
+        .error-box .msg {
+            font-family: 'Consolas', monospace;
+            font-size: 0.92rem;
+            color: #c53030;
+            font-weight: 600;
+        }
+
+        .error-box .forklaring { color: #4a5568; font-size: 0.93rem; margin-top: 6px; }
+
+        /* ---- Lösnings-boxar ---- */
+        .fix-box {
+            background: #f0fff4;
+            border: 1px solid #68d391;
+            border-left: 4px solid #38a169;
+            border-radius: 6px;
+            padding: 14px 18px;
+            margin: 6px 0 18px;
+        }
+
+        .fix-box .label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #276749;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
+        }
+
+        /* ---- Kod-block ---- */
+        pre {
+            background: #1a202c;
+            color: #e2e8f0;
+            border-radius: 6px;
+            padding: 14px 18px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.88rem;
+            overflow-x: auto;
+            margin: 8px 0 14px;
+            line-height: 1.6;
+        }
+
+        code {
+            background: #edf2f7;
+            color: #2d3748;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+
+        /* ---- Steg-lista ---- */
+        .steg-lista { counter-reset: steg; list-style: none; margin: 10px 0 18px; }
+
+        .steg-lista li {
+            counter-increment: steg;
+            padding: 10px 14px 10px 50px;
+            margin-bottom: 8px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            position: relative;
+        }
+
+        .steg-lista li::before {
+            content: counter(steg);
+            position: absolute;
+            left: 14px;
+            top: 10px;
+            background: #3182ce;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        /* ---- Begreppstabell ---- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0 20px;
+            background: #fff;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        th {
+            background: #2c5282;
+            color: white;
+            padding: 10px 14px;
+            text-align: left;
+            font-size: 0.88rem;
+        }
+
+        td {
+            padding: 9px 14px;
+            border-bottom: 1px solid #edf2f7;
+            font-size: 0.92rem;
+            vertical-align: top;
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:nth-child(even) td { background: #f7fafc; }
+
+        td code { font-size: 0.85em; }
+
+        /* ---- Info-box ---- */
+        .info-box {
+            background: #ebf8ff;
+            border: 1px solid #90cdf4;
+            border-left: 4px solid #3182ce;
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin: 12px 0 18px;
+            font-size: 0.93rem;
+            color: #2c5282;
+        }
+
+        /* ---- Avsnittsseparator ---- */
+        hr {
+            border: none;
+            border-top: 2px solid #e2e8f0;
+            margin: 36px 0;
+        }
+
+        /* ---- Varnings-box ---- */
+        .warn-box {
+            background: #fffff0;
+            border: 1px solid #f6e05e;
+            border-left: 4px solid #d69e2e;
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin: 12px 0 18px;
+            font-size: 0.93rem;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #3182ce;
+            color: white;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-right: 6px;
+            vertical-align: middle;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        footer {
+            margin-top: 48px;
+            text-align: center;
+            font-size: 0.82rem;
+            color: #a0aec0;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <h1>Git &amp; GitHub – Koppla Cursor till GitHub</h1>
+    <p class="subtitle">Referensdokument · Kent Lundgren · Version 1.0 · 2026-05-21</p>
+
+    <!-- =====================================================================
+         BEGREPPSÖVERSIKT
+         ===================================================================== -->
+    <h2>Viktiga begrepp – en snabbguide</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Begrepp</th>
+                <th>Vad det är</th>
+                <th>Exempel</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>git</strong></td>
+                <td>Versionshanteringssystem som spårar ändringar i filer lokalt på din dator</td>
+                <td>Körs med kommandon som <code>git add</code>, <code>git commit</code></td>
+            </tr>
+            <tr>
+                <td><strong>GitHub</strong></td>
+                <td>Molntjänst som lagrar ditt git-repo online – en "server-kopia"</td>
+                <td>github.com/kentlundgren/Ovrigt</td>
+            </tr>
+            <tr>
+                <td><strong>remote</strong></td>
+                <td>Ett lokalt smeknamn för en nätverksadress (GitHub-repots URL)</td>
+                <td><code>origin</code> → https://github.com/kentlundgren/Ovrigt.git</td>
+            </tr>
+            <tr>
+                <td><strong>branch</strong></td>
+                <td>En versionsgren – en parallell tidslinje av ändringar</td>
+                <td><code>main</code> är standardgrenen</td>
+            </tr>
+            <tr>
+                <td><strong>origin</strong></td>
+                <td>Det vanligaste namnet på remoten (GitHub). Bara ett namn – inte tekniskt speciellt</td>
+                <td>Sätts med <code>git remote add origin &lt;url&gt;</code></td>
+            </tr>
+            <tr>
+                <td><strong>main</strong></td>
+                <td>Standardbranchen (hette tidigare <code>master</code>). Är din huvudlinje av kod</td>
+                <td>Syns i GitHub som den första grenen</td>
+            </tr>
+            <tr>
+                <td><strong>commit</strong></td>
+                <td>En sparad ögonblicksbild av dina filer – med ett meddelande om vad som ändrades</td>
+                <td><code>git commit -m "Lade till index.html"</code></td>
+            </tr>
+            <tr>
+                <td><strong>push</strong></td>
+                <td>Skickar dina lokala commits upp till GitHub</td>
+                <td><code>git push origin main</code></td>
+            </tr>
+            <tr>
+                <td><strong>pull</strong></td>
+                <td>Hämtar ändringar från GitHub ner till din lokala dator</td>
+                <td><code>git pull</code></td>
+            </tr>
+            <tr>
+                <td><strong>GitHub Pages</strong></td>
+                <td>Gratis webbhosting direkt från ditt GitHub-repo – HTML-filer blir live-webbsidor</td>
+                <td>kentlundgren.github.io/Ovrigt/...</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <hr>
+
+    <!-- =====================================================================
+         FELMEDDELANDE 1
+         ===================================================================== -->
+    <h2>Felmeddelande 1 – "main has no remote branch"</h2>
+
+    <div class="error-box">
+        <div class="msg">The branch "main" has no remote branch. Would you like to publish this branch?</div>
+        <div class="forklaring">
+            <strong>Vad det betyder:</strong> Din lokala branch <code>main</code> är inte kopplad till någon branch på GitHub ännu.
+            Git vet inte vart den ska pusha.
+        </div>
+    </div>
+
+    <h3>När uppstår det?</h3>
+    <p>Vanligast när du har initierat ett nytt lokalt repo med <code>git init</code> men aldrig pushat till GitHub tidigare.
+    Din dator har koden – GitHub har ingenting.</p>
+
+    <div class="fix-box">
+        <div class="label">✅ Lösning – klicka OK i Cursor-dialogen, eller kör i PowerShell:</div>
+        <pre>git push -u origin main</pre>
+        <p>Flaggan <code>-u</code> sätter upp kopplingen ("upstream") en gång för alla. Nästa gång räcker det med <code>git push</code>.</p>
+    </div>
+
+    <hr>
+
+    <!-- =====================================================================
+         FELMEDDELANDE 2
+         ===================================================================== -->
+    <h2>Felmeddelande 2 – "Can't push refs to remote. Try running Pull first"</h2>
+
+    <div class="error-box">
+        <div class="msg">Can't push refs to remote. Try running "Pull" first to integrate your changes.</div>
+        <div class="forklaring">
+            <strong>Vad det betyder:</strong> GitHub-repot har commits som din lokala kopia saknar.
+            Git vägrar skriva över dem – du måste hämta hem dem först.
+        </div>
+    </div>
+
+    <h3>Vanliga orsaker</h3>
+    <ul style="padding-left:20px; margin-bottom:12px;">
+        <li>GitHub skapade automatiskt en fil (t.ex. README eller .gitignore) när du satte upp repot</li>
+        <li>GitHub Pages-aktiveringen lade till en commit på distans</li>
+        <li>Någon annan (eller du själv via GitHub.com) redigerade en fil direkt på GitHub</li>
+    </ul>
+
+    <div class="fix-box">
+        <div class="label">✅ Lösning – kör i PowerShell:</div>
+        <pre>git pull --rebase origin main
+git push</pre>
+        <p><code>--rebase</code> lägger dina lokala commits "ovanpå" de inkomna ändringarna utan att skapa en extra merge-commit. Sedan pushar du som vanligt.</p>
+    </div>
+
+    <div class="warn-box">
+        <strong>⚠️ Om pull skapar konflikter:</strong> Git markerar de drabbade filerna med
+        <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>-markeringar. Öppna filen, välj vilken version du vill behålla,
+        spara, och kör sedan <code>git add &lt;fil&gt;</code> följt av <code>git rebase --continue</code>.
+    </div>
+
+    <hr>
+
+    <!-- =====================================================================
+         HELA PROCESSEN FRÅN SCRATCH
+         ===================================================================== -->
+    <h2>Hela processen – från ny mapp till GitHub Pages</h2>
+
+    <div class="info-box">
+        Det här är den kompletta sekvensen när du startar ett nytt projekt och vill ha det på GitHub med live-sidor via Pages.
+    </div>
+
+    <h3><span class="tag">Steg A</span> Förbered lokalt repo</h3>
+    <ol class="steg-lista">
+        <li>Skapa eller öppna projektet i Cursor</li>
+        <li>Öppna PowerShell-terminalen och navigera till projektmappen:<br>
+            <code>cd "C:\Users\kentl\OneDrive\AI\Claude\Ovrigt"</code></li>
+        <li>Initiera ett git-repo i mappen:<br>
+            <pre>git init</pre></li>
+    </ol>
+
+    <h3><span class="tag">Steg B</span> Skapa repo på GitHub.com</h3>
+    <ol class="steg-lista">
+        <li>Gå till <strong>github.com → New repository</strong></li>
+        <li>Ge repot ett namn (t.ex. <code>Ovrigt</code>)</li>
+        <li><strong>Lämna repot tomt</strong> – lägg INTE till README, .gitignore eller licens nu<br>
+            <span style="color:#c53030;">Om GitHub lägger till filer direkt får du "Can't push"-felet direkt</span></li>
+        <li>Klicka <strong>Create repository</strong> – kopiera HTTPS-URL:en</li>
+    </ol>
+
+    <h3><span class="tag">Steg C</span> Koppla ihop lokalt ↔ GitHub</h3>
+    <ol class="steg-lista">
+        <li>Lägg till remoten i PowerShell:<br>
+            <pre>git remote add origin https://github.com/kentlundgren/Ovrigt.git</pre></li>
+        <li>Kontrollera att det ser rätt ut:<br>
+            <pre>git remote -v</pre></li>
+    </ol>
+
+    <h3><span class="tag">Steg D</span> Lägg till filer och committa</h3>
+    <ol class="steg-lista">
+        <li>Staged alla filer du vill ha med:<br>
+            <pre>git add index.html
+git add kalkylator.html</pre>
+            eller lägg till allt på en gång: <code>git add .</code></li>
+        <li>Skapa en commit:<br>
+            <pre>git commit -m "Första versionen av projektet"</pre></li>
+    </ol>
+
+    <h3><span class="tag">Steg E</span> Pusha till GitHub (första gången)</h3>
+    <ol class="steg-lista">
+        <li>Pusha och sätt upp kopplingen:<br>
+            <pre>git push -u origin main</pre></li>
+        <li>Verifiera på github.com att filerna syns</li>
+    </ol>
+
+    <h3><span class="tag">Steg F</span> Aktivera GitHub Pages</h3>
+    <ol class="steg-lista">
+        <li>Gå till ditt repo på GitHub.com → <strong>Settings → Pages</strong></li>
+        <li>Under <em>Source</em>: välj <strong>Deploy from a branch</strong></li>
+        <li>Branch: <strong>main</strong> &nbsp;/&nbsp; Folder: <strong>/ (root)</strong></li>
+        <li>Klicka <strong>Save</strong></li>
+        <li>Vänta 2–5 minuter – sedan är sidorna live på:<br>
+            <code>https://&lt;användarnamn&gt;.github.io/&lt;reponamn&gt;/</code><br>
+            Exempel: <code>https://kentlundgren.github.io/Ovrigt/Hemma/laddboxar/index.html</code></li>
+    </ol>
+
+    <hr>
+
+    <!-- =====================================================================
+         NORMALT ARBETSFLÖDE EFTER UPPSTART
+         ===================================================================== -->
+    <h2>Normalt arbetsflöde – efter att repot är uppsatt</h2>
+
+    <p>När kopplingen väl är etablerad (efter Steg E ovan) är det bara dessa tre kommandon varje gång du vill spara och publicera ändringar:</p>
+
+    <pre>git add .                          # Lägg till alla ändrade filer
+git commit -m "Beskriv ändringen"  # Spara en ögonblicksbild
+git push                           # Skicka upp till GitHub</pre>
+
+    <div class="info-box">
+        <strong>Tips:</strong> Kör <code>git status</code> när som helst för att se vilka filer som är ändrade,
+        stagade eller ännu inte tillagda.
+    </div>
+
+    <hr>
+
+    <!-- =====================================================================
+         SNABBREFERENS – VANLIGA KOMMANDON
+         ===================================================================== -->
+    <h2>Snabbreferens – vanliga kommandon</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Kommando</th>
+                <th>Vad det gör</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td><code>git init</code></td><td>Skapar ett nytt lokalt git-repo i aktuell mapp</td></tr>
+            <tr><td><code>git status</code></td><td>Visar vilka filer som är ändrade / stagade / otrackade</td></tr>
+            <tr><td><code>git add &lt;fil&gt;</code></td><td>Lägger till en specifik fil i nästa commit</td></tr>
+            <tr><td><code>git add .</code></td><td>Lägger till ALLA ändrade filer</td></tr>
+            <tr><td><code>git commit -m "..."</code></td><td>Sparar en ögonblicksbild med ett meddelande</td></tr>
+            <tr><td><code>git remote add origin &lt;url&gt;</code></td><td>Kopplar lokalt repo till GitHub-repo</td></tr>
+            <tr><td><code>git remote -v</code></td><td>Visar vilka remotes som är konfigurerade</td></tr>
+            <tr><td><code>git push -u origin main</code></td><td>Första push – sätter upp kopplingen permanent</td></tr>
+            <tr><td><code>git push</code></td><td>Alla kommande pushes (efter att -u är satt)</td></tr>
+            <tr><td><code>git pull</code></td><td>Hämtar ändringar från GitHub</td></tr>
+            <tr><td><code>git pull --rebase origin main</code></td><td>Hämtar och lägger dina commits "ovanpå" – undviker merge-commits</td></tr>
+            <tr><td><code>git log --oneline</code></td><td>Visar commit-historiken kortfattat</td></tr>
+        </tbody>
+    </table>
+
+    <hr>
+
+    <!-- =====================================================================
+         DETTA PROJEKT
+         ===================================================================== -->
+    <h2>Detta projekt – Ovrigt / laddboxar</h2>
+
+    <table>
+        <thead>
+            <tr><th>Vad</th><th>Värde</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>Lokalt repo</td><td><code>C:\Users\kentl\OneDrive\AI\Claude\Ovrigt</code></td></tr>
+            <tr><td>GitHub-repo</td><td><a href="https://github.com/kentlundgren/Ovrigt">github.com/kentlundgren/Ovrigt</a></td></tr>
+            <tr><td>Remote-namn</td><td><code>origin</code></td></tr>
+            <tr><td>Branch</td><td><code>main</code></td></tr>
+            <tr><td>GitHub Pages – bas-URL</td><td><a href="https://kentlundgren.github.io/Ovrigt/">kentlundgren.github.io/Ovrigt/</a></td></tr>
+            <tr><td>Live – projektöversikt</td><td><a href="https://kentlundgren.github.io/Ovrigt/Hemma/laddboxar/index.html">…/Hemma/laddboxar/index.html</a></td></tr>
+            <tr><td>Live – kalkylator</td><td><a href="https://kentlundgren.github.io/Ovrigt/Hemma/laddboxar/kalkylator.html">…/Hemma/laddboxar/kalkylator.html</a></td></tr>
+        </tbody>
+    </table>
+
+    <footer>
+        Referensdokument · Kent Lundgren · Version 1.0 · 2026-05-21
+    </footer>
+
+</div>
+</body>
+</html>
