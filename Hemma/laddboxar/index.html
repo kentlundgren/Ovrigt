@@ -501,15 +501,16 @@
 
 
     <!-- ================================================================
-         LADDARJÄMFÖRELSE – Zaptec Go 2 vs Easee Charge Pro vs Easee Charge Max
+         ZAPTEC GO 2 VS ZAPTEC PRO – NYCKELSKILLNADER
+         Uppdaterad 2026-05-21 efter genomgång av offert från Laddboxkillarna AB
          ================================================================ -->
     <div class="card">
-        <h2>Jämförelse av aktuella laddboxmodeller</h2>
+        <h2>Zaptec Go 2 vs Zaptec Pro – vad är skillnaden?</h2>
 
         <p>
-            Nedan jämförs de tre modeller som är mest aktuella för projektet,
-            med fokus på V2G-beredskap, certifieringar och lämplighet för
-            flerfamiljsinstallationer/samfälligheter.
+            Laddboxkillarna AB har offerterat <strong>Zaptec Pro</strong>.
+            En viktig fråga är om man istället bör välja <strong>Zaptec Go 2</strong>
+            som har starkare V2G-stöd. Här är en faktabaserad jämförelse.
         </p>
 
         <div style="overflow-x:auto; margin-top:14px;">
@@ -517,6 +518,136 @@
                 <thead>
                     <tr>
                         <th>Egenskap</th>
+                        <th>Zaptec Pro <span style="font-weight:400;font-size:0.8em;">(offerterad av Laddboxkillarna)</span></th>
+                        <th>Zaptec Go 2 <span style="font-weight:400;font-size:0.8em;">(alternativ)</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Primär målgrupp</strong></td>
+                        <td><span class="yes">✓ Samfälligheter / BRF / kommersiellt</span></td>
+                        <td><span class="part">≈ Hemmabruk (villa / radhus)</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Skalbarhet</strong></td>
+                        <td><span class="yes">✓ 1–1 000+ laddare</span> – designad för stor installation</td>
+                        <td><span class="part">≈ Hemmainstallation, ej primärt skalbar</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Dynamisk lastbalansering</strong></td>
+                        <td><span class="yes">✓ Patenterad fas- och lastbalansering</span> – upp till 66 % bättre effektutnyttjande</td>
+                        <td><span class="yes">✓ Ja</span> – via Zaptec Sense + Portal</td>
+                    </tr>
+                    <tr>
+                        <td><strong>V2G-redo (hårdvara)</strong></td>
+                        <td><span class="part">≈ ISO 15118 Plug&amp;Charge redo</span> – V2G ej explicit garanterat i HW</td>
+                        <td><span class="yes">✓ Explicit V2G-redo</span> – ISO 15118-20, dubbelriktat AC</td>
+                    </tr>
+                    <tr>
+                        <td><strong>1/3-fas-växling</strong></td>
+                        <td><span class="part">≈ Ej omnämnt</span></td>
+                        <td><span class="yes">✓ Ja</span> – smarter vid solceller och varierande last</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Solcellsintegration</strong></td>
+                        <td><span class="part">≈ Via Zaptec Sense externt</span></td>
+                        <td><span class="yes">✓ Inbyggt stöd</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>OCPP-stöd</strong></td>
+                        <td><span class="yes">✓ OCPP 1.6J</span> (box-level och cloud)</td>
+                        <td><span class="yes">✓ Native OCPP 1.6J</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>MID-certifierad mätare</strong></td>
+                        <td><span class="yes">✓ Ja</span> – möjliggör individuell debitering</td>
+                        <td><span class="yes">✓ Ja</span> – inbyggd display</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Backplate / Make-Ready</strong></td>
+                        <td><span class="yes">✓ Ja</span> – Zaptec Pro Backplate, infrastruktur kan förberedas utan laddbox</td>
+                        <td><span class="no">✗ Nej</span> – saknar backplate-koncept</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Garanti</strong></td>
+                        <td><span class="yes">✓ 5 år</span></td>
+                        <td>Standard (kontrollera med leverantör)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Maxeffekt</strong></td>
+                        <td>22 kW (3-fas)</td>
+                        <td>22 kW (3-fas)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Anslutning</strong></td>
+                        <td>Type 2 (Mennekes)</td>
+                        <td>Type 2 socket (kabel medföljer ej)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Rekommendationsruta -->
+        <div class="v2g-box" style="margin-top:16px; background:#f0fff4; border-left:4px solid #38a169;">
+            <strong>⚖️ Bedömning – Zaptec Pro eller Go 2 för samfälligheten?</strong>
+            <p style="margin-top:8px;">
+                <strong>Zaptec Pro är det rätta valet för samfälligheten</strong> av dessa skäl:
+            </p>
+            <ul style="padding-left:18px; margin-top:6px; font-size:0.93rem;">
+                <li>Designad specifikt för BRF/samfälligheter – inte hemmabruk</li>
+                <li>Patenterad lastbalansering hanterar 23 garages simultana laddning överlägset</li>
+                <li>Backplate-konceptet passar Make-Ready-principen perfekt: förbered infrastruktur nu, montera laddboxar successivt</li>
+                <li>5 års garanti och OTA-uppdateringar via Zaptec Portal</li>
+            </ul>
+            <p style="margin-top:10px;">
+                <strong>V2G-frågan:</strong> Go 2 har starkare explicit V2G-certifiering (ISO 15118-20).
+                Zaptec Pro stöder ISO 15118 (Plug&amp;Charge) men V2G-aktivering via mjukvaruuppdatering
+                är ännu inte bekräftad. <em>Rekommendation: fråga Laddboxkillarna AB direkt om
+                Zaptec Pros V2G-roadmap och om Go 2 kan offerteras som alternativ.</em>
+                Oavsett är V2G inte kommersiellt tillgängligt i Sverige maj 2026 – beslutet
+                behöver inte avgöras av V2G ensamt.
+            </p>
+        </div>
+
+        <!-- V2G-förtydligande -->
+        <div class="v2g-box">
+            <strong>🔋 Om V2G – vehicle-to-grid (maj 2026)</strong>
+            V2G är ännu inte kommersiellt tillgängligt för konsumenter i Sverige.
+            Praktisk implementering kräver: V2G-kompatibel bil (t.ex. Nissan Leaf, BYD Dolphin),
+            mjukvaruaktivering från laddartillverkaren, en aggregatortjänst och
+            nationellt regelverk som tillåter återmatning. Marknaden förväntas mogna
+            2–4 år. Att investera i V2G-förberedd hårdvara nu är klokt –
+            men modellvalet bör styras mer av driftsäkerhet och lastbalansering
+            för 23 garage (Zaptec, 2025b).
+        </div>
+
+        <!-- Offert-OBS -->
+        <div class="warning-box">
+            <strong>⚠️ Notera om Kraftringen-offerten</strong>
+            Offert 3541 daterades 2026-04-27 med en giltighetstid på 1 månad
+            (giltig t.o.m. ca 2026-05-27). Kontakta Kraftringen för att
+            förnya eller bekräfta offerten om beslutet dröjer.
+        </div>
+    </div>
+
+
+    <!-- ================================================================
+         LADDARJÄMFÖRELSE – Zaptec vs Easee (bredare marknadsbild)
+         ================================================================ -->
+    <div class="card">
+        <h2>Bredare jämförelse – Zaptec Pro, Zaptec Go 2 och Easee</h2>
+
+        <p style="margin-bottom:14px;">
+            Tabellen nedan ger en fullständig bild av alla aktuella modeller
+            inklusive Easee-alternativen.
+        </p>
+
+        <div style="overflow-x:auto;">
+            <table class="compare-table">
+                <thead>
+                    <tr>
+                        <th>Egenskap</th>
+                        <th>Zaptec Pro</th>
                         <th>Zaptec Go 2</th>
                         <th>Easee Charge Pro</th>
                         <th>Easee Charge Max</th>
@@ -528,71 +659,52 @@
                         <td>22 kW (3-fas)</td>
                         <td>22 kW (3-fas)</td>
                         <td>22 kW (3-fas)</td>
+                        <td>22 kW (3-fas)</td>
                     </tr>
                     <tr>
                         <td><strong>V2G-redo (HW)</strong></td>
-                        <td><span class="yes">✓ Ja</span> – ISO 15118-20</td>
+                        <td><span class="part">≈ ISO 15118 (Plug&amp;Charge)</span></td>
+                        <td><span class="yes">✓ Ja</span> – ISO 15118-20, explicit V2G</td>
                         <td><span class="yes">✓ Ja</span></td>
                         <td><span class="yes">✓ Ja</span> (M02-variant)</td>
                     </tr>
                     <tr>
-                        <td><strong>V2G kommersiellt tillgängligt (2026)</strong></td>
-                        <td><span class="part">≈ Ej ännu</span> – kräver bil + aggregator</td>
-                        <td><span class="part">≈ Ej ännu</span></td>
-                        <td><span class="part">≈ Ej ännu</span></td>
-                    </tr>
-                    <tr>
                         <td><strong>OCPP-stöd</strong></td>
-                        <td><span class="yes">✓ Ja</span> (OCPP 1.6/2.0)</td>
+                        <td><span class="yes">✓ Ja</span> (1.6J box + cloud)</td>
+                        <td><span class="yes">✓ Ja</span> (1.6J native)</td>
                         <td><span class="yes">✓ Ja</span></td>
                         <td><span class="no">✗ Nej</span></td>
                     </tr>
                     <tr>
-                        <td><strong>MID-certifierad mätare</strong></td>
+                        <td><strong>MID-certifierad</strong></td>
                         <td><span class="yes">✓ Ja</span></td>
-                        <td><span class="yes">✓ Ja</span> (import + export)</td>
-                        <td><span class="part">≈ M01: import. M02: import+export</span></td>
+                        <td><span class="yes">✓ Ja</span> (display)</td>
+                        <td><span class="yes">✓ Ja</span></td>
+                        <td><span class="part">≈ M01/M02</span></td>
                     </tr>
                     <tr>
-                        <td><strong>Smart lastbalansering</strong></td>
-                        <td><span class="yes">✓ Ja</span> (via Zaptec Portal)</td>
-                        <td><span class="yes">✓ Ja</span> (inbyggd + Easee Cloud)</td>
-                        <td><span class="part">≈ Begränsad (för hemmabruk)</span></td>
+                        <td><strong>Lastbalansering</strong></td>
+                        <td><span class="yes">✓ Patenterad fas+last</span></td>
+                        <td><span class="yes">✓ Ja</span> (Sense+Portal)</td>
+                        <td><span class="yes">✓ Ja</span> (Easee Cloud)</td>
+                        <td><span class="part">≈ Begränsad</span></td>
                     </tr>
                     <tr>
                         <td><strong>Lämplig för samfällighet</strong></td>
-                        <td><span class="yes">✓ Ja</span> – designad för flerfamiljshus</td>
-                        <td><span class="yes">✓ Ja</span> – professionell installation</td>
+                        <td><span class="yes">✓✓ Primärt syfte</span></td>
+                        <td><span class="part">≈ Hemmabruk i grunden</span></td>
+                        <td><span class="yes">✓ Ja</span></td>
                         <td><span class="part">≈ Begränsad skalbarhet</span></td>
                     </tr>
                     <tr>
-                        <td><strong>Målgrupp</strong></td>
-                        <td>Hem och flerfamiljshus</td>
-                        <td>Kommersiell/stor installation</td>
-                        <td>Hem (1–3 laddare)</td>
+                        <td><strong>Garanti</strong></td>
+                        <td><span class="yes">✓ 5 år</span></td>
+                        <td>Standard</td>
+                        <td>Standard</td>
+                        <td>Standard</td>
                     </tr>
                 </tbody>
             </table>
-        </div>
-
-        <!-- V2G-förtydligande -->
-        <div class="v2g-box">
-            <strong>🔋 Om V2G – vehicle-to-grid</strong>
-            Alla tre modeller är <em>V2G-förberedda på hårdvarunivå</em>, vilket innebär att
-            de kan hantera dubbelriktat elflöde när mjukvara, bilkompatibilitet och
-            nationella regelverk är på plats. I Sverige och övriga Europa är V2G ännu
-            inte kommersiellt tillgängligt för konsumenter (maj 2026), men marknaden
-            förväntas mogna inom 2–4 år. Investering i V2G-redo laddboxar nu innebär att
-            samfälligheten slipper byta hårdvara när tekniken är redo
-            (Easee, 2025b; Zaptec, 2025b).
-        </div>
-
-        <!-- Offert-OBS -->
-        <div class="warning-box">
-            <strong>⚠️ Notera om Kraftringen-offerten</strong>
-            Offert 3541 daterades 2026-04-27 med en giltighetstid på 1 månad
-            (dvs. giltig till ca 2026-05-27). Ta kontakt med Kraftringen för att
-            förnya eller bekräfta offerten om beslutet dröjer.
         </div>
     </div>
 
