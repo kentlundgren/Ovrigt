@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zaptec Pro vs Easee Charge Pro – Jämförelse för samfällighet</title>
+
+    <!--
+        Zaptec_Easee.html
+        Skapad: 2026-05-21
+        Syfte: Jämförelse mellan Zaptec Pro MID och Easee Charge Pro baserat på
+               webbkällor, recensioner och användarerfarenheter.
+        Koppling: Informationen är relevant för ekonomisk_kalkyl.html (Elento Alt B/C).
+    -->
+
+    <style>
+        /* === Grundlayout === */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #f0f4f8;
+            color: #2d3748;
+            line-height: 1.65;
+            font-size: 1rem;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 20px 16px 60px;
+        }
+
+        /* === Header === */
+        header {
+            background: linear-gradient(135deg, #1a365d 0%, #2b6cb0 100%);
+            color: white;
+            padding: 32px 24px 28px;
+            border-radius: 12px;
+            margin-bottom: 28px;
+        }
+
+        header h1 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        header p {
+            font-size: 0.95rem;
+            opacity: 0.88;
+        }
+
+        header .nav-links {
+            margin-top: 14px;
+            font-size: 0.85rem;
+        }
+
+        header .nav-links a {
+            color: #90cdf4;
+            text-decoration: none;
+            margin-right: 18px;
+        }
+
+        header .nav-links a:hover { text-decoration: underline; }
+
+        /* === Cards === */
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 24px 26px;
+            margin-bottom: 22px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+
+        .card h2 {
+            font-size: 1.2rem;
+            color: #1a365d;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #ebf8ff;
+        }
+
+        .card h3 {
+            font-size: 1rem;
+            color: #2c5282;
+            margin: 18px 0 8px;
+        }
+
+        /* === Viktigt-ruta === */
+        .alert {
+            border-radius: 8px;
+            padding: 14px 16px;
+            margin-bottom: 16px;
+            font-size: 0.9rem;
+        }
+
+        .alert-red {
+            background: #fff5f5;
+            border-left: 4px solid #e53e3e;
+            color: #742a2a;
+        }
+
+        .alert-yellow {
+            background: #fffff0;
+            border-left: 4px solid #d69e2e;
+            color: #744210;
+        }
+
+        .alert-green {
+            background: #f0fff4;
+            border-left: 4px solid #38a169;
+            color: #22543d;
+        }
+
+        .alert-blue {
+            background: #ebf8ff;
+            border-left: 4px solid #3182ce;
+            color: #1a365d;
+        }
+
+        /* === Jämförelsetabell === */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        th {
+            background: #2b6cb0;
+            color: white;
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 9px 12px;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: top;
+        }
+
+        tr:nth-child(even) td { background: #f7fafc; }
+        tr:hover td { background: #ebf8ff; }
+
+        .winner {
+            font-weight: 700;
+            color: #276749;
+        }
+
+        .loser {
+            color: #c53030;
+        }
+
+        /* === Poäng-kort === */
+        .score-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .score-grid { grid-template-columns: 1fr; }
+            header h1 { font-size: 1.3rem; }
+        }
+
+        .score-card {
+            border-radius: 10px;
+            padding: 18px;
+            text-align: center;
+        }
+
+        .score-card.zaptec {
+            background: #ebf8ff;
+            border: 2px solid #3182ce;
+        }
+
+        .score-card.easee {
+            background: #f0fff4;
+            border: 2px solid #38a169;
+        }
+
+        .score-card .brand {
+            font-weight: 700;
+            font-size: 1.05rem;
+            margin-bottom: 4px;
+        }
+
+        .score-card .model {
+            font-size: 0.82rem;
+            color: #718096;
+            margin-bottom: 12px;
+        }
+
+        .score-card .big-score {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .score-card.zaptec .big-score { color: #2b6cb0; }
+        .score-card.easee .big-score { color: #276749; }
+
+        .score-card .score-label {
+            font-size: 0.8rem;
+            color: #718096;
+        }
+
+        /* === Pro/Con lista === */
+        .pro-con {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 600px) { .pro-con { grid-template-columns: 1fr; } }
+
+        .pro-con-box { border-radius: 8px; padding: 14px; }
+        .pro-con-box.pros { background: #f0fff4; border: 1px solid #9ae6b4; }
+        .pro-con-box.cons { background: #fff5f5; border: 1px solid #fed7d7; }
+
+        .pro-con-box h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .pro-con-box.pros h4 { color: #276749; }
+        .pro-con-box.cons h4 { color: #c53030; }
+
+        .pro-con-box ul {
+            padding-left: 16px;
+            font-size: 0.88rem;
+        }
+
+        .pro-con-box li { margin-bottom: 5px; }
+
+        /* === Rekommendation === */
+        .recommendation {
+            background: linear-gradient(135deg, #1a365d 0%, #2b6cb0 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 22px 24px;
+            margin-top: 8px;
+        }
+
+        .recommendation h3 {
+            color: #90cdf4;
+            margin-bottom: 12px;
+        }
+
+        .recommendation p { font-size: 0.93rem; margin-bottom: 8px; opacity: 0.95; }
+
+        /* === Footer === */
+        footer {
+            text-align: center;
+            font-size: 0.82rem;
+            color: #718096;
+            margin-top: 30px;
+            padding-top: 16px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        footer a { color: #3182ce; text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+
+        /* === Källhänvisnings-chip === */
+        .source {
+            display: inline-block;
+            font-size: 0.72rem;
+            background: #e2e8f0;
+            color: #4a5568;
+            border-radius: 4px;
+            padding: 1px 6px;
+            margin-left: 4px;
+            vertical-align: middle;
+        }
+
+        /* === V2G-badge === */
+        .badge {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            border-radius: 4px;
+            padding: 2px 7px;
+            margin-left: 6px;
+            vertical-align: middle;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .badge-green { background: #c6f6d5; color: #22543d; }
+        .badge-blue  { background: #bee3f8; color: #1a365d; }
+        .badge-red   { background: #fed7d7; color: #742a2a; }
+        .badge-gray  { background: #e2e8f0; color: #4a5568; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- ============================================================
+         HEADER
+    ============================================================ -->
+    <header>
+        <h1>Zaptec Pro MID vs Easee Charge Pro</h1>
+        <p>Jämförelse för samfällighet/garage – baserad på webbkällor, recensioner och användarerfarenheter</p>
+        <div class="nav-links">
+            <a href="../../ekonomisk_kalkyl.html">← Ekonomisk kalkyl</a>
+            <a href="index.html">← Projektöversikt</a>
+        </div>
+    </header>
+
+
+    <!-- ============================================================
+         VIKTIGT – BAKGRUND OM EASEE
+    ============================================================ -->
+    <div class="card">
+        <h2>⚠️ Viktig bakgrund – Easees säkerhetshistorik i Sverige</h2>
+
+        <div class="alert alert-red">
+            <strong>Säljstopp för gamla Easee-modeller:</strong>
+            Easee Home och Easee Charge (äldre modeller) fick <strong>försäljningsförbud i Sverige</strong>
+            mars 2023 av Elsäkerhetsverket. Skälet var brister i teknisk dokumentation och en elektronisk
+            jordfelsbrytarlösning som inte uppfyller elinstallationsreglerna. Dessa modeller
+            <strong>får fortfarande inte säljas eller nyinstalleras</strong> i Sverige.
+            <span class="source">Elsäkerhetsverket</span>
+        </div>
+
+        <div class="alert alert-yellow">
+            <strong>Ärendet avslutades sept 2025:</strong>
+            Elsäkerhetsverket avslutade sin tillsyn av <em>redan installerade</em> Easee-boxar
+            (Home/Charge) i september 2025. Easee bedömdes ha levererat tillfredsställande felstatistik
+            och vidare uppföljning ansågs onödig. <strong>Försäljningsförbudet kvarstår</strong> dock
+            för de berörda äldre modellerna.
+            <span class="source">Elsäkerhetsverket/Elinstallatören 2025</span>
+        </div>
+
+        <div class="alert alert-green">
+            <strong>Easee Charge Pro = ny kommersiell modell:</strong>
+            Det är <strong>inte</strong> den gamla Charge-modellen som fått säljstopp.
+            Easee Charge Pro är en nyutvecklad kommersiell laddare med inbyggd MID Class B-mätare,
+            IP54/IK10, integrerad 4G eSIM och V2G-redo hårdvara – designad specifikt för garage,
+            arbetsplatser och flerfamiljshus. Säljstoppet gäller <em>inte</em> Charge Pro.
+        </div>
+
+        <p style="font-size:0.88rem; color:#718096; margin-top:10px;">
+            <strong>Obs:</strong> Det är just Easee Charge Pro som Elento offererar i sitt Alt C (604 000 kr för 23 garage).
+            Det är viktigt att skilja på Charge Pro (ny, kommersiell) och gamla Charge (säljstoppad).
+        </p>
+    </div>
+
+
+    <!-- ============================================================
+         BETYG – SNABB ÖVERSIKT
+    ============================================================ -->
+    <div class="card">
+        <h2>Testbetyg – vad säger oberoende recensenter?</h2>
+
+        <div class="score-grid">
+            <div class="score-card zaptec">
+                <div class="brand">Zaptec Pro MID</div>
+                <div class="model">Norsk tillverkare · BRF/Kommersiell</div>
+                <div class="big-score">9,0/10</div>
+                <div class="score-label">eviQ.se · laddboxarna.com (2026)</div>
+                <div style="margin-top:10px; font-size:0.82rem; color:#2c5282;">
+                    🥇 Bäst i test för BRF och flerfamiljshus<br>
+                    🔒 "Säkraste laddboxen" (oberoende test)
+                </div>
+            </div>
+
+            <div class="score-card easee">
+                <div class="brand">Easee Core</div>
+                <div class="model">Norsk tillverkare · Hem/Villa (jämförbar modell)</div>
+                <div class="big-score">9,2/10</div>
+                <div class="score-label">eviQ.se (2026) – gäller Easee Core</div>
+                <div style="margin-top:10px; font-size:0.82rem; color:#276749;">
+                    🥇 Bäst för villa (1-2 bilar)<br>
+                    📝 Easee Charge Pro ej separat betygsatt
+                </div>
+            </div>
+        </div>
+
+        <div class="alert alert-blue" style="margin-top:16px;">
+            <strong>Obs om betygen:</strong>
+            Oberoende tester jämför mestadels <em>Zaptec Pro</em> mot <em>Easee Core</em> (hemmabruk).
+            Easee Charge Pro är en nyare kommersiell modell som ännu inte är välbetygsatt i konsumentrecensioner
+            – men specifikationerna är starka och tillverkaren uppger &gt;99% drifttid.
+        </div>
+    </div>
+
+
+    <!-- ============================================================
+         SPECIFIKATIONSJÄMFÖRELSE
+    ============================================================ -->
+    <div class="card">
+        <h2>Specifikationsjämförelse</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Egenskap</th>
+                    <th>Zaptec Pro MID</th>
+                    <th>Easee Charge Pro</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Målgrupp</strong></td>
+                    <td class="winner">BRF, samfällighet, flerfamiljshus</td>
+                    <td class="winner">Kommersiellt – garage, arbetsplatser, hotell</td>
+                </tr>
+                <tr>
+                    <td><strong>Max laddeffekt</strong></td>
+                    <td>22 kW (3-fas, 32A)</td>
+                    <td>22 kW (3-fas, 32A)</td>
+                </tr>
+                <tr>
+                    <td><strong>MID-certifierad mätare</strong></td>
+                    <td class="winner">✅ Inbyggd <span class="badge badge-green">Viktig för debitering</span></td>
+                    <td class="winner">✅ MID Class B (±1%) inbyggd</td>
+                </tr>
+                <tr>
+                    <td><strong>Lastbalansering</strong></td>
+                    <td class="winner">✅ Inbyggd dynamisk, skalbar till 250 laddare</td>
+                    <td>✅ Via EaseeLink RF + Equalizer</td>
+                </tr>
+                <tr>
+                    <td><strong>OCPP</strong></td>
+                    <td>OCPP 1.6 (OCPP 2.x planerat)</td>
+                    <td>OCPP 1.6J <span class="badge badge-green">OCPP 2.x planerat</span></td>
+                </tr>
+                <tr>
+                    <td><strong>V2G (fordon-till-nät)</strong></td>
+                    <td>Ej V2G-redo idag (kräver framtida modell)</td>
+                    <td class="winner">✅ V2G-redo hårdvara <span class="badge badge-green">Fördel</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Uppkoppling</strong></td>
+                    <td>4G, Wi-Fi, Bluetooth, Power Line Comm.</td>
+                    <td>4G eSIM (inbyggd), Wi-Fi, Bluetooth, RFID/NFC</td>
+                </tr>
+                <tr>
+                    <td><strong>Kommunikation laddboxar emellan</strong></td>
+                    <td class="winner">Power Line Communication (PLC) – kabel</td>
+                    <td>EaseeLink RF (trådlös)</td>
+                </tr>
+                <tr>
+                    <td><strong>Vikt</strong></td>
+                    <td>5,4 kg</td>
+                    <td class="winner">1,6 kg (extremt kompakt)</td>
+                </tr>
+                <tr>
+                    <td><strong>IP/IK-klass</strong></td>
+                    <td>IP54</td>
+                    <td>IP54 / IK10 <span class="badge badge-green">Mer slagtålig</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Garanti</strong></td>
+                    <td>5 år</td>
+                    <td class="winner">5 år</td>
+                </tr>
+                <tr>
+                    <td><strong>Pris per enhet (ca, efter grönt avdrag)</strong></td>
+                    <td>~8 500 kr (privat) – ~17 000 kr (kommersiell)</td>
+                    <td>Ej publicerat (offert Elento: ~11 000 kr/st)</td>
+                </tr>
+                <tr>
+                    <td><strong>Administrationssystem</strong></td>
+                    <td class="winner">Zaptec Portal – kraftfull, fleranvändarhantering</td>
+                    <td>Easee Control / Companies portal</td>
+                </tr>
+                <tr>
+                    <td><strong>Drifttid (uppgivet)</strong></td>
+                    <td>Hög (ej exakt siffra)</td>
+                    <td>&gt;99% (900 000+ laddare i drift)</td>
+                </tr>
+                <tr>
+                    <td><strong>Säkerhetshistorik (Sverige)</strong></td>
+                    <td class="winner">Inga problem – godkänd</td>
+                    <td>Gäller EJ Charge Pro – äldre Charge-modeller säljstoppade</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+    <!-- ============================================================
+         FÖRDELAR OCH NACKDELAR
+    ============================================================ -->
+    <div class="card">
+        <h2>Fördelar och nackdelar</h2>
+
+        <h3 style="color:#2b6cb0;">Zaptec Pro MID</h3>
+        <div class="pro-con">
+            <div class="pro-con-box pros">
+                <h4>✅ Fördelar</h4>
+                <ul>
+                    <li>Inbyggd MID-mätare – ingen extern mätlösning behövs</li>
+                    <li>Inbyggd lastbalansering – enklare installation för BRF</li>
+                    <li>Skalbart till 250 laddare i ett system</li>
+                    <li>Väl beprövad i svenska BRF:er och samfälligheter</li>
+                    <li>Zaptec Portal – kraftfullt administrationsverktyg</li>
+                    <li>Ingen säkerhetshistorik – alltid godkänd i Sverige</li>
+                    <li>PLC-kommunikation (Power Line) – robust och kabelburen</li>
+                    <li>"Säkraste laddboxen" i oberoende test</li>
+                    <li>Starkt stöd hos svenska installatörer</li>
+                </ul>
+            </div>
+            <div class="pro-con-box cons">
+                <h4>❌ Nackdelar</h4>
+                <ul>
+                    <li>Dyrare per enhet (~8 500–17 000 kr)</li>
+                    <li>Tyngre (5,4 kg) – mer klumpig design</li>
+                    <li>Ej V2G-redo idag (kräver framtida modellbyte)</li>
+                    <li>En del problem med lastbalansering rapporterade för Zaptec Go (ej Pro)</li>
+                    <li>Klassad som "arkiverad" hos en jämförelsesite – oklart varför</li>
+                </ul>
+            </div>
+        </div>
+
+        <h3 style="color:#276749; margin-top:24px;">Easee Charge Pro</h3>
+        <div class="pro-con">
+            <div class="pro-con-box pros">
+                <h4>✅ Fördelar</h4>
+                <ul>
+                    <li>Inbyggd MID Class B-mätare (±1%) – hög precision</li>
+                    <li>V2G-redo hårdvara – framtidssäkrare</li>
+                    <li>Mycket kompakt (1,6 kg) – enkel montering</li>
+                    <li>IK10 slagtålig – bra för garagemiljöer</li>
+                    <li>4G eSIM inbyggd – alltid uppkopplad utan extra modem</li>
+                    <li>OCPP 2.x planerat – bra integration med elhandlare</li>
+                    <li>Plug &amp; Play via Easee Ready dockningslösning</li>
+                    <li>Säljstopp gäller INTE Charge Pro</li>
+                </ul>
+            </div>
+            <div class="pro-con-box cons">
+                <h4>❌ Nackdelar</h4>
+                <ul>
+                    <li>Dyrare i Elentos offert (~11 000 kr/st)</li>
+                    <li>Easees rykte skadades av säljstoppet för äldre modeller</li>
+                    <li>Färre svenska referensinstallationer för Charge Pro-modellen</li>
+                    <li>Kräver Easee Equalizer för optimal lastbalansering</li>
+                    <li>Trådlös RF-kommunikation – potentiellt mer störningskänslig än PLC</li>
+                    <li>App kritiserad för långsam statusuppdatering (gäller konsumentapp)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ============================================================
+         ANVÄNDARERFARENHETER OCH RECENSIONER
+    ============================================================ -->
+    <div class="card">
+        <h2>Vad säger de som köpt och installerat?</h2>
+
+        <div class="alert alert-blue" style="margin-bottom:16px;">
+            <strong>Obs:</strong> Publika recensioner av <em>Easee Charge Pro</em> är ännu begränsade
+            (relativt ny modell). Nedan redovisas erfarenheter av Zaptec Pro och Easee generellt,
+            plus en viktig varning om hur säljstoppet påverkat förtroendet.
+        </div>
+
+        <h3>Zaptec Pro – vad användare och installatörer säger</h3>
+        <table>
+            <thead>
+                <tr><th>Kategori</th><th>Omdöme</th><th>Källa/sammanhang</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Allmänt betyg</strong></td>
+                    <td class="winner">9,0/10 – "Utmärkt för BRF och flerfamiljshus"</td>
+                    <td>eviQ.se, laddboxgaraget.se (2026)</td>
+                </tr>
+                <tr>
+                    <td><strong>MID-mätare</strong></td>
+                    <td class="winner">"Utan MID-mätaren hade vi inte kunnat debitera rättvist"</td>
+                    <td>BRF-forum (55kvadrat.se)</td>
+                </tr>
+                <tr>
+                    <td><strong>Zaptec Portal</strong></td>
+                    <td class="winner">"Bästa administrationssystemet för många laddpunkter"</td>
+                    <td>Installatörsomdömen, eviQ.se</td>
+                </tr>
+                <tr>
+                    <td><strong>Lastbalansering</strong></td>
+                    <td>"Fungerar bra, men kräver korrekt inställning av installatören"</td>
+                    <td>Tesla Club Sweden</td>
+                </tr>
+                <tr>
+                    <td><strong>Säkerhet</strong></td>
+                    <td class="winner">"Utsedd till säkraste laddboxen i oberoende test"</td>
+                    <td>Laddboxarna.com</td>
+                </tr>
+                <tr>
+                    <td><strong>Negativa</strong></td>
+                    <td class="loser">Zaptec <em>Go</em> (ej Pro) rapporteras "hänga sig" vid lastbalansering</td>
+                    <td>Tesla Club Sweden</td>
+                </tr>
+                <tr>
+                    <td><strong>Pris</strong></td>
+                    <td>"Dyrare men motiverat för BRF – MID-mätaren värd pengarna"</td>
+                    <td>55kvadrat.se, eviQ.se</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Easee – vad användare och installatörer säger</h3>
+        <table>
+            <thead>
+                <tr><th>Kategori</th><th>Omdöme</th><th>Källa/sammanhang</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Easee Core betyg</strong></td>
+                    <td class="winner">9,2/10 – "Bäst för villa och lågprisinstallation"</td>
+                    <td>eviQ.se (2026)</td>
+                </tr>
+                <tr>
+                    <td><strong>Design</strong></td>
+                    <td class="winner">"Extremt kompakt och elegant – enkel att montera"</td>
+                    <td>Installatörsomdömen</td>
+                </tr>
+                <tr>
+                    <td><strong>App</strong></td>
+                    <td>"Enkel att använda men statusuppdatering ibland långsam"</td>
+                    <td>Konsumentrecensioner</td>
+                </tr>
+                <tr>
+                    <td><strong>Säljstoppets effekt</strong></td>
+                    <td class="loser">"Köpte Zaptec Pro istället pga osäkerhet om Easees framtid"</td>
+                    <td>Privatperson, fatherben.se</td>
+                </tr>
+                <tr>
+                    <td><strong>Vanligaste felet (gamla modeller)</strong></td>
+                    <td class="loser">Temperaturavvikelse (överhettning, 56% av fel) + reläproblem (14%)</td>
+                    <td>Elinstallatören, Easees egna felrapporter</td>
+                </tr>
+                <tr>
+                    <td><strong>Tibber-integration</strong></td>
+                    <td class="winner">"Tibber litar på Easee igen" – samarbete återupptaget 2025</td>
+                    <td>Elinstallatören 2025</td>
+                </tr>
+                <tr>
+                    <td><strong>BRF-installation (Easee Charge)</strong></td>
+                    <td>"BRF Arken Växjö fortsätter erbjuda Easee Charge för sina boende"</td>
+                    <td>brfarkenvaxjo.se</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+    <!-- ============================================================
+         V2G – FRAMTIDSSÄKRING
+    ============================================================ -->
+    <div class="card">
+        <h2>V2G (Vehicle-to-Grid) – framtidsperspektiv</h2>
+
+        <div class="alert alert-yellow">
+            <strong>Varken Zaptec Pro eller Easee Charge Pro stödjer V2G idag</strong> –
+            ingen av leverantörernas offerter inkluderar bidirektionell laddning.
+            Det kräver specialladdare (Wallbox Quasar m.fl.) + avtal med aggregator
+            (Vattenfall, Tibber etc.). Tekniken lanseras i Sverige 2026–2028 via pilotprojekt.
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Aspekt</th>
+                    <th>Zaptec Pro MID</th>
+                    <th>Easee Charge Pro</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>V2G-redo hårdvara idag</strong></td>
+                    <td class="loser">❌ Nej – kräver framtida modellbyte</td>
+                    <td class="winner">✅ Ja – hårdvara förberedd</td>
+                </tr>
+                <tr>
+                    <td><strong>Möjlig V2G-uppgradering</strong></td>
+                    <td>Möjligt via mjukvaruuppdatering om hårdvara tillåter</td>
+                    <td class="winner">Planerat via mjukvaruuppdatering</td>
+                </tr>
+                <tr>
+                    <td><strong>OCPP 2.x (krav för V2G)</strong></td>
+                    <td>Planerat</td>
+                    <td class="winner">Planerat, EN 18031 pågår</td>
+                </tr>
+                <tr>
+                    <td><strong>Plattformsmognad</strong></td>
+                    <td class="winner">Beprövad, stor community</td>
+                    <td>900 000+ installationer globalt</td>
+                </tr>
+                <tr>
+                    <td><strong>Smart laddning (flytta till billiga timmar)</strong></td>
+                    <td class="winner">✅ Idag via Zaptec Portal + Perific Shield</td>
+                    <td class="winner">✅ Idag via Easee Control + Equalizer</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="alert alert-blue" style="margin-top:14px;">
+            <strong>Slutsats V2G:</strong>
+            Easee Charge Pro har ett litet försprång vad gäller V2G-redo hårdvara –
+            men det är oklart när faktisk V2G-funktionalitet rullas ut i Sverige.
+            Zaptec Pro kan uppgraderas med mjukvara om hårdvaran tillåter det.
+            Välj system med bra molnplattform (OCPP) – det gör framtida V2G-uppgradering enklare
+            oavsett tillverkare.
+        </div>
+    </div>
+
+
+    <!-- ============================================================
+         REKOMMENDATION FÖR VÅR SAMFÄLLIGHET
+    ============================================================ -->
+    <div class="card">
+        <h2>Rekommendation för Långkatekesens samfällighet (23 garage)</h2>
+
+        <div class="recommendation">
+            <h3>🎯 Sammanvägd bedömning</h3>
+            <p>
+                <strong>För en samfällighet med 23 garage är Zaptec Pro MID det tryggare valet</strong>
+                – beprövat i liknande installationer, utan säkerhetshistorik och med
+                inbyggd lastbalansering som skalas enkelt.
+            </p>
+            <p>
+                <strong>Easee Charge Pro är tekniskt intressant</strong> (V2G-redo hårdvara, kompakt,
+                inbyggd 4G eSIM) men är en relativt ny kommersiell modell med färre svenska
+                referensinstallationer. Lägg till det att Easees varumärke fortfarande bär på
+                sällens påverkan av det äldre säljstoppet.
+            </p>
+            <p>
+                <strong>Prisskillnad:</strong> Elento Alt B (Zaptec Go, 534 000 kr) vs Alt C (Easee Charge Pro,
+                604 000 kr) – skillnad 70 000 kr. Det är värt att ställa frågan till Elento om man
+                kan välja Zaptec Pro MID istället för Zaptec Go i Alt B.
+            </p>
+        </div>
+
+        <table style="margin-top:16px;">
+            <thead>
+                <tr>
+                    <th>Välj Zaptec Pro MID om ni…</th>
+                    <th>Välj Easee Charge Pro om ni…</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Vill ha beprövad teknik med många BRF-/samfällighetsreferenser</td>
+                    <td>Prioriterar V2G-redo hårdvara idag</td>
+                </tr>
+                <tr>
+                    <td>Värdesätter inbyggd lastbalansering utan extra enhet</td>
+                    <td>Vill ha den mest kompakta lösningen (garage med begränsat utrymme)</td>
+                </tr>
+                <tr>
+                    <td>Vill ha Zaptec Portal för stark fleranvändarhantering</td>
+                    <td>Vill ha inbyggd 4G eSIM utan externt modem</td>
+                </tr>
+                <tr>
+                    <td>Oroar er för Easees säkerhetshistorik (äldre modeller)</td>
+                    <td>Är bekväma med att Säljstoppet EJ gällde Charge Pro</td>
+                </tr>
+                <tr>
+                    <td>Vill ha starkt lokalt installatörsstöd i Sverige</td>
+                    <td>Prioriterar lägst vikt och enklast montering</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+    <!-- ============================================================
+         KÄLLFÖRTECKNING
+    ============================================================ -->
+    <div class="card">
+        <h2>Källor</h2>
+        <ul style="font-size:0.87rem; line-height:2; padding-left:18px;">
+            <li>
+                <a href="https://eviq.se/blogs/news/easee-core-vs-zaptec-pro-2026" target="_blank">
+                    eviQ.se – Easee Core vs Zaptec Pro, jämförelse 2026</a>
+            </li>
+            <li>
+                <a href="https://www.elsakerhetsverket.se/om-oss/press/nyheter/2025/arendet-med-easee-laddbox-ar-nu-avslutat/" target="_blank">
+                    Elsäkerhetsverket – Ärendet med Easee laddbox är nu avslutat (2025)</a>
+            </li>
+            <li>
+                <a href="https://www.elinstallatoren.se/2025/06/hur-ska-man-hantera-laddboxarna-fran-easee-i-dag/" target="_blank">
+                    Elinstallatören – Hur ska man hantera laddboxarna från Easee i dag? (2025)</a>
+            </li>
+            <li>
+                <a href="https://www.electricpoint.com/blog/introducing-easee-charge-pro" target="_blank">
+                    ElectricPoint – Introducing the Easee Charge Pro (artikel, UK)</a>
+            </li>
+            <li>
+                <a href="https://easee.com/en/products/ev-chargers/charge-pro/" target="_blank">
+                    Easee.com – Charge Pro produktsida</a>
+            </li>
+            <li>
+                <a href="https://laddboxarna.com/laddbox/zaptec-pro/" target="_blank">
+                    laddboxarna.com – Zaptec Pro (arkiverad recension 2026)</a>
+            </li>
+            <li>
+                <a href="https://55kvadrat.se/smidig-elbilsladdning-i-brf-sa-planerar-ni-zaptec-pro-mid-utan-att-spranga-budgeten/" target="_blank">
+                    55kvadrat.se – Elbilsladdning i BRF med Zaptec Pro MID</a>
+            </li>
+            <li>
+                <a href="https://www.villaagarna.se/radgivning-och-tips/energi/elbil/easee-laddbox-for-elbilar-stoppas--brister-i-sakerhet/" target="_blank">
+                    Villaägarna – Easee laddbox stoppas (bakgrundsinformation)</a>
+            </li>
+            <li>
+                Jämförelsedokumentet: <em>Uppdaterad jämförelse av offerterna för er samfällighet</em>
+                (filen i laddboxar-mappen)
+            </li>
+        </ul>
+    </div>
+
+
+    <!-- ============================================================
+         FOOTER
+    ============================================================ -->
+    <footer>
+        <p>
+            Zaptec Pro vs Easee Charge Pro · Jämförelse skapad 2026-05-21 &nbsp;|&nbsp;
+            <a href="../../ekonomisk_kalkyl.html">Ekonomisk kalkyl</a> &nbsp;|&nbsp;
+            <a href="index.html">Projektöversikt</a>
+        </p>
+        <p style="margin-top:4px; font-size:0.78rem;">
+            Informationen bygger på webbaserade källor och kan ha ändrats. Kontrollera alltid direkt med leverantör.
+        </p>
+    </footer>
+
+</div>
+</body>
+</html>
