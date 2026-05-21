@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ekonomisk kalkyl – Laddboxar Långkatekesens Samfällighetsförening</title>
+
+    <!--
+    ================================================================
+    EKONOMISK_KALKYL.HTML
+    Ekonomisk analys och offertjämförelse – laddboxar i samfällighet
+    ----------------------------------------------------------------
+    Syfte:
+      Sammanställer kostnader från inhämtade offerter och beräknar
+      totalkostnad per garage för Långkatekesens Samfällighetsförening.
+
+    Offerter som ingår:
+      - Kraftringen Nät AB (offert 3541) – nätanslutning 16→63 A
+      - Elento – installation laddsystem 23 garage
+      - Laddboxkillarna AB – Zaptec Pro i garage (x6)
+      - Laddboxkillarna AB – Zaptec Pro på stolpe (x6)
+
+    OBS: Fält med GUL bakgrund är inmatningsfält – fyll i
+         faktiska siffror från PDF-offerternas prissidor.
+
+    Skapad:  2026-05-21
+    Projekt: Långkatekesens Samfällighetsförening – laddboxar
+    Källa:   github.com/kentlundgren/Ovrigt/Hemma/laddboxar
+    ================================================================
+    -->
+
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #f0f4f8;
+            color: #2d3748;
+            line-height: 1.7;
+            padding: 20px 16px 60px;
+        }
+
+        .container { max-width: 960px; margin: 0 auto; }
+
+        /* ---- Header ---- */
+        header {
+            background: linear-gradient(135deg, #276749 0%, #1a4731 100%);
+            color: white;
+            padding: 32px 36px;
+            border-radius: 14px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(39, 103, 73, 0.3);
+        }
+        header .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.18);
+            border: 1px solid rgba(255,255,255,0.35);
+            border-radius: 999px;
+            padding: 3px 14px;
+            font-size: 0.78rem;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+        }
+        header h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; }
+        header p { opacity: 0.88; font-size: 0.95rem; max-width: 640px; }
+
+        /* ---- Navigering ---- */
+        .nav-links {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        .nav-links a {
+            background: white;
+            border: 1px solid #cbd5e0;
+            color: #2c5282;
+            padding: 7px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .nav-links a:hover { background: #ebf8ff; border-color: #90cdf4; }
+
+        /* ---- Kort ---- */
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 28px 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        }
+        .card h2 {
+            font-size: 1.2rem;
+            color: #276749;
+            border-bottom: 2px solid #c6f6d5;
+            padding-bottom: 8px;
+            margin-bottom: 18px;
+        }
+        .card h3 {
+            font-size: 1rem;
+            color: #2d3748;
+            margin: 18px 0 8px;
+        }
+
+        /* ---- Leverantörskort ---- */
+        .leverantor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .leverantor-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 18px 20px;
+            background: #f7fafc;
+        }
+        .leverantor-card.kraftringen { border-color: #90cdf4; background: #ebf8ff; }
+        .leverantor-card.elento      { border-color: #fbd38d; background: #fffaf0; }
+        .leverantor-card.laddbox1    { border-color: #b794f4; background: #faf5ff; }
+        .leverantor-card.laddbox2    { border-color: #9ae6b4; background: #f0fff4; }
+
+        .leverantor-name {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+        .leverantor-modell {
+            font-size: 0.82rem;
+            color: #718096;
+            margin-bottom: 12px;
+            font-style: italic;
+        }
+
+        /* ---- Inmatningsfält (GUL bakgrund = indata att fylla i) ---- */
+        .input-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        .input-row label {
+            flex: 1;
+            color: #4a5568;
+        }
+        input[type="number"] {
+            width: 130px;
+            padding: 6px 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            text-align: right;
+            /* GUL bakgrund för inmatningsfält – tydlig signal att detta är indata */
+            background: #fffff0;
+            border-color: #d69e2e;
+            color: #2d3748;
+        }
+        input[type="number"]:focus {
+            outline: none;
+            background: #fefcbf;
+            border-color: #b7791f;
+            box-shadow: 0 0 0 3px rgba(214,158,46,0.2);
+        }
+        .unit { color: #718096; font-size: 0.82rem; min-width: 30px; }
+
+        /* ---- Beräknade fält (blå/grön bakgrund = resultat) ---- */
+        .result-field {
+            width: 130px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            text-align: right;
+            font-weight: 700;
+            background: #ebf8ff;
+            color: #2b6cb0;
+            border: 1px solid #90cdf4;
+            display: inline-block;
+        }
+
+        /* ---- Sammanställningstabell ---- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            font-size: 0.92rem;
+        }
+        th {
+            background: #2d3748;
+            color: white;
+            padding: 10px 14px;
+            text-align: left;
+        }
+        th.right, td.right { text-align: right; }
+        td {
+            padding: 9px 14px;
+            border-bottom: 1px solid #edf2f7;
+            vertical-align: top;
+        }
+        tr:nth-child(even) td { background: #f7fafc; }
+        tr.total td {
+            background: #f0fff4;
+            font-weight: 700;
+            border-top: 2px solid #68d391;
+            color: #276749;
+        }
+        tr.subtotal td {
+            background: #fffff0;
+            font-weight: 600;
+            color: #744210;
+        }
+
+        /* ---- Info/varning/tips-boxar ---- */
+        .info-box {
+            background: #ebf8ff;
+            border-left: 4px solid #3182ce;
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin: 12px 0;
+            font-size: 0.9rem;
+            color: #2c5282;
+        }
+        .warn-box {
+            background: #fffff0;
+            border-left: 4px solid #d69e2e;
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin: 12px 0;
+            font-size: 0.9rem;
+        }
+
+        /* ---- Modell-badge ---- */
+        .model-badge {
+            display: inline-block;
+            background: #2d3748;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 999px;
+            margin-bottom: 8px;
+        }
+
+        /* ---- Antal-selector ---- */
+        .antal-selector {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 10px 0 16px;
+        }
+        .antal-btn {
+            padding: 7px 20px;
+            border: 2px solid #cbd5e0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #4a5568;
+        }
+        .antal-btn.active {
+            background: #276749;
+            color: white;
+            border-color: #276749;
+        }
+        .antal-btn:hover:not(.active) { border-color: #276749; color: #276749; }
+
+        /* ---- Summerings-kort ---- */
+        .summary-card {
+            background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+            border: 2px solid #68d391;
+            border-radius: 12px;
+            padding: 22px 26px;
+            margin: 16px 0;
+        }
+        .summary-card .big-number {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #276749;
+            line-height: 1;
+        }
+        .summary-card .big-label {
+            font-size: 0.85rem;
+            color: #276749;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 14px;
+        }
+        .summary-item {
+            background: white;
+            border-radius: 8px;
+            padding: 12px 16px;
+        }
+        .summary-item .val {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #276749;
+        }
+        .summary-item .lbl {
+            font-size: 0.78rem;
+            color: #718096;
+        }
+
+        footer {
+            margin-top: 40px;
+            color: #a0aec0;
+            font-size: 0.82rem;
+            text-align: center;
+        }
+        footer a { color: #276749; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- ================================================================
+         SIDHUVUD
+         ================================================================ -->
+    <header>
+        <div class="badge">💰 Ekonomisk kalkyl · Maj 2026</div>
+        <h1>Ekonomisk kalkyl – Laddboxar</h1>
+        <p>Offertjämförelse och totalkostnadsanalys för elbilsladdning i
+        Långkatekesens Samfällighetsförening (23 garage, Lund).</p>
+    </header>
+
+    <!-- Navigering -->
+    <div class="nav-links">
+        <a href="Hemma/laddboxar/index.html">← Projektöversikt</a>
+        <a href="Hemma/laddboxar/kalkylator.html">⚡ Kapacitetskalkylator</a>
+        <a href="Hemma/laddboxar/offerter/Offert-3541 kraftringen.pdf" target="_blank">📄 Kraftringen-offert</a>
+        <a href="Hemma/laddboxar/offerter/Offert från Elento_Installation av laddsystem för samfällighet 23 garage.pdf" target="_blank">📄 Elento-offert</a>
+        <a href="Hemma/laddboxar/offerter/Offert från Laddboxkillarna AB_ 6 st Zaptec Pro i garage - Långkatekesens Samfällighetsförening.pdf" target="_blank">📄 Laddboxkillarna (garage)</a>
+        <a href="Hemma/laddboxar/offerter/Offert från Laddboxkillarna AB_ 6 st Zaptec Pro på stolpe - Långkatekesens Samfällighetsförening.pdf" target="_blank">📄 Laddboxkillarna (stolpe)</a>
+    </div>
+
+    <div class="warn-box">
+        <strong>⚠️ Fält med gul bakgrund</strong> är inmatningsfält – fyll i siffrorna
+        från respektive PDF-offert. Alla belopp anges i <strong>kronor inkl. moms</strong>
+        om inget annat anges. Beräknade summor uppdateras automatiskt.
+    </div>
+
+
+    <!-- ================================================================
+         LEVERANTÖRSPRESENTATION
+         ================================================================ -->
+    <div class="card">
+        <h2>Leverantörer och laddboxmodeller</h2>
+
+        <div class="leverantor-grid">
+
+            <!-- Kraftringen -->
+            <div class="leverantor-card kraftringen">
+                <div class="leverantor-name">⚡ Kraftringen Nät AB</div>
+                <div class="leverantor-modell">Nätinfrastruktur – inte laddboxar</div>
+                <div class="model-badge">Offert 3541 · 2026-04-27</div>
+                <p style="font-size:0.88rem;">
+                    Uppgradering av mätarsäkring från <strong>16 A → 63 A</strong>
+                    (11 kW → 43,5 kW). Förutsättning för hela laddinstallationen.
+                    Giltig t.o.m. ca 2026-05-27.
+                </p>
+            </div>
+
+            <!-- Elento -->
+            <div class="leverantor-card elento">
+                <div class="leverantor-name">🔌 Elento</div>
+                <div class="leverantor-modell">Elinstallation + laddboxar</div>
+                <div class="model-badge" id="elentoModellBadge">Modell: se offert</div>
+                <p style="font-size:0.88rem;">
+                    Offert avser installation av laddsystem för samtliga 23 garage.
+                    Fyll i laddboxmodell och priser från PDF-offerten.
+                </p>
+                <div class="input-row" style="margin-top:10px;">
+                    <label>Laddboxmodell:</label>
+                    <input type="text" id="elentoModell" placeholder="t.ex. Easee Charge Pro"
+                           style="width:160px; background:#fffff0; border-color:#d69e2e; padding:5px 8px; border-radius:6px; border:1px solid; font-size:0.88rem;"
+                           oninput="document.getElementById('elentoModellBadge').textContent = 'Modell: ' + (this.value || 'se offert')">
+                </div>
+            </div>
+
+            <!-- Laddboxkillarna garage -->
+            <div class="leverantor-card laddbox1">
+                <div class="leverantor-name">🔧 Laddboxkillarna AB</div>
+                <div class="leverantor-modell">Offert 1 – Zaptec Pro i garage</div>
+                <div class="model-badge">Zaptec Pro · 22 kW · 3-fas</div>
+                <p style="font-size:0.88rem;">
+                    6 st <strong>Zaptec Pro</strong> monterade inuti garageboxarna.
+                    Zaptec Pro är designad för flerfamiljshus med smart lastbalansering
+                    via Zaptec Portal. OCPP 1.6/2.0, MID-certifierad.
+                </p>
+            </div>
+
+            <!-- Laddboxkillarna stolpe -->
+            <div class="leverantor-card laddbox2">
+                <div class="leverantor-name">🔧 Laddboxkillarna AB</div>
+                <div class="leverantor-modell">Offert 2 – Zaptec Pro på stolpe</div>
+                <div class="model-badge">Zaptec Pro · 22 kW · 3-fas</div>
+                <p style="font-size:0.88rem;">
+                    6 st <strong>Zaptec Pro</strong> monterade på gemensam stolpe utanför
+                    garageraderna. Alternativ placering – eventuellt enklare kabeldragning,
+                    men längre kabel per bil.
+                </p>
+            </div>
+
+        </div>
+
+        <!-- Modellöversikt -->
+        <h3>Teknisk snabbfakta – Zaptec Pro</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Egenskap</th>
+                    <th>Zaptec Pro</th>
+                    <th>Kommentar</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Maxeffekt</td><td>22 kW (3-fas)</td><td>Per laddbox</td></tr>
+                <tr><td>V2G-redo (hårdvara)</td><td>✓ Ja – ISO 15118-20</td><td>Kräver V2G-aktiverad mjukvara (ej ännu 2026)</td></tr>
+                <tr><td>OCPP-stöd</td><td>✓ Ja (1.6 / 2.0)</td><td>Öppet protokoll – inte leverantörslåst</td></tr>
+                <tr><td>MID-certifierad mätare</td><td>✓ Ja</td><td>Möjliggör individuell debitering</td></tr>
+                <tr><td>Smart lastbalansering</td><td>✓ Ja – Zaptec Portal</td><td>Dynamisk fördelning av tillgänglig effekt</td></tr>
+                <tr><td>Målgrupp</td><td>Flerfamiljshus / samfälligheter</td><td>Designad för just detta användningsfall</td></tr>
+                <tr><td>Anslutning</td><td>Type 2 (Mennekes) – fast kabel</td><td>EU-standard IEC 62196-2</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+
+    <!-- ================================================================
+         OFFERTPRISER – INMATNING
+         ================================================================ -->
+    <div class="card">
+        <h2>Offertpriser – fyll i från PDF-offerternas prissidor</h2>
+
+        <div class="info-box">
+            Alla belopp i <strong>kronor inkl. moms</strong>. Öppna PDF-offerternas
+            prissidor via länkarna i navigeringen ovanför och fyll i siffrorna nedan.
+        </div>
+
+        <!-- Kraftringen – känd -->
+        <h3>1. Kraftringen Nät AB – nätanslutning (känd kostnad)</h3>
+        <div class="input-row">
+            <label>Anslutningsavgift, säkringsändring 16→63 A:</label>
+            <input type="number" id="kraftringenPris" value="35875" min="0" oninput="berakna()">
+            <span class="unit">kr</span>
+        </div>
+        <p style="font-size:0.82rem; color:#718096; margin-top:4px;">
+            Förifyllt: 28 700 kr exkl. moms = 35 875 kr inkl. moms (offert 3541, 2026-04-27).
+            Giltig t.o.m. ca 2026-05-27.
+        </p>
+
+        <!-- Elento -->
+        <h3>2. Elento – installation laddsystem 23 garage</h3>
+        <div class="input-row">
+            <label>Kostnad laddboxar (totalt för offerterat antal):</label>
+            <input type="number" id="elentoLaddboxar" value="0" min="0" oninput="berakna()">
+            <span class="unit">kr</span>
+        </div>
+        <div class="input-row">
+            <label>Antal laddboxar i offerten:</label>
+            <input type="number" id="elentoAntal" value="0" min="0" oninput="berakna()">
+            <span class="unit">st</span>
+        </div>
+        <div class="input-row">
+            <label>Installationskostnad (arbete + material):</label>
+            <input type="number" id="elentoInstallation" value="0" min="0" oninput="berakna()">
+            <span class="unit">kr</span>
+        </div>
+        <div class="input-row">
+            <label>Övriga kostnader (EMS, styrsystem etc.):</label>
+            <input type="number" id="elentoOvrigt" value="0" min="0" oninput="berakna()">
+            <span class="unit">kr</span>
+        </div>
+        <div class="input-row" style="margin-top:4px;">
+            <label><strong>Delsumma Elento:</strong></label>
+            <span class="result-field" id="elentoSumma">0</span>
+            <span class="unit">kr</span>
+        </div>
+
+        <!-- Laddboxkillarna garage -->
+        <h3>3. Laddboxkillarna AB – Zaptec Pro i garage</h3>
+        <div class="input-row">
+            <label>Kostnad laddboxar – Zaptec Pro (6 st, offerterat pris):</label>
+            <input type="number" id="lb1Laddboxar" value="0" min="0" oninput="berakna()">
+            <span class="unit">kr</span>
+        </div>
+        <div class="input-row">
+            <label>Installationskostnad (arbete + material):</label>
+            <input type="number" id="lb1Installation" value="0" min="0" oninput="berakna()">
+            <span class="unit">kr</span>
+        </div>
+        <div class="input-row">
+            <label>Övriga kostnader (EMS, Zaptec Portal-abonnemang etc.):</label>
+            <input type="number" id="lb1Ovrigt" value="0" min="0" oninput="berakna()">
+            <span class="unit">kr</span>
+        </div>
+        <div class="input-row" style="margin-top:4px;">
+            <label><strong>Delsumma Laddboxkillarna (garage):</strong></label>
+            <span class="result-field" id="lb1Summa">0</span>
+            <span class="unit">kr</span>
+        </div>
+
+        <!-- Laddboxkillarna stolpe -->
+        <h3>4. Laddboxkillarna AB – Zaptec Pro på stolpe</h3>
+        <div class="input-row">
+            <label>Kostnad laddboxar – Zaptec Pro (6 st, offerterat pris):</label>
+            <input type="number" id="lb2Laddboxar" value="0" min="0" oninput="berakna()">
+            <span class="unit">kr</span>
+        </div>
+        <div class="input-row">
+            <label>Installationskostnad (arbete + material):</label>
+            <input type="number" id="lb2Installation" value="0" min="0" oninput="berakna()">
+            <span class="unit">kr</span>
+        </div>
+        <div class="input-row">
+            <label>Övriga kostnader (stolpfundament, EMS etc.):</label>
+            <input type="number" id="lb2Ovrigt" value="0" min="0" oninput="berakna()">
+            <span class="unit">kr</span>
+        </div>
+        <div class="input-row" style="margin-top:4px;">
+            <label><strong>Delsumma Laddboxkillarna (stolpe):</strong></label>
+            <span class="result-field" id="lb2Summa">0</span>
+            <span class="unit">kr</span>
+        </div>
+    </div>
+
+
+    <!-- ================================================================
+         SAMMANSTÄLLNING – totalkostnad per alternativ
+         ================================================================ -->
+    <div class="card">
+        <h2>Sammanställning – totalkostnad per alternativ</h2>
+
+        <p style="margin-bottom:14px; font-size:0.92rem;">
+            Nätanslutningskostnaden (Kraftringen) tillkommer i <strong>samtliga alternativ</strong>
+            och fördelas lika på alla 23 garage.
+        </p>
+
+        <table id="sammanstallning">
+            <thead>
+                <tr>
+                    <th>Alternativ</th>
+                    <th>Leverantör laddboxar</th>
+                    <th>Modell</th>
+                    <th class="right">Nätanslutning</th>
+                    <th class="right">Installation + laddboxar</th>
+                    <th class="right">Totalt inkl. moms</th>
+                    <th class="right">Per garage (23 st)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Alt A</strong></td>
+                    <td>Elento</td>
+                    <td id="tblElentoModell">–</td>
+                    <td class="right" id="tblKraftr1">35 875 kr</td>
+                    <td class="right" id="tblElentoKost">0 kr</td>
+                    <td class="right" id="tblElentoTot"><strong>35 875 kr</strong></td>
+                    <td class="right" id="tblElentoPerGarage">1 560 kr</td>
+                </tr>
+                <tr>
+                    <td><strong>Alt B</strong></td>
+                    <td>Laddboxkillarna AB</td>
+                    <td>Zaptec Pro – i garage</td>
+                    <td class="right" id="tblKraftr2">35 875 kr</td>
+                    <td class="right" id="tblLb1Kost">0 kr</td>
+                    <td class="right" id="tblLb1Tot"><strong>35 875 kr</strong></td>
+                    <td class="right" id="tblLb1PerGarage">1 560 kr</td>
+                </tr>
+                <tr>
+                    <td><strong>Alt C</strong></td>
+                    <td>Laddboxkillarna AB</td>
+                    <td>Zaptec Pro – på stolpe</td>
+                    <td class="right" id="tblKraftr3">35 875 kr</td>
+                    <td class="right" id="tblLb2Kost">0 kr</td>
+                    <td class="right" id="tblLb2Tot"><strong>35 875 kr</strong></td>
+                    <td class="right" id="tblLb2PerGarage">1 560 kr</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="info-box" style="margin-top:14px;">
+            <strong>Obs:</strong> Tabellen visar kostnad för <em>offerterat antal laddboxar</em>.
+            "Make-Ready"-principen innebär att man lägger kabel till alla 23 garage vid
+            första installationen – laddboxar installeras successivt vid behov.
+        </div>
+    </div>
+
+
+    <!-- ================================================================
+         FÖRDELNING PER GARAGE – välj antal
+         ================================================================ -->
+    <div class="card">
+        <h2>Kostnadsfördelning per garage</h2>
+
+        <p style="margin-bottom:10px; font-size:0.92rem;">
+            Välj vilket alternativ och hur många laddboxar som ska ingå i
+            <em>första etappen</em>. Välj sedan hur kostnaden ska fördelas –
+            på alla 23 garage eller bara de som deltar.
+        </p>
+
+        <h3>Välj alternativ att beräkna på:</h3>
+        <div class="antal-selector">
+            <button class="antal-btn active" onclick="valjAlt('A', this)">Alt A – Elento</button>
+            <button class="antal-btn" onclick="valjAlt('B', this)">Alt B – Laddboxkillarna (garage)</button>
+            <button class="antal-btn" onclick="valjAlt('C', this)">Alt C – Laddboxkillarna (stolpe)</button>
+        </div>
+
+        <h3>Fördela kostnaden på:</h3>
+        <div class="antal-selector">
+            <button class="antal-btn" onclick="valjFordelning(2, this)">2 garage</button>
+            <button class="antal-btn" onclick="valjFordelning(5, this)">5 garage</button>
+            <button class="antal-btn" onclick="valjFordelning(10, this)">10 garage</button>
+            <button class="antal-btn active" onclick="valjFordelning(23, this)">Alla 23 garage</button>
+        </div>
+
+        <div class="summary-card">
+            <div class="big-number" id="perGarageBelopp">–</div>
+            <div class="big-label" id="perGarageLabel">per garage (fyll i offertpriser ovan)</div>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="val" id="summNatansl">35 875 kr</div>
+                    <div class="lbl">Nätanslutning (Kraftringen)</div>
+                </div>
+                <div class="summary-item">
+                    <div class="val" id="summInstall">0 kr</div>
+                    <div class="lbl">Installation + laddboxar</div>
+                </div>
+                <div class="summary-item">
+                    <div class="val" id="summTotalt">35 875 kr</div>
+                    <div class="lbl">Totalt inkl. moms</div>
+                </div>
+                <div class="summary-item">
+                    <div class="val" id="summAntal">23 garage</div>
+                    <div class="lbl">Fördelat på</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================================================================
+         EKONOMISKA ÖVERVÄGANDEN
+         ================================================================ -->
+    <div class="card">
+        <h2>Ekonomiska överväganden</h2>
+
+        <h3>Make-Ready-principen – rekommenderas</h3>
+        <p>
+            Lägg kabel och rörinfrastruktur till <strong>alla 23 garage</strong> redan vid
+            första installationen. Merkostnaden för att dra kabel till oanvända platser är
+            liten jämfört med kostnaden för att gräva upp och installera om i efterhand.
+            Laddboxar monteras sedan successivt när respektive garageinnehavare vill ha det.
+        </p>
+
+        <h3 style="margin-top:16px;">Individuell vs kollektiv finansiering</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Modell</th>
+                    <th>Vem betalar</th>
+                    <th>Fördelar</th>
+                    <th>Nackdelar</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Kollektiv</strong></td>
+                    <td>Alla 23 garageplatser delar lika</td>
+                    <td>Lägst per-garagebelopp; alla gynnas av infrastrukturen</td>
+                    <td>De utan elbil betalar för andras laddning</td>
+                </tr>
+                <tr>
+                    <td><strong>Individuell</strong></td>
+                    <td>Bara de som installerar laddbox betalar</td>
+                    <td>Rättvist om få el-bilar i dag</td>
+                    <td>Dyrare per person; svårare om många ansluter sig senare</td>
+                </tr>
+                <tr>
+                    <td><strong>Hybrid</strong></td>
+                    <td>Infrastruktur kollektivt, laddboxar individuellt</td>
+                    <td>Balanserat; Make-Ready möjliggörs</td>
+                    <td>Kräver tydliga regler i samfällighetens stadgar</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3 style="margin-top:16px;">Löpande kostnader att ta med i kalkylen</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Post</th>
+                    <th>Ungefärlig kostnad</th>
+                    <th>Frekvens</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Zaptec Portal-abonnemang</td><td>Se offert</td><td>Per år / per laddbox</td></tr>
+                <tr><td>Underhåll laddboxar</td><td>Låg – modern hårdvara</td><td>Vid behov</td></tr>
+                <tr><td>Elabonnemang (effekttariff)</td><td>Beror på nätbolag</td><td>Per månad</td></tr>
+                <tr><td>Förnyelse av Kraftringen-offert</td><td>Ev. ny offert efter 2026-05-27</td><td>Engång</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+
+    <footer>
+        <p>
+            Ekonomisk kalkyl · Långkatekesens Samfällighetsförening · 2026-05-21 &nbsp;|&nbsp;
+            <a href="Hemma/laddboxar/index.html">Tillbaka till projektöversikt</a>
+        </p>
+    </footer>
+
+</div>
+
+<script>
+    /* ================================================================
+       JAVASCRIPT – beräkningar och interaktivitet
+       ================================================================ */
+
+    // Aktiva val
+    let valtAlt = 'A';
+    let valtAntal = 23;
+
+    /* Formatera tal som "1 234 kr" */
+    function fmt(n) {
+        return Math.round(n).toLocaleString('sv-SE') + ' kr';
+    }
+
+    /* Huvudberäkning – körs vid varje inmatningsändring */
+    function berakna() {
+        const kraftringen = parseFloat(document.getElementById('kraftringenPris').value) || 0;
+
+        // Elento
+        const elentoLb   = parseFloat(document.getElementById('elentoLaddboxar').value) || 0;
+        const elentoInst = parseFloat(document.getElementById('elentoInstallation').value) || 0;
+        const elentoOvr  = parseFloat(document.getElementById('elentoOvrigt').value) || 0;
+        const elentoSum  = elentoLb + elentoInst + elentoOvr;
+        document.getElementById('elentoSumma').textContent = Math.round(elentoSum).toLocaleString('sv-SE');
+
+        // Laddboxkillarna garage
+        const lb1Lb   = parseFloat(document.getElementById('lb1Laddboxar').value) || 0;
+        const lb1Inst = parseFloat(document.getElementById('lb1Installation').value) || 0;
+        const lb1Ovr  = parseFloat(document.getElementById('lb1Ovrigt').value) || 0;
+        const lb1Sum  = lb1Lb + lb1Inst + lb1Ovr;
+        document.getElementById('lb1Summa').textContent = Math.round(lb1Sum).toLocaleString('sv-SE');
+
+        // Laddboxkillarna stolpe
+        const lb2Lb   = parseFloat(document.getElementById('lb2Laddboxar').value) || 0;
+        const lb2Inst = parseFloat(document.getElementById('lb2Installation').value) || 0;
+        const lb2Ovr  = parseFloat(document.getElementById('lb2Ovrigt').value) || 0;
+        const lb2Sum  = lb2Lb + lb2Inst + lb2Ovr;
+        document.getElementById('lb2Summa').textContent = Math.round(lb2Sum).toLocaleString('sv-SE');
+
+        // Totaler per alternativ
+        const totA = kraftringen + elentoSum;
+        const totB = kraftringen + lb1Sum;
+        const totC = kraftringen + lb2Sum;
+
+        // Elento modell i tabell
+        const elentoModell = document.getElementById('elentoModell')?.value || '–';
+        document.getElementById('tblElentoModell').textContent = elentoModell || '–';
+
+        // Uppdatera sammanställningstabellen
+        const N = 23;
+        document.getElementById('tblKraftr1').textContent = fmt(kraftringen);
+        document.getElementById('tblKraftr2').textContent = fmt(kraftringen);
+        document.getElementById('tblKraftr3').textContent = fmt(kraftringen);
+
+        document.getElementById('tblElentoKost').textContent = fmt(elentoSum);
+        document.getElementById('tblLb1Kost').textContent    = fmt(lb1Sum);
+        document.getElementById('tblLb2Kost').textContent    = fmt(lb2Sum);
+
+        document.getElementById('tblElentoTot').innerHTML = '<strong>' + fmt(totA) + '</strong>';
+        document.getElementById('tblLb1Tot').innerHTML    = '<strong>' + fmt(totB) + '</strong>';
+        document.getElementById('tblLb2Tot').innerHTML    = '<strong>' + fmt(totC) + '</strong>';
+
+        document.getElementById('tblElentoPerGarage').textContent = fmt(totA / N);
+        document.getElementById('tblLb1PerGarage').textContent    = fmt(totB / N);
+        document.getElementById('tblLb2PerGarage').textContent    = fmt(totC / N);
+
+        // Uppdatera per-garage-kortet
+        uppdateraPerGarage(kraftringen, elentoSum, lb1Sum, lb2Sum);
+    }
+
+    /* Uppdatera summerings-kortet */
+    function uppdateraPerGarage(kraft, elentoSum, lb1Sum, lb2Sum) {
+        let installKost = 0;
+        if (valtAlt === 'A') installKost = elentoSum;
+        if (valtAlt === 'B') installKost = lb1Sum;
+        if (valtAlt === 'C') installKost = lb2Sum;
+
+        const totalt = kraft + installKost;
+        const perGarage = totalt / valtAntal;
+
+        document.getElementById('perGarageBelopp').textContent = fmt(perGarage);
+        document.getElementById('perGarageLabel').textContent =
+            'per garage (Alt ' + valtAlt + ', fördelat på ' + valtAntal + ' garage)';
+
+        document.getElementById('summNatansl').textContent  = fmt(kraft);
+        document.getElementById('summInstall').textContent  = fmt(installKost);
+        document.getElementById('summTotalt').textContent   = fmt(totalt);
+        document.getElementById('summAntal').textContent    = valtAntal + ' garage';
+    }
+
+    /* Välj alternativ (A/B/C) */
+    function valjAlt(alt, btn) {
+        valtAlt = alt;
+        document.querySelectorAll('.antal-selector').forEach((sel, i) => {
+            if (i === 0) {
+                sel.querySelectorAll('.antal-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            }
+        });
+        berakna();
+    }
+
+    /* Välj antal garage att fördela på */
+    function valjFordelning(antal, btn) {
+        valtAntal = antal;
+        // Hitta rätt selectorgrupp (den andra)
+        const sektioner = document.querySelectorAll('.antal-selector');
+        if (sektioner[1]) {
+            sektioner[1].querySelectorAll('.antal-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+        berakna();
+    }
+
+    /* Kör vid sidladdning */
+    berakna();
+</script>
+</body>
+</html>
