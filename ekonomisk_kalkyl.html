@@ -522,97 +522,186 @@
         </p>
 
         <!-- Elento -->
-        <h3>2. Elento – installation laddsystem 23 garage</h3>
+        <h3>
+            2. Elento – installation laddsystem
+            <a href="Hemma/laddboxar/offerter/Offert från Elento_Installation av laddsystem för samfällighet 23 garage.pdf"
+               target="_blank" style="font-size:0.78rem; font-weight:400; margin-left:10px;">📄 Öppna offert</a>
+        </h3>
         <p style="font-size:0.82rem; color:#c53030; margin-bottom:10px;">
-            ⚠️ Röda värden nedan är uppskattningar baserade på marknadspriser (maj 2026).
-            Ersätt med faktiska siffror från Elentos PDF-offert.
+            ⚠️ Röda värden är uppskattningar – ersätt med siffror från Elentos PDF-offert.
         </p>
-        <div class="input-row">
-            <label>Kostnad laddboxar (totalt för offerterat antal):</label>
-            <input type="number" id="elentoLaddboxar" value="54000" min="0"
-                   class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
-            <span class="unit">kr</span>
+
+        <!-- Elento – per laddare -->
+        <div style="background:#f7fafc; border:1px solid #e2e8f0; border-radius:8px; padding:14px 16px; margin-bottom:12px;">
+            <div style="font-size:0.82rem; font-weight:700; color:#4a5568; margin-bottom:10px; text-transform:uppercase; letter-spacing:0.04em;">Per laddare</div>
+            <div class="input-row">
+                <label>Laddboxmodell:</label>
+                <input type="text" id="elentoModell" placeholder="se offert"
+                       style="width:180px; background:#fffff0; border-color:#d69e2e; padding:6px 8px; border-radius:6px; border:1px solid; font-size:0.88rem;"
+                       oninput="document.getElementById('elentoModellBadge').textContent = 'Modell: ' + (this.value || 'se offert')">
+            </div>
+            <div class="input-row">
+                <label>Pris per laddare:</label>
+                <input type="number" id="elentoPerSt" value="9000" min="0"
+                       class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
+                <span class="unit">kr/st</span>
+            </div>
+            <div class="input-row">
+                <label>Installation per laddare (arbete + material):</label>
+                <input type="number" id="elentoInstPerSt" value="13300" min="0"
+                       class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
+                <span class="unit">kr/st</span>
+            </div>
         </div>
-        <div class="input-row">
-            <label>Antal laddboxar i offerten:</label>
-            <input type="number" id="elentoAntal" value="6" min="0"
-                   class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
-            <span class="unit">st</span>
-        </div>
-        <div class="input-row">
-            <label>Installationskostnad (arbete + material):</label>
-            <input type="number" id="elentoInstallation" value="80000" min="0"
-                   class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
-            <span class="unit">kr</span>
-        </div>
-        <div class="input-row">
-            <label>Övriga kostnader (EMS, styrsystem etc.):</label>
-            <input type="number" id="elentoOvrigt" value="25000" min="0"
-                   class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
-            <span class="unit">kr</span>
-        </div>
-        <div class="input-row" style="margin-top:4px;">
-            <label><strong>Delsumma Elento:</strong></label>
-            <span class="result-field" id="elentoSumma">0</span>
-            <span class="unit">kr</span>
+
+        <!-- Elento – totalt -->
+        <div style="background:#f7fafc; border:1px solid #e2e8f0; border-radius:8px; padding:14px 16px; margin-bottom:12px;">
+            <div style="font-size:0.82rem; font-weight:700; color:#4a5568; margin-bottom:10px; text-transform:uppercase; letter-spacing:0.04em;">Totalt</div>
+            <div class="input-row">
+                <label>Antal laddboxar:</label>
+                <input type="number" id="elentoAntal" value="6" min="1"
+                       class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
+                <span class="unit">st</span>
+            </div>
+            <div class="input-row">
+                <label>Totalt laddboxar (pris/st × antal):</label>
+                <span class="result-field" id="elentoLaddboxar">0</span>
+                <span class="unit">kr</span>
+            </div>
+            <div class="input-row">
+                <label>Totalt installation (inst/st × antal):</label>
+                <span class="result-field" id="elentoInstallation">0</span>
+                <span class="unit">kr</span>
+            </div>
+            <div class="input-row">
+                <label>Övriga kostnader (EMS, styrsystem, uppstart):</label>
+                <input type="number" id="elentoOvrigt" value="25000" min="0"
+                       class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
+                <span class="unit">kr</span>
+            </div>
+            <div class="input-row" style="margin-top:6px; padding-top:8px; border-top:1px solid #e2e8f0;">
+                <label><strong>Delsumma Elento:</strong></label>
+                <span class="result-field" id="elentoSumma" style="background:#2b6cb0; color:white; border-color:#2b6cb0;">0</span>
+                <span class="unit">kr</span>
+            </div>
         </div>
 
         <!-- Laddboxkillarna garage -->
-        <h3>3. Laddboxkillarna AB – Zaptec Pro i garage</h3>
+        <h3 style="margin-top:20px;">
+            3. Laddboxkillarna AB – Zaptec Pro i garage
+            <a href="https://www.zaptec.com/charging-solutions/business-and-commercial/zaptec-pro"
+               target="_blank" style="font-size:0.78rem; font-weight:400; margin-left:10px;">🔗 Zaptec Pro produktsida</a>
+            <a href="Hemma/laddboxar/offerter/Offert från Laddboxkillarna AB_ 6 st Zaptec Pro i garage - Långkatekesens Samfällighetsförening.pdf"
+               target="_blank" style="font-size:0.78rem; font-weight:400; margin-left:8px;">📄 Öppna offert</a>
+        </h3>
         <p style="font-size:0.82rem; color:#c53030; margin-bottom:10px;">
-            ⚠️ Röda värden nedan är uppskattningar. Ersätt med faktiska siffror från Laddboxkillarnas PDF-offert (garage).
+            ⚠️ Röda värden är uppskattningar – ersätt med siffror från Laddboxkillarnas PDF-offert (garage).
         </p>
-        <div class="input-row">
-            <label>Kostnad laddboxar – Zaptec Pro (6 st, offerterat pris):</label>
-            <input type="number" id="lb1Laddboxar" value="62500" min="0"
-                   class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
-            <span class="unit">kr</span>
+
+        <div style="background:#f7fafc; border:1px solid #e2e8f0; border-radius:8px; padding:14px 16px; margin-bottom:12px;">
+            <div style="font-size:0.82rem; font-weight:700; color:#4a5568; margin-bottom:10px; text-transform:uppercase; letter-spacing:0.04em;">Per laddare – Zaptec Pro</div>
+            <div class="input-row">
+                <label>Pris per laddare (Zaptec Pro):</label>
+                <input type="number" id="lb1PerSt" value="10400" min="0"
+                       class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
+                <span class="unit">kr/st</span>
+            </div>
+            <div class="input-row">
+                <label>Installation per laddare i garage (arbete + material):</label>
+                <input type="number" id="lb1InstPerSt" value="12500" min="0"
+                       class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
+                <span class="unit">kr/st</span>
+            </div>
         </div>
-        <div class="input-row">
-            <label>Installationskostnad (arbete + material):</label>
-            <input type="number" id="lb1Installation" value="75000" min="0"
-                   class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
-            <span class="unit">kr</span>
-        </div>
-        <div class="input-row">
-            <label>Övriga kostnader (EMS, Zaptec Portal-abonnemang etc.):</label>
-            <input type="number" id="lb1Ovrigt" value="18750" min="0"
-                   class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
-            <span class="unit">kr</span>
-        </div>
-        <div class="input-row" style="margin-top:4px;">
-            <label><strong>Delsumma Laddboxkillarna (garage):</strong></label>
-            <span class="result-field" id="lb1Summa">0</span>
-            <span class="unit">kr</span>
+
+        <div style="background:#f7fafc; border:1px solid #e2e8f0; border-radius:8px; padding:14px 16px; margin-bottom:12px;">
+            <div style="font-size:0.82rem; font-weight:700; color:#4a5568; margin-bottom:10px; text-transform:uppercase; letter-spacing:0.04em;">Totalt</div>
+            <div class="input-row">
+                <label>Antal laddboxar:</label>
+                <input type="number" id="lb1Antal" value="6" min="1"
+                       class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
+                <span class="unit">st</span>
+            </div>
+            <div class="input-row">
+                <label>Totalt laddboxar (pris/st × antal):</label>
+                <span class="result-field" id="lb1LaddboxarTot">0</span>
+                <span class="unit">kr</span>
+            </div>
+            <div class="input-row">
+                <label>Totalt installation (inst/st × antal):</label>
+                <span class="result-field" id="lb1InstallationTot">0</span>
+                <span class="unit">kr</span>
+            </div>
+            <div class="input-row">
+                <label>Övriga kostnader (Zaptec Portal-setup, EMS etc.):</label>
+                <input type="number" id="lb1Ovrigt" value="18750" min="0"
+                       class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
+                <span class="unit">kr</span>
+            </div>
+            <div class="input-row" style="margin-top:6px; padding-top:8px; border-top:1px solid #e2e8f0;">
+                <label><strong>Delsumma Laddboxkillarna (garage):</strong></label>
+                <span class="result-field" id="lb1Summa" style="background:#2b6cb0; color:white; border-color:#2b6cb0;">0</span>
+                <span class="unit">kr</span>
+            </div>
         </div>
 
         <!-- Laddboxkillarna stolpe -->
-        <h3>4. Laddboxkillarna AB – Zaptec Pro på stolpe</h3>
+        <h3 style="margin-top:20px;">
+            4. Laddboxkillarna AB – Zaptec Pro på stolpe
+            <a href="https://www.zaptec.com/charging-solutions/business-and-commercial/zaptec-pro"
+               target="_blank" style="font-size:0.78rem; font-weight:400; margin-left:10px;">🔗 Zaptec Pro produktsida</a>
+            <a href="Hemma/laddboxar/offerter/Offert från Laddboxkillarna AB_ 6 st Zaptec Pro på stolpe - Långkatekesens Samfällighetsförening.pdf"
+               target="_blank" style="font-size:0.78rem; font-weight:400; margin-left:8px;">📄 Öppna offert</a>
+        </h3>
         <p style="font-size:0.82rem; color:#c53030; margin-bottom:10px;">
-            ⚠️ Röda värden nedan är uppskattningar. Ersätt med faktiska siffror från Laddboxkillarnas PDF-offert (stolpe).
+            ⚠️ Röda värden är uppskattningar – ersätt med siffror från Laddboxkillarnas PDF-offert (stolpe).
         </p>
-        <div class="input-row">
-            <label>Kostnad laddboxar – Zaptec Pro (6 st, offerterat pris):</label>
-            <input type="number" id="lb2Laddboxar" value="62500" min="0"
-                   class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
-            <span class="unit">kr</span>
+
+        <div style="background:#f7fafc; border:1px solid #e2e8f0; border-radius:8px; padding:14px 16px; margin-bottom:12px;">
+            <div style="font-size:0.82rem; font-weight:700; color:#4a5568; margin-bottom:10px; text-transform:uppercase; letter-spacing:0.04em;">Per laddare – Zaptec Pro</div>
+            <div class="input-row">
+                <label>Pris per laddare (Zaptec Pro):</label>
+                <input type="number" id="lb2PerSt" value="10400" min="0"
+                       class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
+                <span class="unit">kr/st</span>
+            </div>
+            <div class="input-row">
+                <label>Installation per laddare på stolpe (inkl. stolpe, fundament):</label>
+                <input type="number" id="lb2InstPerSt" value="15000" min="0"
+                       class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
+                <span class="unit">kr/st</span>
+            </div>
         </div>
-        <div class="input-row">
-            <label>Installationskostnad (arbete + material):</label>
-            <input type="number" id="lb2Installation" value="90000" min="0"
-                   class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
-            <span class="unit">kr</span>
-        </div>
-        <div class="input-row">
-            <label>Övriga kostnader (stolpfundament, EMS etc.):</label>
-            <input type="number" id="lb2Ovrigt" value="18750" min="0"
-                   class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
-            <span class="unit">kr</span>
-        </div>
-        <div class="input-row" style="margin-top:4px;">
-            <label><strong>Delsumma Laddboxkillarna (stolpe):</strong></label>
-            <span class="result-field" id="lb2Summa">0</span>
-            <span class="unit">kr</span>
+
+        <div style="background:#f7fafc; border:1px solid #e2e8f0; border-radius:8px; padding:14px 16px; margin-bottom:12px;">
+            <div style="font-size:0.82rem; font-weight:700; color:#4a5568; margin-bottom:10px; text-transform:uppercase; letter-spacing:0.04em;">Totalt</div>
+            <div class="input-row">
+                <label>Antal laddboxar:</label>
+                <input type="number" id="lb2Antal" value="6" min="1"
+                       class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
+                <span class="unit">st</span>
+            </div>
+            <div class="input-row">
+                <label>Totalt laddboxar (pris/st × antal):</label>
+                <span class="result-field" id="lb2LaddboxarTot">0</span>
+                <span class="unit">kr</span>
+            </div>
+            <div class="input-row">
+                <label>Totalt installation (inst/st × antal):</label>
+                <span class="result-field" id="lb2InstallationTot">0</span>
+                <span class="unit">kr</span>
+            </div>
+            <div class="input-row">
+                <label>Övriga kostnader (stolpfundament, EMS etc.):</label>
+                <input type="number" id="lb2Ovrigt" value="18750" min="0"
+                       class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
+                <span class="unit">kr</span>
+            </div>
+            <div class="input-row" style="margin-top:6px; padding-top:8px; border-top:1px solid #e2e8f0;">
+                <label><strong>Delsumma Laddboxkillarna (stolpe):</strong></label>
+                <span class="result-field" id="lb2Summa" style="background:#2b6cb0; color:white; border-color:#2b6cb0;">0</span>
+                <span class="unit">kr</span>
+            </div>
         </div>
     </div>
 
@@ -631,42 +720,54 @@
         <table id="sammanstallning">
             <thead>
                 <tr>
-                    <th>Alternativ</th>
-                    <th>Leverantör laddboxar</th>
+                    <th>Alt</th>
+                    <th>Leverantör</th>
                     <th>Modell</th>
+                    <th class="right">Antal</th>
+                    <th class="right">Pris/st</th>
+                    <th class="right">Laddboxar tot.</th>
+                    <th class="right">Installation tot.</th>
                     <th class="right">Nätanslutning</th>
-                    <th class="right">Installation + laddboxar</th>
                     <th class="right">Totalt inkl. moms</th>
-                    <th class="right">Per garage (23 st)</th>
+                    <th class="right">Per garage (23)</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td><strong>Alt A</strong></td>
+                    <td><strong>A</strong></td>
                     <td>Elento</td>
                     <td id="tblElentoModell">–</td>
+                    <td class="right" id="tblElentoAntal">6 st</td>
+                    <td class="right" id="tblElentoPerSt">–</td>
+                    <td class="right" id="tblElentoLb">0 kr</td>
+                    <td class="right" id="tblElentoInst">0 kr</td>
                     <td class="right" id="tblKraftr1">35 875 kr</td>
-                    <td class="right" id="tblElentoKost">0 kr</td>
-                    <td class="right" id="tblElentoTot"><strong>35 875 kr</strong></td>
-                    <td class="right" id="tblElentoPerGarage">1 560 kr</td>
+                    <td class="right" id="tblElentoTot"><strong>–</strong></td>
+                    <td class="right" id="tblElentoPerGarage">–</td>
                 </tr>
                 <tr>
-                    <td><strong>Alt B</strong></td>
+                    <td><strong>B</strong></td>
                     <td>Laddboxkillarna AB</td>
-                    <td>Zaptec Pro – i garage</td>
+                    <td>Zaptec Pro – garage</td>
+                    <td class="right" id="tblLb1Antal">6 st</td>
+                    <td class="right" id="tblLb1PerSt">–</td>
+                    <td class="right" id="tblLb1Lb">0 kr</td>
+                    <td class="right" id="tblLb1Inst">0 kr</td>
                     <td class="right" id="tblKraftr2">35 875 kr</td>
-                    <td class="right" id="tblLb1Kost">0 kr</td>
-                    <td class="right" id="tblLb1Tot"><strong>35 875 kr</strong></td>
-                    <td class="right" id="tblLb1PerGarage">1 560 kr</td>
+                    <td class="right" id="tblLb1Tot"><strong>–</strong></td>
+                    <td class="right" id="tblLb1PerGarage">–</td>
                 </tr>
                 <tr>
-                    <td><strong>Alt C</strong></td>
+                    <td><strong>C</strong></td>
                     <td>Laddboxkillarna AB</td>
-                    <td>Zaptec Pro – på stolpe</td>
+                    <td>Zaptec Pro – stolpe</td>
+                    <td class="right" id="tblLb2Antal">6 st</td>
+                    <td class="right" id="tblLb2PerSt">–</td>
+                    <td class="right" id="tblLb2Lb">0 kr</td>
+                    <td class="right" id="tblLb2Inst">0 kr</td>
                     <td class="right" id="tblKraftr3">35 875 kr</td>
-                    <td class="right" id="tblLb2Kost">0 kr</td>
-                    <td class="right" id="tblLb2Tot"><strong>35 875 kr</strong></td>
-                    <td class="right" id="tblLb2PerGarage">1 560 kr</td>
+                    <td class="right" id="tblLb2Tot"><strong>–</strong></td>
+                    <td class="right" id="tblLb2PerGarage">–</td>
                 </tr>
             </tbody>
         </table>
@@ -823,26 +924,41 @@
     function berakna() {
         const kraftringen = parseFloat(document.getElementById('kraftringenPris').value) || 0;
 
-        // Elento
-        const elentoLb   = parseFloat(document.getElementById('elentoLaddboxar').value) || 0;
-        const elentoInst = parseFloat(document.getElementById('elentoInstallation').value) || 0;
-        const elentoOvr  = parseFloat(document.getElementById('elentoOvrigt').value) || 0;
-        const elentoSum  = elentoLb + elentoInst + elentoOvr;
-        document.getElementById('elentoSumma').textContent = Math.round(elentoSum).toLocaleString('sv-SE');
+        // Elento – beräkna totaler från pris/st och antal
+        const elentoPerSt    = parseFloat(document.getElementById('elentoPerSt').value) || 0;
+        const elentoInstPerSt= parseFloat(document.getElementById('elentoInstPerSt').value) || 0;
+        const elentoAntal    = parseFloat(document.getElementById('elentoAntal').value) || 0;
+        const elentoLb       = elentoPerSt * elentoAntal;
+        const elentoInst     = elentoInstPerSt * elentoAntal;
+        const elentoOvr      = parseFloat(document.getElementById('elentoOvrigt').value) || 0;
+        const elentoSum      = elentoLb + elentoInst + elentoOvr;
+        document.getElementById('elentoLaddboxar').textContent   = Math.round(elentoLb).toLocaleString('sv-SE');
+        document.getElementById('elentoInstallation').textContent= Math.round(elentoInst).toLocaleString('sv-SE');
+        document.getElementById('elentoSumma').textContent       = Math.round(elentoSum).toLocaleString('sv-SE');
 
         // Laddboxkillarna garage
-        const lb1Lb   = parseFloat(document.getElementById('lb1Laddboxar').value) || 0;
-        const lb1Inst = parseFloat(document.getElementById('lb1Installation').value) || 0;
-        const lb1Ovr  = parseFloat(document.getElementById('lb1Ovrigt').value) || 0;
-        const lb1Sum  = lb1Lb + lb1Inst + lb1Ovr;
-        document.getElementById('lb1Summa').textContent = Math.round(lb1Sum).toLocaleString('sv-SE');
+        const lb1PerSt    = parseFloat(document.getElementById('lb1PerSt').value) || 0;
+        const lb1InstPerSt= parseFloat(document.getElementById('lb1InstPerSt').value) || 0;
+        const lb1Antal    = parseFloat(document.getElementById('lb1Antal').value) || 0;
+        const lb1Lb       = lb1PerSt * lb1Antal;
+        const lb1Inst     = lb1InstPerSt * lb1Antal;
+        const lb1Ovr      = parseFloat(document.getElementById('lb1Ovrigt').value) || 0;
+        const lb1Sum      = lb1Lb + lb1Inst + lb1Ovr;
+        document.getElementById('lb1LaddboxarTot').textContent   = Math.round(lb1Lb).toLocaleString('sv-SE');
+        document.getElementById('lb1InstallationTot').textContent= Math.round(lb1Inst).toLocaleString('sv-SE');
+        document.getElementById('lb1Summa').textContent          = Math.round(lb1Sum).toLocaleString('sv-SE');
 
         // Laddboxkillarna stolpe
-        const lb2Lb   = parseFloat(document.getElementById('lb2Laddboxar').value) || 0;
-        const lb2Inst = parseFloat(document.getElementById('lb2Installation').value) || 0;
-        const lb2Ovr  = parseFloat(document.getElementById('lb2Ovrigt').value) || 0;
-        const lb2Sum  = lb2Lb + lb2Inst + lb2Ovr;
-        document.getElementById('lb2Summa').textContent = Math.round(lb2Sum).toLocaleString('sv-SE');
+        const lb2PerSt    = parseFloat(document.getElementById('lb2PerSt').value) || 0;
+        const lb2InstPerSt= parseFloat(document.getElementById('lb2InstPerSt').value) || 0;
+        const lb2Antal    = parseFloat(document.getElementById('lb2Antal').value) || 0;
+        const lb2Lb       = lb2PerSt * lb2Antal;
+        const lb2Inst     = lb2InstPerSt * lb2Antal;
+        const lb2Ovr      = parseFloat(document.getElementById('lb2Ovrigt').value) || 0;
+        const lb2Sum      = lb2Lb + lb2Inst + lb2Ovr;
+        document.getElementById('lb2LaddboxarTot').textContent   = Math.round(lb2Lb).toLocaleString('sv-SE');
+        document.getElementById('lb2InstallationTot').textContent= Math.round(lb2Inst).toLocaleString('sv-SE');
+        document.getElementById('lb2Summa').textContent          = Math.round(lb2Sum).toLocaleString('sv-SE');
 
         // Totaler per alternativ
         const totA = kraftringen + elentoSum;
@@ -853,15 +969,28 @@
         const elentoModell = document.getElementById('elentoModell')?.value || '–';
         document.getElementById('tblElentoModell').textContent = elentoModell || '–';
 
+        // Uppdatera antal-info i sammanställning
+        document.getElementById('tblElentoAntal').textContent  = elentoAntal + ' st';
+        document.getElementById('tblLb1Antal').textContent     = lb1Antal + ' st';
+        document.getElementById('tblLb2Antal').textContent     = lb2Antal + ' st';
+
         // Uppdatera sammanställningstabellen
         const N = 23;
         document.getElementById('tblKraftr1').textContent = fmt(kraftringen);
         document.getElementById('tblKraftr2').textContent = fmt(kraftringen);
         document.getElementById('tblKraftr3').textContent = fmt(kraftringen);
 
-        document.getElementById('tblElentoKost').textContent = fmt(elentoSum);
-        document.getElementById('tblLb1Kost').textContent    = fmt(lb1Sum);
-        document.getElementById('tblLb2Kost').textContent    = fmt(lb2Sum);
+        document.getElementById('tblElentoPerSt').textContent = elentoPerSt ? fmt(elentoPerSt) : '–';
+        document.getElementById('tblLb1PerSt').textContent    = lb1PerSt    ? fmt(lb1PerSt)    : '–';
+        document.getElementById('tblLb2PerSt').textContent    = lb2PerSt    ? fmt(lb2PerSt)    : '–';
+
+        document.getElementById('tblElentoLb').textContent = fmt(elentoLb);
+        document.getElementById('tblLb1Lb').textContent    = fmt(lb1Lb);
+        document.getElementById('tblLb2Lb').textContent    = fmt(lb2Lb);
+
+        document.getElementById('tblElentoInst').textContent = fmt(elentoInst + elentoOvr);
+        document.getElementById('tblLb1Inst').textContent    = fmt(lb1Inst + lb1Ovr);
+        document.getElementById('tblLb2Inst').textContent    = fmt(lb2Inst + lb2Ovr);
 
         document.getElementById('tblElentoTot').innerHTML = '<strong>' + fmt(totA) + '</strong>';
         document.getElementById('tblLb1Tot').innerHTML    = '<strong>' + fmt(totB) + '</strong>';
