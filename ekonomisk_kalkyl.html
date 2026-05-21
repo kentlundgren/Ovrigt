@@ -164,6 +164,48 @@
             border-color: #b7791f;
             box-shadow: 0 0 0 3px rgba(214,158,46,0.2);
         }
+
+        /* Uppskattade värden – röd text och röd ram */
+        input.estimated {
+            color: #c53030;
+            border-color: #fc8181;
+            background: #fff5f5;
+            font-style: italic;
+        }
+        input.estimated:focus {
+            background: #fff5f5;
+            border-color: #e53e3e;
+            box-shadow: 0 0 0 3px rgba(229,62,62,0.2);
+        }
+        /* Bekräftade värden (hämtade från offert) – grön ram */
+        input.confirmed {
+            color: #276749;
+            border-color: #68d391;
+            background: #f0fff4;
+            font-style: normal;
+            font-weight: 600;
+        }
+
+        /* Förklaring till färgkodning */
+        .legend-box {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin: 12px 0 18px;
+            font-size: 0.88rem;
+        }
+        .legend-item { display: flex; align-items: center; gap: 8px; }
+        .legend-dot {
+            width: 28px; height: 20px; border-radius: 4px; border: 2px solid;
+            flex-shrink: 0;
+        }
+        .legend-dot.yellow { background:#fffff0; border-color:#d69e2e; }
+        .legend-dot.red    { background:#fff5f5; border-color:#fc8181; }
+        .legend-dot.green  { background:#f0fff4; border-color:#68d391; }
         .unit { color: #718096; font-size: 0.82rem; min-width: 30px; }
 
         /* ---- Beräknade fält (blå/grön bakgrund = resultat) ---- */
@@ -450,38 +492,63 @@
             prissidor via länkarna i navigeringen ovanför och fyll i siffrorna nedan.
         </div>
 
+        <!-- Färgförklaring -->
+        <div class="legend-box">
+            <div class="legend-item">
+                <div class="legend-dot yellow"></div>
+                <span><strong>Gul:</strong> Känt värde – fyll i från offert</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot red"></div>
+                <span><strong>Röd kursiv:</strong> Uppskattning – ersätt med verkligt offertpris</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot green"></div>
+                <span><strong>Grön:</strong> Bekräftat – du har fyllt i ett eget värde</span>
+            </div>
+        </div>
+
         <!-- Kraftringen – känd -->
         <h3>1. Kraftringen Nät AB – nätanslutning (känd kostnad)</h3>
         <div class="input-row">
             <label>Anslutningsavgift, säkringsändring 16→63 A:</label>
-            <input type="number" id="kraftringenPris" value="35875" min="0" oninput="berakna()">
+            <input type="number" id="kraftringenPris" value="35875" min="0"
+                   class="confirmed" oninput="berakna()" onchange="markConfirmed(this)">
             <span class="unit">kr</span>
         </div>
-        <p style="font-size:0.82rem; color:#718096; margin-top:4px;">
-            Förifyllt: 28 700 kr exkl. moms = 35 875 kr inkl. moms (offert 3541, 2026-04-27).
+        <p style="font-size:0.82rem; color:#276749; margin-top:4px;">
+            ✓ Bekräftat: 28 700 kr exkl. moms = 35 875 kr inkl. moms (offert 3541, 2026-04-27).
             Giltig t.o.m. ca 2026-05-27.
         </p>
 
         <!-- Elento -->
         <h3>2. Elento – installation laddsystem 23 garage</h3>
+        <p style="font-size:0.82rem; color:#c53030; margin-bottom:10px;">
+            ⚠️ Röda värden nedan är uppskattningar baserade på marknadspriser (maj 2026).
+            Ersätt med faktiska siffror från Elentos PDF-offert.
+        </p>
         <div class="input-row">
             <label>Kostnad laddboxar (totalt för offerterat antal):</label>
-            <input type="number" id="elentoLaddboxar" value="0" min="0" oninput="berakna()">
+            <input type="number" id="elentoLaddboxar" value="54000" min="0"
+                   class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
             <span class="unit">kr</span>
         </div>
         <div class="input-row">
             <label>Antal laddboxar i offerten:</label>
-            <input type="number" id="elentoAntal" value="0" min="0" oninput="berakna()">
+            <input type="number" id="elentoAntal" value="6" min="0"
+                   class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
             <span class="unit">st</span>
         </div>
         <div class="input-row">
             <label>Installationskostnad (arbete + material):</label>
-            <input type="number" id="elentoInstallation" value="0" min="0" oninput="berakna()">
+            <input type="number" id="elentoInstallation" value="80000" min="0"
+                   class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
             <span class="unit">kr</span>
         </div>
         <div class="input-row">
             <label>Övriga kostnader (EMS, styrsystem etc.):</label>
-            <input type="number" id="elentoOvrigt" value="0" min="0" oninput="berakna()">
+            <input type="number" id="elentoOvrigt" value="25000" min="0"
+                   class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
             <span class="unit">kr</span>
         </div>
         <div class="input-row" style="margin-top:4px;">
@@ -492,19 +559,25 @@
 
         <!-- Laddboxkillarna garage -->
         <h3>3. Laddboxkillarna AB – Zaptec Pro i garage</h3>
+        <p style="font-size:0.82rem; color:#c53030; margin-bottom:10px;">
+            ⚠️ Röda värden nedan är uppskattningar. Ersätt med faktiska siffror från Laddboxkillarnas PDF-offert (garage).
+        </p>
         <div class="input-row">
             <label>Kostnad laddboxar – Zaptec Pro (6 st, offerterat pris):</label>
-            <input type="number" id="lb1Laddboxar" value="0" min="0" oninput="berakna()">
+            <input type="number" id="lb1Laddboxar" value="62500" min="0"
+                   class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
             <span class="unit">kr</span>
         </div>
         <div class="input-row">
             <label>Installationskostnad (arbete + material):</label>
-            <input type="number" id="lb1Installation" value="0" min="0" oninput="berakna()">
+            <input type="number" id="lb1Installation" value="75000" min="0"
+                   class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
             <span class="unit">kr</span>
         </div>
         <div class="input-row">
             <label>Övriga kostnader (EMS, Zaptec Portal-abonnemang etc.):</label>
-            <input type="number" id="lb1Ovrigt" value="0" min="0" oninput="berakna()">
+            <input type="number" id="lb1Ovrigt" value="18750" min="0"
+                   class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
             <span class="unit">kr</span>
         </div>
         <div class="input-row" style="margin-top:4px;">
@@ -515,19 +588,25 @@
 
         <!-- Laddboxkillarna stolpe -->
         <h3>4. Laddboxkillarna AB – Zaptec Pro på stolpe</h3>
+        <p style="font-size:0.82rem; color:#c53030; margin-bottom:10px;">
+            ⚠️ Röda värden nedan är uppskattningar. Ersätt med faktiska siffror från Laddboxkillarnas PDF-offert (stolpe).
+        </p>
         <div class="input-row">
             <label>Kostnad laddboxar – Zaptec Pro (6 st, offerterat pris):</label>
-            <input type="number" id="lb2Laddboxar" value="0" min="0" oninput="berakna()">
+            <input type="number" id="lb2Laddboxar" value="62500" min="0"
+                   class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
             <span class="unit">kr</span>
         </div>
         <div class="input-row">
             <label>Installationskostnad (arbete + material):</label>
-            <input type="number" id="lb2Installation" value="0" min="0" oninput="berakna()">
+            <input type="number" id="lb2Installation" value="90000" min="0"
+                   class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
             <span class="unit">kr</span>
         </div>
         <div class="input-row">
             <label>Övriga kostnader (stolpfundament, EMS etc.):</label>
-            <input type="number" id="lb2Ovrigt" value="0" min="0" oninput="berakna()">
+            <input type="number" id="lb2Ovrigt" value="18750" min="0"
+                   class="estimated" oninput="berakna()" onchange="markConfirmed(this)">
             <span class="unit">kr</span>
         </div>
         <div class="input-row" style="margin-top:4px;">
@@ -838,6 +917,12 @@
             btn.classList.add('active');
         }
         berakna();
+    }
+
+    /* Markera fält som bekräftade när användaren ändrar ett värde */
+    function markConfirmed(input) {
+        input.classList.remove('estimated');
+        input.classList.add('confirmed');
     }
 
     /* Kör vid sidladdning */
