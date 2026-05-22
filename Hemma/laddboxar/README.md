@@ -12,6 +12,8 @@ _Version 1.0, 2026-05-21_
 | ---- | --- |
 | Projektöversikt | [index.html – live](https://kentlundgren.github.io/Ovrigt/Hemma/laddboxar/index.html) |
 | Kapacitetskalkylator (63 A) | [kalkylator.html – live](https://kentlundgren.github.io/Ovrigt/Hemma/laddboxar/kalkylator.html) |
+| Ekonomisk kalkyl | [ekonomisk_kalkyl.html – live](https://kentlundgren.github.io/Ovrigt/Hemma/laddboxar/ekonomisk_kalkyl.html) |
+| Zaptec Pro vs Easee Charge Pro | [Zaptec_Easee.html – live](https://kentlundgren.github.io/Ovrigt/Hemma/laddboxar/Zaptec_Easee.html) |
 
 ---
 
@@ -35,6 +37,8 @@ AI-verktyg (Claude/Cursor) har använts som assistent – med Kent Lundgren som 
 | --- | -------- |
 | `index.html` | Projektöversikt: nyckeltal, parametrar, sammanfattning av laddarmodeller och V2G, källförteckning (Harvardstil) |
 | `kalkylator.html` | Interaktiv kapacitetskalkylator – visar effekt per bil beroende på antal anslutna bilar |
+|| `ekonomisk_kalkyl.html` | Ekonomisk kalkyl: offertj�mf�relse (Elento, Laddboxkillarna AB), totalkostnad och f�rdelning per garage |
+|| `Zaptec_Easee.html` | Detaljerad j�mf�relse: Zaptec Pro MID vs Easee Charge Pro, med recension och V2G-analys |
 
 ---
 
@@ -45,3 +49,4 @@ Repo: [kentlundgren/Ovrigt](https://github.com/kentlundgren/Ovrigt) → mapp `He
 ---
 
 _README v1.0, 2026-05-21_
+

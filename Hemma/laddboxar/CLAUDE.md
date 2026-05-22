@@ -20,7 +20,7 @@ kapacitet, offertpriser och ekonomi.
 | --- | ----- | -------------- |
 | `index.html` | Projektöversikt: bakgrund, nyckeltal, laddarjämförelse, systemarkitektur | → kalkylator.html, → ekonomisk_kalkyl.html, → offerter/ |
 | `kalkylator.html` | Interaktiv kapacitetskalkylator (63 A, 400 V, trefas) | → index.html |
-| `../../ekonomisk_kalkyl.html` | Ekonomisk kalkyl och offertjämförelse | → index.html, → kalkylator.html, → offerter/ |
+| `ekonomisk_kalkyl.html` | Ekonomisk kalkyl och offertjämförelse | → index.html, → kalkylator.html, → offerter/ |
 | `offerter/Offert-3541 kraftringen.pdf` | Nätanslutning 16→63 A, 35 875 kr inkl. moms | Refereras i index.html och ekonomisk_kalkyl.html |
 | `offerter/Offert från Elento_...pdf` | Installation laddsystem 23 garage | Refereras i ekonomisk_kalkyl.html |
 | `offerter/Offert från Laddboxkillarna AB_...pdf (x2)` | Zaptec Pro i garage / på stolpe | Refereras i ekonomisk_kalkyl.html |
@@ -68,7 +68,7 @@ Bas-URL: `https://kentlundgren.github.io/Ovrigt/`
 | ---- | -------- |
 | Projektöversikt | https://kentlundgren.github.io/Ovrigt/Hemma/laddboxar/index.html |
 | Kalkylator | https://kentlundgren.github.io/Ovrigt/Hemma/laddboxar/kalkylator.html |
-| Ekonomisk kalkyl | https://kentlundgren.github.io/Ovrigt/ekonomisk_kalkyl.html |
+| Ekonomisk kalkyl | https://kentlundgren.github.io/Ovrigt/Hemma/laddboxar/ekonomisk_kalkyl.html |
 
 ### 6. Commit och push
 
