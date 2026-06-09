@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Offertanalys – Laddboxar 2026 | Långkatekesens Samfällighetsförening</title>
+<!--
+  offertanalys.html
+  Sammanfattning av inkomna offerter för elbilsladdning
+  Långkatekesens Samfällighetsförening, Lund
+  Upprättad: 2026-06-09
+  Korsreferenser: → index.html, → ekonomisk_kalkyl.html
+-->
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  /* ---- Typografi & palett ---- */
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #f0f4f8;
+    color: #2d3748;
+    line-height: 1.7;
+    padding: 0 16px 60px;
+  }
+
+  /* ---- Toppbanner ---- */
+  .top-bar {
+    background: linear-gradient(135deg, #276749 0%, #1a4731 100%);
+    color: white;
+    padding: 36px 40px 32px;
+    border-radius: 0 0 18px 18px;
+    margin-bottom: 28px;
+    box-shadow: 0 6px 24px rgba(39,103,73,0.25);
+  }
+  .top-bar .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 999px;
+    padding: 3px 14px;
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+  }
+  .top-bar h1 { font-size: 2rem; font-weight: 800; margin-bottom: 6px; }
+  .top-bar p  { opacity: 0.88; font-size: 0.93rem; max-width: 640px; }
+
+  /* ---- Navigering ---- */
+  .nav { display: flex; gap: 10px; flex-wrap: wrap; max-width: 900px; margin: 0 auto 28px; }
+  .nav a {
+    background: white; border: 1px solid #cbd5e0; color: #2c5282;
+    padding: 6px 16px; border-radius: 8px; text-decoration: none;
+    font-size: 0.88rem; font-weight: 600;
+  }
+  .nav a:hover { background: #ebf8ff; border-color: #90cdf4; }
+
+  /* ---- Kort ---- */
+  .container { max-width: 900px; margin: 0 auto; }
+  .card {
+    background: white; border-radius: 14px; padding: 28px 32px;
+    margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  }
+  .card h2 {
+    font-size: 1.15rem; color: #276749;
+    border-bottom: 2px solid #c6f6d5;
+    padding-bottom: 8px; margin-bottom: 18px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card h3 { font-size: 1rem; color: #1a4731; margin: 18px 0 8px; }
+
+  /* ---- Alert-boxar ---- */
+  .alert {
+    padding: 12px 16px; border-radius: 8px;
+    margin: 14px 0; font-size: 0.93rem; line-height: 1.5;
+  }
+  .alert-red    { background: #fff5f5; border-left: 4px solid #e53e3e; color: #c53030; }
+  .alert-blue   { background: #ebf8ff; border-left: 4px solid #3182ce; color: #2b6cb0; }
+  .alert-green  { background: #f0fff4; border-left: 4px solid #276749; color: #1a4731; }
+  .alert-yellow { background: #fffff0; border-left: 4px solid #d69e2e; color: #744210; }
+
+  /* ---- Tabeller ---- */
+  table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 0.9rem; }
+  th {
+    background: #f0fff4; color: #276749; text-align: left;
+    padding: 10px 12px; border-bottom: 2px solid #276749;
+  }
+  td { padding: 9px 12px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+  tr:nth-child(even) td { background: #f7fafc; }
+  td.yes  { color: #276749; font-weight: 700; }
+  td.no   { color: #e53e3e; }
+  td.unk  { color: #d69e2e; }
+  td.num  { font-weight: 700; }
+  td.tot  { background: #f0fff4; font-weight: 700; color: #276749; }
+  td.warn { background: #fff5f5; color: #c53030; }
+
+  /* ---- Rekommendationskort ---- */
+  .rec-card {
+    background: linear-gradient(135deg, #f0fff4 0%, #e6ffed 100%);
+    border: 2px solid #68d391; border-radius: 14px;
+    padding: 24px 28px; margin-bottom: 24px;
+  }
+  .rec-card h2 { font-size: 1.2rem; color: #276749; margin-bottom: 12px; }
+  .rec-card .choice {
+    font-size: 1.3rem; font-weight: 800; color: #1a4731; margin-bottom: 10px;
+  }
+  .check-list { list-style: none; margin: 10px 0; }
+  .check-list li { padding: 4px 0; }
+  .check-list li::before { content: "✓ "; color: #276749; font-weight: 700; }
+
+  /* ---- Åtgärdslista ---- */
+  .action-list { list-style: none; counter-reset: actions; }
+  .action-list li {
+    counter-increment: actions;
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 10px 0; border-bottom: 1px solid #e2e8f0;
+  }
+  .action-list li:last-child { border-bottom: none; }
+  .action-num {
+    width: 28px; height: 28px; min-width: 28px;
+    background: #276749; color: white; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.85rem;
+  }
+  .action-text { font-size: 0.93rem; line-height: 1.5; }
+  .action-meta { font-size: 0.8rem; color: #718096; margin-top: 2px; }
+
+  /* ---- Footer ---- */
+  footer {
+    text-align: center; color: #a0aec0; font-size: 0.8rem;
+    margin-top: 40px; padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+  }
+</style>
+</head>
+<body>
+
+<!-- Toppbanner -->
+<div class="top-bar">
+  <div class="badge">MÖTESUNDERLAG · 9 JUNI 2026</div>
+  <h1>Offertanalys – Laddboxar</h1>
+  <p>Långkatekesens Samfällighetsförening · 23 garage · Hjalmar Gullbergs Väg 2–46, Lund<br>
+  Underlag inför styrelsemöte och offertjämförelse, med fokus på OCPP och V2G.</p>
+</div>
+
+<!-- Navigering -->
+<nav class="nav">
+  <a href="index.html">⬅ Projektöversikt</a>
+  <a href="kalkylator.html">Kapacitetskalkylator</a>
+  <a href="ekonomisk_kalkyl.html">Ekonomisk kalkyl</a>
+</nav>
+
+<div class="container">
+
+  <!-- ===== 1. BAKGRUND ===== -->
+  <div class="card">
+    <h2>📋 1. Bakgrund och förutsättningar</h2>
+    <p>Samfälligheten planerar installation av elbilsladdning. Strategin är att dra trefas till
+    samtliga 23 garage direkt (<strong>Make-Ready-principen</strong>) men under 2026 ansluta
+    ca 4 laddboxar till de medlemmar som för tillfället är intresserade.</p>
+
+    <h3>Tekniska krav som styrelsen prioriterar</h3>
+    <ul style="margin-left:20px; line-height:2">
+      <li><strong>OCPP</strong> (Open Charge Point Protocol) – möjliggör operatörsoberoende och
+        framtida fritt val av laddtjänst</li>
+      <li><strong>V2G</strong> (Vehicle-to-Grid) – möjlighet att mata tillbaka el till elnätet
+        när tekniken är kommersiellt tillgänglig i Sverige</li>
+      <li><strong>Dynamisk lastbalansering</strong> – laddarna delar tillgänglig kapacitet</li>
+      <li><strong>MID-certifierad mätning</strong> – laglig grund för individuell debitering</li>
+    </ul>
+
+    <div class="alert alert-red" style="margin-top:16px">
+      ⚠️ <strong>Kraftringens offert 3541 är utgången.</strong> Offerten (nätuppgradering
+      16 A → 63 A, 35 875 kr inkl. moms) hade giltighetstid t.o.m. ca 27 maj 2026.
+      Ny offert måste beställas innan beslut fattas.
+    </div>
+  </div>
+
+  <!-- ===== 2. OFFERTER ===== -->
+  <div class="card">
+    <h2>📄 2. Inkomna offerter – sammanfattning</h2>
+
+    <h3>2.1 Kraftringen Nät AB (offert 3541) – nätanslutning</h3>
+    <p>Avser uppgradering av servissäkring 16 A → 63 A (11 kW → 43,5 kW).
+    Förutsättning för samtliga installationsalternativ, bekostas separat av föreningen.</p>
+    <table>
+      <tr><th>Post</th><th>Uppgift</th></tr>
+      <tr><td>Pris exkl. moms</td><td>28 700 kr</td></tr>
+      <tr><td>Pris inkl. moms</td><td class="num">35 875 kr</td></tr>
+      <tr><td>Giltighetstid</td><td class="warn">1 mån fr.o.m. 2026-04-27 – <strong>UTGÅNGEN</strong></td></tr>
+      <tr><td>Leveranstid</td><td>1–3 månader efter avrop</td></tr>
+      <tr><td>Installatör</td><td>LNB Elservice AB (Niklas Lönnberg)</td></tr>
+    </table>
+
+    <h3>2.2 Elento AB – elinfrastruktur och laddboxar (3 alternativ)</h3>
+    <p>Alternativ B och C är tillägg utöver Alt A (infrastruktur).</p>
+    <table>
+      <tr><th>Alternativ</th><th>Innehåll</th><th>Pris inkl. moms</th><th>Laddbox</th></tr>
+      <tr>
+        <td><strong>Alt A – Make-Ready</strong></td>
+        <td>Kablage + kopplingsdosor till 23 garage</td>
+        <td class="unk">ca 34 000 kr*</td>
+        <td>Ej inkl.</td>
+      </tr>
+      <tr>
+        <td>Alt B – Zaptec Go</td>
+        <td>Alt A + 23 st Zaptec Go</td>
+        <td>ca 34 000 + 185 000 kr</td>
+        <td>Zaptec Go</td>
+      </tr>
+      <tr>
+        <td>Alt C – Easee Charge Pro</td>
+        <td>Alt A + 23 st Easee Charge Pro, lastbalansering</td>
+        <td>ca 34 000 + 255 000 kr</td>
+        <td>Easee Charge Pro</td>
+      </tr>
+    </table>
+    <p style="font-size:0.83rem;color:#718096">* Priset för Alt A är inte entydigt läsbart i offerten och bör bekräftas med Elento.<br>
+    Garanti: 2 år installation. Genomförandetid: 5–6 veckor.</p>
+
+    <h3>2.3 Laddboxkillarna AB – Zaptec Pro MID (2 utföranden)</h3>
+    <p>Erbjuder Zaptec Pro MID installerad antingen i garage (inomhus) eller på stolpe utomhus.
+    I garagealternativet ingår Make-Ready för alla 23 garage.</p>
+    <table>
+      <tr><th>Post</th><th>I garage (6 st)</th><th>På stolpe (6 st)</th></tr>
+      <tr><td>Laddboxar 6 st Zaptec Pro MID</td><td>63 000 kr</td><td>63 000 kr</td></tr>
+      <tr><td>Material (kabel, A-boxar, router, lastbalansering)</td><td>70 948 kr</td><td>41 343 kr</td></tr>
+      <tr><td>Elektriker</td><td>19 584 kr (32 h)</td><td>11 016 kr (18 h)</td></tr>
+      <tr><td>Grävning</td><td>54 561 kr (39 m)</td><td>22 384 kr (16 m)</td></tr>
+      <tr><td>Delsumma exkl. moms</td><td>208 093 kr</td><td>137 743 kr</td></tr>
+      <tr><td>Grönt teknik-avdrag (50 %)</td><td class="warn">−90 000 kr</td><td class="warn">−68 872 kr</td></tr>
+      <tr><td><strong>Totalt exkl. moms (efter avdrag)</strong></td><td class="tot">118 093 kr</td><td class="tot">68 872 kr</td></tr>
+      <tr><td><strong>Totalt inkl. moms (efter avdrag)</strong></td><td class="tot">ca 147 600 kr</td><td class="tot">ca 86 100 kr</td></tr>
+      <tr><td>Make-Ready för alla 23 garage?</td><td class="yes">Ja – 23 st A-boxar ingår</td><td class="no">Nej</td></tr>
+      <tr><td>Garanti</td><td class="yes">5 år (produkt + installation)</td><td class="yes">5 år (produkt + installation)</td></tr>
+      <tr><td>Ny anslutning per intresserad medlem</td><td>7 990 kr inkl. moms</td><td>–</td></tr>
+    </table>
+    <div class="alert alert-blue">
+      ℹ️ Kraftringens nätanslutningskostnad (ca 35 875 kr) tillkommer utöver Laddboxkillarnas priser.
+    </div>
+  </div>
+
+  <!-- ===== 3. OCPP & V2G ===== -->
+  <div class="card">
+    <h2>⚡ 3. Teknisk utvärdering: OCPP och V2G</h2>
+    <table>
+      <tr>
+        <th>Kriterium</th>
+        <th>Zaptec Pro MID<br><small>(Laddboxkillarna)</small></th>
+        <th>Easee Charge Pro<br><small>(Elento Alt C)</small></th>
+        <th>Zaptec Go<br><small>(Elento Alt B)</small></th>
+      </tr>
+      <tr>
+        <td><strong>OCPP-stöd</strong></td>
+        <td class="yes">✓ Ja</td>
+        <td class="yes">✓ Ja (v1.6J)</td>
+        <td class="unk">? Oklart*</td>
+      </tr>
+      <tr>
+        <td><strong>V2G-redo (hårdvara)</strong></td>
+        <td class="yes">✓ Ja</td>
+        <td class="no">✗ Ej nämnt</td>
+        <td class="no">✗ Nej</td>
+      </tr>
+      <tr>
+        <td><strong>MID-certifierad mätning</strong></td>
+        <td class="yes">✓ Ja</td>
+        <td class="yes">✓ Ja</td>
+        <td class="no">✗ Nej</td>
+      </tr>
+      <tr>
+        <td><strong>Dynamisk lastbalansering</strong></td>
+        <td class="yes">✓ Perific</td>
+        <td class="yes">✓ Ja</td>
+        <td class="yes">✓ Ja</td>
+      </tr>
+      <tr>
+        <td><strong>Effekt per laddbox</strong></td>
+        <td>22 kW (3-fas)</td>
+        <td>22 kW (3-fas)</td>
+        <td>22 kW (3-fas)</td>
+      </tr>
+      <tr>
+        <td><strong>Garantitid</strong></td>
+        <td class="yes">5 år</td>
+        <td>2 år (installatör)</td>
+        <td>2 år (installatör)</td>
+      </tr>
+    </table>
+    <p style="font-size:0.83rem;color:#718096;margin-top:8px">
+      * Zaptec Go är en enklare konsumentmodell – OCPP-stöd och debiteringsmöjligheter
+      bör verifieras direkt med Elento innan alternativet kan bedömas.
+    </p>
+    <div class="alert alert-yellow" style="margin-top:14px">
+      📌 V2G är hårdvarumässigt förberett i Zaptec Pro MID men är ännu inte kommersiellt
+      tillgängligt i Sverige (juni 2026). Ingen av laddboxarna kan alltså nyttja V2G idag,
+      men Zaptec Pro MID är redo när tekniken lanseras.
+    </div>
+  </div>
+
+  <!-- ===== 4. REKOMMENDATION ===== -->
+  <div class="rec-card">
+    <h2>🏆 4. Rekommendation</h2>
+    <div class="choice">Laddboxkillarna AB – Zaptec Pro MID (garageinstallation)</div>
+    <p>Uppfyller samtliga tekniska krav och passar Make-Ready-strategin bäst.</p>
+    <ul class="check-list" style="margin-top:12px">
+      <li>OCPP: Ja – möjliggör fritt val av laddoperatör och framtida konkurrens</li>
+      <li>V2G: Hårdvarumässigt förberedd – kan aktiveras när teknik och regelverk är på plats</li>
+      <li>MID-certifierad – laglig grund för individuell debitering</li>
+      <li>Make-Ready ingår – kablage och A-boxar till alla 23 garage i en installation</li>
+      <li>5 års garanti (produkt + arbete) – lägst löpande risk för föreningen</li>
+      <li>Kommande anslutning per ny intresserad: 7 990 kr inkl. moms</li>
+    </ul>
+
+    <h3 style="margin-top:20px">Uppskattad totalkostnad 2026 (6 laddboxar, garageinstallation)</h3>
+    <table style="margin-top:10px">
+      <tr><th>Post</th><th>Belopp inkl. moms</th></tr>
+      <tr><td class="warn">Kraftringen – nätuppgradering 16 A → 63 A <em>(ny offert krävs!)</em></td><td class="warn">ca 35 900 kr</td></tr>
+      <tr><td>Laddboxkillarna – 6 st Zaptec Pro MID + Make-Ready (alla 23 garage)</td><td>ca 147 600 kr</td></tr>
+      <tr><td class="tot"><strong>Totalt (ungefär)</strong></td><td class="tot"><strong>ca 183 500 kr</strong></td></tr>
+      <tr><td>Varav per ansluten medlem (6 st, dela lika)</td><td>ca 30 600 kr/st</td></tr>
+    </table>
+    <p style="font-size:0.83rem;color:#718096;margin-top:8px">
+      Obs: Offerten gäller 6 laddboxar. Begär justerad offert för 4 st om det är aktuellt antalet 2026.
+    </p>
+  </div>
+
+  <!-- ===== 5. ÅTGÄRDER ===== -->
+  <div class="card">
+    <h2>✅ 5. Åtgärder innan beslut kan fattas</h2>
+    <ol class="action-list">
+      <li>
+        <div class="action-num">1</div>
+        <div class="action-text">
+          <strong>Begär ny offert från Kraftringen</strong> (nätuppgradering 16 A → 63 A)
+          <div class="action-meta">Brådskande – befintlig offert utgången sedan maj 2026</div>
+        </div>
+      </li>
+      <li>
+        <div class="action-num">2</div>
+        <div class="action-text">
+          <strong>Bekräfta Elentos Alt A-pris</strong> och fråga om Zaptec Go har OCPP
+          <div class="action-meta">Priset är inte entydigt läsbart i offerten</div>
+        </div>
+      </li>
+      <li>
+        <div class="action-num">3</div>
+        <div class="action-text">
+          <strong>Begär justerad offert från Laddboxkillarna AB</strong> för 4 laddboxar (istället för 6)
+          <div class="action-meta">För att matcha faktiskt behov 2026</div>
+        </div>
+      </li>
+      <li>
+        <div class="action-num">4</div>
+        <div class="action-text">
+          <strong>Kartlägg antal intresserade medlemmar</strong> och samla in avsiktsförklaringar
+          <div class="action-meta">Inför eventuell föreningsstämma</div>
+        </div>
+      </li>
+      <li>
+        <div class="action-num">5</div>
+        <div class="action-text">
+          <strong>Besluta om finansieringsmodell</strong> – betalar föreningen infrastruktur och
+          individen laddbox?
+          <div class="action-meta">Påverkar hur kostnaderna fördelas</div>
+        </div>
+      </li>
+      <li>
+        <div class="action-num">6</div>
+        <div class="action-text">
+          <strong>Överväg att ta in ytterligare en offert</strong> för bredare jämförelse
+          <div class="action-meta">Valfritt men ger starkare beslutsunderlag</div>
+        </div>
+      </li>
+    </ol>
+  </div>
+
+  <footer>
+    <p>Sammanställt av Claude (Anthropic) på uppdrag av Kent Lundgren &nbsp;·&nbsp;
+    Underlag baserat på inkomna offerter per 9 juni 2026 &nbsp;·&nbsp;
+    <a href="index.html" style="color:#276749">Tillbaka till projektöversikten</a></p>
+  </footer>
+
+</div><!-- /container -->
+</body>
+</html>
