@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VM-tips 2026</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0d1117;
+      --surface: #161b22;
+      --border:  #30363d;
+      --text:    #e6edf3;
+      --muted:   #7d8590;
+      --gold:    #ffd700;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── Header ─── */
+    header {
+      padding: 48px 24px 36px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      /* Dekorativ boll i bakgrunden */
+      content: '⚽';
+      position: absolute;
+      font-size: 220px;
+      opacity: 0.04;
+      top: -30px; right: -20px;
+      pointer-events: none;
+    }
+    header .label {
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+    header h1 {
+      font-size: clamp(28px, 5vw, 52px);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    header p {
+      font-size: 15px;
+      color: var(--muted);
+    }
+
+    /* ─── Välj-sektion ─── */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px;
+      gap: 20px;
+    }
+
+    .choose-label {
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    /* ─── Valkort ─── */
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      width: 100%;
+      max-width: 680px;
+    }
+
+    @media (max-width: 520px) {
+      .cards { grid-template-columns: 1fr; }
+    }
+
+    .choice-card {
+      display: block;
+      text-decoration: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px 24px 28px;
+      text-align: center;
+      transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .choice-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+    }
+    /* Färgad toppkant — sätts nedan per kort */
+    .choice-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+    .choice-card.kent::before   { background: #7F77DD; }
+    .choice-card.family::before { background: linear-gradient(90deg, #7F77DD, #1D9E75, #D85A30, #D4537E); }
+    .choice-card.kent:hover   { border-color: #7F77DD55; }
+    .choice-card.family:hover { border-color: #1D9E7555; }
+
+    .card-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      display: block;
+    }
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+    .card-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .card-link-hint {
+      margin-top: 20px;
+      display: inline-block;
+      font-size: 12px;
+      color: var(--gold);
+      letter-spacing: 0.5px;
+    }
+
+    /* ─── Footer ─── */
+    footer {
+      text-align: center;
+      padding: 18px 20px;
+      font-size: 12px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+    footer a { color: var(--gold); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="label">FIFA VM 2026 · USA · Kanada · Mexiko</div>
+  <h1>VM-tips 2026</h1>
+  <p>Tippade resultat inför mästerskapet</p>
+</header>
+
+<main>
+  <div class="choose-label">Välj vy</div>
+
+  <div class="cards">
+
+    <!-- Kents egna detaljerade tips -->
+    <a href="kent_vmtips_2026.html" class="choice-card kent">
+      <span class="card-icon">🎯</span>
+      <div class="card-title">Kents tips</div>
+      <div class="card-desc">
+        Detaljerad vy med samtliga gruppspelstabeller och hela slutspelsbracket.
+      </div>
+      <span class="card-link-hint">Öppna →</span>
+    </a>
+
+    <!-- Familj och vänners tips med personkort -->
+    <a href="vmtips_familj_2026.html" class="choice-card family">
+      <span class="card-icon">👨‍👩‍👧</span>
+      <div class="card-title">Familj &amp; Vänner</div>
+      <div class="card-desc">
+        Kent, Bengt, Benita och Lotta — jämför tips och se slutspel per person.
+      </div>
+      <span class="card-link-hint">Öppna →</span>
+    </a>
+
+  </div>
+</main>
+
+<footer>
+  Data från <a href="https://masterskapstipset.se" target="_blank" rel="noopener">masterskapstipset.se</a>
+  &nbsp;·&nbsp; tippat inför FIFA VM 2026
+</footer>
+
+</body>
+</html>

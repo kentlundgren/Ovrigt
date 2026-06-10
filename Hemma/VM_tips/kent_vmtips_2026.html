@@ -305,9 +305,39 @@
       .podium { grid-template-columns: 1fr 1fr; }
       .rounds-grid { grid-template-columns: 1fr 1fr; }
     }
+  /* ─── Navigationsbar ─── */
+  .topnav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #0d1117;
+    border-bottom: 1px solid #1e2a3a;
+    font-size: 13px;
+    flex-wrap: wrap;
+  }
+  .topnav a {
+    color: #8892b0;
+    text-decoration: none;
+    padding: 4px 10px;
+    border-radius: 6px;
+    transition: background 0.1s, color 0.1s;
+  }
+  .topnav a:hover { background: #1e2a3a; color: #e8eaf6; }
+  .topnav .sep   { color: #2a3550; }
+  .topnav .current { color: #ffd700; font-weight: 600; pointer-events: none; }
   </style>
 </head>
 <body>
+
+<!-- ════════════════ NAVIGATIONSBAR ════════════════ -->
+<nav class="topnav">
+  <a href="index.html">⚽ Start</a>
+  <span class="sep">›</span>
+  <span class="current">Kents tips</span>
+  <span class="sep" style="margin-left:auto;"></span>
+  <a href="vmtips_familj_2026.html">👨‍👩‍👧 Familj &amp; Vänner →</a>
+</nav>
 
 <!-- ════════════════ SIDHUVUD ════════════════ -->
 <header>
@@ -712,8 +742,11 @@
 </div><!-- /content -->
 
 <footer>
-  Data hämtad från <a href="https://masterskapstipset.se/vmtips2026.aspx?p=1795" target="_blank">masterskapstipset.se</a> &nbsp;·&nbsp;
-  Kent Lundgrens tips inför FIFA VM 2026
+  <a href="index.html">⚽ Start</a>
+  &nbsp;·&nbsp;
+  <a href="vmtips_familj_2026.html">👨‍👩‍👧 Familj &amp; Vänner</a>
+  &nbsp;·&nbsp;
+  Data från <a href="https://masterskapstipset.se/vmtips2026.aspx?p=1795" target="_blank">masterskapstipset.se</a>
 </footer>
 
 </body>

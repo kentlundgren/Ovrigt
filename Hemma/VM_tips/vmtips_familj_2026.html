@@ -319,9 +319,40 @@
       border-top: 1px solid var(--border);
     }
     footer a { color: var(--gold); text-decoration: none; }
+  /* ─── Navigationsbar ─── */
+  .topnav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    flex-wrap: wrap;
+  }
+  .topnav a {
+    color: var(--muted);
+    text-decoration: none;
+    padding: 4px 10px;
+    border-radius: 6px;
+    transition: background 0.1s, color 0.1s;
+    white-space: nowrap;
+  }
+  .topnav a:hover  { background: var(--surface2); color: var(--text); }
+  .topnav .sep     { color: var(--border); }
+  .topnav .current { color: var(--gold); font-weight: 600; pointer-events: none; padding: 4px 10px; }
   </style>
 </head>
 <body>
+
+<!-- ═══════════════ NAVIGATIONSBAR ═══════════════ -->
+<nav class="topnav">
+  <a href="index.html">⚽ Start</a>
+  <span class="sep">›</span>
+  <span class="current">Familj &amp; Vänner</span>
+  <span class="sep" style="margin-left:auto;"></span>
+  <a href="kent_vmtips_2026.html">🎯 Kents tips →</a>
+</nav>
 
 <!-- ═══════════════ SIDHUVUD ═══════════════ -->
 <header>
@@ -363,9 +394,11 @@
 </div>
 
 <footer>
-  Data hämtad från
-  <a href="https://masterskapstipset.se" target="_blank" rel="noopener">masterskapstipset.se</a>
-  &nbsp;·&nbsp; VM 2026
+  <a href="index.html">⚽ Start</a>
+  &nbsp;·&nbsp;
+  <a href="kent_vmtips_2026.html">🎯 Kents tips</a>
+  &nbsp;·&nbsp;
+  Data från <a href="https://masterskapstipset.se" target="_blank" rel="noopener">masterskapstipset.se</a>
 </footer>
 
 <script>
