@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VM-tips 2026 – Familj &amp; Vänner</title>
+  <style>
+    /* ─── Reset ─────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ─── CSS-variabler (mörkt tema) ─────────────── */
+    :root {
+      --bg:           #0d1117;
+      --surface:      #161b22;
+      --surface2:     #21262d;
+      --border:       #30363d;
+      --text:         #e6edf3;
+      --muted:        #7d8590;
+      --green:        rgba(46,160,67,0.15);
+      --green-text:   #3fb950;
+      --gold:         #ffd700;
+      --bronze:       #cd7f32;
+      --purple:       #7F77DD;
+      --teal:         #1D9E75;
+      --coral:        #D85A30;
+      --pink:         #D4537E;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ─── Sidhuvud ───────────────────────────────── */
+    header {
+      padding: 28px 20px 22px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    header .label {
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+    header h1 {
+      font-size: clamp(20px, 4vw, 34px);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    header p {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* ─── Main ───────────────────────────────────── */
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 28px 20px 60px;
+    }
+
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    /* ─── Kortgrid (desktop: 2×2 / 4 i rad) ────── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 16px;
+    }
+
+    /* ─── Mobil: horisontell scroll-snap ─────────── */
+    @media (max-width: 600px) {
+      .cards-grid {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        gap: 12px;
+        padding-bottom: 4px;
+      }
+      .cards-grid::-webkit-scrollbar { display: none; }
+
+      .card {
+        min-width: 240px !important;
+        scroll-snap-align: start;
+        flex-shrink: 0;
+      }
+    }
+
+    /* ─── Personkort ─────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      cursor: pointer;
+      transition: transform 0.15s ease, border-color 0.15s ease;
+      position: relative;
+      overflow: hidden;
+      /* Färgstreck överst sätts via JS */
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      /* background sätts via JS */
+    }
+    .card:hover { transform: translateY(-3px); }
+    .card.disabled {
+      opacity: 0.45;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    /* Avatar-cirkel */
+    .avatar {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 600; font-size: 14px;
+      margin-bottom: 12px;
+      /* bg/color sätts via JS */
+    }
+
+    .card-name     { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+    .card-relation { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+
+    /* Podium-lista */
+    .podium-list { display: flex; flex-direction: column; gap: 6px; }
+    .podium-row  { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+    .podium-row .medal { font-size: 15px; width: 22px; text-align: center; flex-shrink: 0; }
+
+    /* "Se slutspel →" hint */
+    .card-hint {
+      margin-top: 14px;
+      font-size: 11px;
+      color: var(--muted);
+      text-align: right;
+    }
+
+    /* Swipe-hint (mobil) */
+    .swipe-hint {
+      display: none;
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+    @media (max-width: 600px) {
+      .swipe-hint { display: block; }
+    }
+
+    /* ─── Bracket-overlay ────────────────────────── */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.88);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* Overlay-header */
+    .ov-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .ov-person {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+    .ov-avatar {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 600; font-size: 12px;
+      flex-shrink: 0;
+    }
+    .ov-name     { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ov-relation { font-size: 12px; color: var(--muted); }
+
+    /* Nav-knappar */
+    .ov-nav { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+    .ov-nav button, .ov-close {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 5px 11px;
+      transition: background 0.1s;
+      white-space: nowrap;
+    }
+    .ov-nav button:hover, .ov-close:hover { background: var(--border); }
+    .ov-nav button:disabled { opacity: 0.3; cursor: default; }
+    .ov-close { font-size: 13px; }
+
+    /* Bracket-innehåll (horisontell scroll) */
+    .ov-content {
+      flex: 1;
+      overflow-x: auto;
+      overflow-y: auto;
+      padding: 18px 16px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+    .rounds-wrapper {
+      display: flex;
+      gap: 14px;
+      min-width: max-content;
+    }
+
+    /* Omgångskolumn */
+    .round-col {
+      width: 175px;
+      flex-shrink: 0;
+    }
+    .round-col h3 {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #F5C475;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    /* Final-kolumn: guldton */
+    .round-col.is-final h3 { color: var(--gold); }
+    /* Brons-kolumn */
+    .round-col.is-bronze h3 { color: var(--bronze); }
+
+    /* Match-kort i bracket */
+    .bmatch {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+    .round-col.is-final  .bmatch { border-color: rgba(255,215,0,0.25); background: rgba(255,215,0,0.04); }
+    .round-col.is-bronze .bmatch { border-color: rgba(205,127,50,0.25); }
+
+    .brow {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .brow:first-child { border-bottom: 1px solid var(--surface2); }
+    .brow.win {
+      background: var(--green);
+      color: var(--green-text);
+      font-weight: 600;
+    }
+    .round-col.is-final .brow.win  { background: rgba(255,215,0,0.12); color: var(--gold); }
+    .round-col.is-bronze .brow.win { color: var(--bronze); }
+    .bscore { font-weight: 700; min-width: 14px; text-align: right; }
+
+    /* Navigationsprickar (personbyte) */
+    .ov-dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--border);
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .dot.active {
+      transform: scale(1.4);
+      /* background sätts via JS med personens färg */
+    }
+
+    /* ─── Footer ─────────────────────────────────── */
+    footer {
+      text-align: center;
+      padding: 18px 20px;
+      font-size: 12px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+    footer a { color: var(--gold); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════ SIDHUVUD ═══════════════ -->
+<header>
+  <div class="label">FIFA VM 2026 · USA · Kanada · Mexiko</div>
+  <h1>VM-tips – Familj &amp; Vänner</h1>
+  <p>Klicka på ett kort för att se slutspelstipset</p>
+</header>
+
+<main>
+  <div class="section-label">Tippare</div>
+  <div class="cards-grid" id="cardsGrid"></div>
+  <div class="swipe-hint">← Svep för att bläddra →</div>
+</main>
+
+<!-- ═══════════════ BRACKET-OVERLAY ═══════════════ -->
+<div class="overlay" id="overlay">
+
+  <div class="ov-header">
+    <div class="ov-person">
+      <div class="ov-avatar" id="ovAvatar"></div>
+      <div>
+        <div class="ov-name"     id="ovName"></div>
+        <div class="ov-relation" id="ovRelation"></div>
+      </div>
+    </div>
+    <div class="ov-nav">
+      <button id="btnPrev" title="Föregående person" onclick="navPerson(-1)">◀</button>
+      <button id="btnNext" title="Nästa person"      onclick="navPerson(1)">▶</button>
+    </div>
+    <button class="ov-close" onclick="closeOverlay()">✕ Stäng</button>
+  </div>
+
+  <div class="ov-content" id="ovContent">
+    <div class="rounds-wrapper" id="roundsWrapper"></div>
+  </div>
+
+  <div class="ov-dots" id="ovDots"></div>
+
+</div>
+
+<footer>
+  Data hämtad från
+  <a href="https://masterskapstipset.se" target="_blank" rel="noopener">masterskapstipset.se</a>
+  &nbsp;·&nbsp; VM 2026
+</footer>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   DATA — En post per tippare
+   Matchformat: { t1, s1, t2, s2 }
+   Vid oavgjort i slutspel: lägg till winner: 1 eller 2
+═══════════════════════════════════════════════════════════ */
+const PERSONS = [
+
+  /* ─── KENT ─── */
+  {
+    id: 'kent', name: 'Kent Lundgren', relation: 'Du',
+    initials: 'KL', color: '#7F77DD', done: true,
+    podium: ['Spanien','England','Frankrike','Argentina'],
+    rounds: [
+      { name: 'Sextondelfinaler (1)', matches: [
+        { t1:'Tyskland',      s1:1, t2:'Paraguay',    s2:0 },
+        { t1:'Frankrike',     s1:1, t2:'Japan',        s2:0 },
+        { t1:'Sydkorea',      s1:1, t2:'Kanada',       s2:2 },
+        { t1:'Nederländerna', s1:1, t2:'Marocko',      s2:0 },
+        { t1:'Colombia',      s1:1, t2:'Kroatien',     s2:2 },
+        { t1:'Spanien',       s1:2, t2:'Österrike',    s2:1 },
+        { t1:'USA',           s1:2, t2:'Bosnien',      s2:1 },
+        { t1:'Belgien',       s1:2, t2:'Tjeckien',     s2:1 },
+      ]},
+      { name: 'Sextondelfinaler (2)', matches: [
+        { t1:'Brasilien',        s1:2, t2:'Sverige',          s2:1 },
+        { t1:'Elfenbenskusten',  s1:2, t2:'Senegal',          s2:2, winner:2 }, // Senegal via HV
+        { t1:'Mexiko',           s1:2, t2:'Skottland',        s2:1 },
+        { t1:'England',          s1:2, t2:'Uzbekistan',       s2:0 },
+        { t1:'Argentina',        s1:2, t2:'Uruguay',          s2:0 },
+        { t1:'Turkiet',          s1:2, t2:'Egypten',          s2:1 },
+        { t1:'Schweiz',          s1:2, t2:'Irak',             s2:0 },
+        { t1:'Portugal',         s1:2, t2:'Ghana',            s2:1 },
+      ]},
+      { name: 'Åttondelsfinaler', matches: [
+        { t1:'Tyskland',      s1:1, t2:'Frankrike',      s2:2 },
+        { t1:'Kanada',        s1:1, t2:'Nederländerna',  s2:2 },
+        { t1:'Kroatien',      s1:0, t2:'Spanien',        s2:2 },
+        { t1:'USA',           s1:1, t2:'Belgien',        s2:2 },
+        { t1:'Brasilien',     s1:2, t2:'Senegal',        s2:1 },
+        { t1:'Mexiko',        s1:1, t2:'England',        s2:2 },
+        { t1:'Argentina',     s1:2, t2:'Turkiet',        s2:0 },
+        { t1:'Schweiz',       s1:1, t2:'Portugal',       s2:2 },
+      ]},
+      { name: 'Kvartsfinaler', matches: [
+        { t1:'Frankrike',     s1:1, t2:'Nederländerna',  s2:0 },
+        { t1:'Spanien',       s1:2, t2:'Belgien',        s2:0 },
+        { t1:'Brasilien',     s1:0, t2:'England',        s2:1 },
+        { t1:'Argentina',     s1:2, t2:'Portugal',       s2:1 },
+      ]},
+      { name: 'Semifinaler', matches: [
+        { t1:'Frankrike', s1:1, t2:'Spanien',    s2:2 },
+        { t1:'England',   s1:2, t2:'Argentina',  s2:1 },
+      ]},
+      { name: 'Final 🏆', isFinal: true, matches: [
+        { t1:'Spanien', s1:2, t2:'England', s2:1 },
+      ]},
+      { name: 'Bronsmatch 🥉', isBronze: true, matches: [
+        { t1:'Frankrike', s1:2, t2:'Argentina', s2:1 },
+      ]},
+    ]
+  },
+
+  /* ─── BENGT ─── */
+  {
+    id: 'bengt', name: 'Bengt Sjöquist', relation: 'Kompis',
+    initials: 'BS', color: '#1D9E75', done: true,
+    podium: ['England','Spanien','Argentina','Tyskland'],
+    rounds: [
+      { name: 'Sextondelfinaler (1)', matches: [
+        { t1:'Tyskland',      s1:2, t2:'Turkiet',     s2:0 },
+        { t1:'Norge',         s1:3, t2:'Japan',        s2:0 },
+        { t1:'Tjeckien',      s1:2, t2:'Kanada',       s2:1 },
+        { t1:'Nederländerna', s1:1, t2:'Skottland',    s2:0 },
+        { t1:'Colombia',      s1:0, t2:'Kroatien',     s2:1 },
+        { t1:'Spanien',       s1:2, t2:'Österrike',    s2:0 },
+        { t1:'USA',           s1:0, t2:'Bosnien',      s2:1 },
+        { t1:'Belgien',       s1:2, t2:'Uruguay',      s2:0 },
+      ]},
+      { name: 'Sextondelfinaler (2)', matches: [
+        { t1:'Brasilien',        s1:1, t2:'Sverige',          s2:0 },
+        { t1:'Ecuador',          s1:0, t2:'Frankrike',        s2:2 },
+        { t1:'Mexiko',           s1:2, t2:'Elfenbenskusten',  s2:0 },
+        { t1:'England',          s1:2, t2:'DR Kongo',         s2:0 },
+        { t1:'Argentina',        s1:2, t2:'Saudiarabien',     s2:0 },
+        { t1:'Australien',       s1:0, t2:'Egypten',          s2:1 },
+        { t1:'Schweiz',          s1:2, t2:'Algeriet',         s2:0 },
+        { t1:'Portugal',         s1:2, t2:'Ghana',            s2:0 },
+      ]},
+      { name: 'Åttondelsfinaler', matches: [
+        { t1:'Tyskland',      s1:2, t2:'Norge',          s2:1 },
+        { t1:'Tjeckien',      s1:0, t2:'Nederländerna',  s2:1 },
+        { t1:'Kroatien',      s1:0, t2:'Spanien',        s2:2 },
+        { t1:'Bosnien',       s1:0, t2:'Belgien',        s2:1 },
+        { t1:'Brasilien',     s1:0, t2:'Frankrike',      s2:2 },
+        { t1:'Mexiko',        s1:0, t2:'England',        s2:1 },
+        { t1:'Argentina',     s1:2, t2:'Egypten',        s2:0 },
+        { t1:'Schweiz',       s1:1, t2:'Portugal',       s2:2 },
+      ]},
+      { name: 'Kvartsfinaler', matches: [
+        { t1:'Tyskland',  s1:2, t2:'Nederländerna',  s2:1 },
+        { t1:'Spanien',   s1:2, t2:'Belgien',        s2:0 },
+        { t1:'Frankrike', s1:0, t2:'England',        s2:1 },
+        { t1:'Argentina', s1:2, t2:'Portugal',       s2:1 },
+      ]},
+      { name: 'Semifinaler', matches: [
+        { t1:'Tyskland', s1:0, t2:'Spanien',    s2:2 },
+        { t1:'England',  s1:2, t2:'Argentina',  s2:1 },
+      ]},
+      { name: 'Final 🏆', isFinal: true, matches: [
+        { t1:'Spanien', s1:0, t2:'England', s2:1 },
+      ]},
+      { name: 'Bronsmatch 🥉', isBronze: true, matches: [
+        { t1:'Tyskland', s1:0, t2:'Argentina', s2:2 },
+      ]},
+    ]
+  },
+
+  /* ─── BENITA ─── */
+  {
+    id: 'benita', name: 'Benita Lundgren', relation: 'Mamma',
+    initials: 'BL', color: '#D85A30', done: true,
+    podium: ['England','Tyskland','Spanien','Österrike'],
+    rounds: [
+      { name: 'Sextondelfinaler (1)', matches: [
+        { t1:'Tyskland',   s1:3, t2:'Australien',      s2:1 },
+        { t1:'Frankrike',  s1:2, t2:'Japan',            s2:1 },
+        { t1:'Mexiko',     s1:0, t2:'Kanada',           s2:2 },
+        { t1:'Sverige',    s1:2, t2:'Skottland',        s2:1 },
+        { t1:'Colombia',   s1:0, t2:'Kroatien',         s2:2 },
+        { t1:'Spanien',    s1:2, t2:'Argentina',        s2:1 },
+        { t1:'USA',        s1:2, t2:'Elfenbenskusten',  s2:0 },
+        { t1:'Belgien',    s1:1, t2:'Sydkorea',         s2:0 },
+      ]},
+      { name: 'Sextondelfinaler (2)', matches: [
+        { t1:'Brasilien',  s1:2, t2:'Nederländerna',   s2:1 },
+        { t1:'Ecuador',    s1:1, t2:'Norge',            s2:0 },
+        { t1:'Tjeckien',   s1:1, t2:'Saudiarabien',    s2:0 },
+        { t1:'England',    s1:2, t2:'Irak',             s2:0 },
+        { t1:'Österrike',  s1:2, t2:'Uruguay',          s2:1 },
+        { t1:'Turkiet',    s1:2, t2:'Nya Zeeland',      s2:0 },
+        { t1:'Schweiz',    s1:1, t2:'Egypten',          s2:0 },
+        { t1:'Portugal',   s1:1, t2:'Ghana',            s2:0 },
+      ]},
+      { name: 'Åttondelsfinaler', matches: [
+        { t1:'Tyskland',  s1:3, t2:'Frankrike',  s2:2 },
+        { t1:'Kanada',    s1:2, t2:'Sverige',    s2:0 },
+        { t1:'Kroatien',  s1:0, t2:'Spanien',    s2:2 },
+        { t1:'USA',       s1:2, t2:'Belgien',    s2:0 },
+        { t1:'Brasilien', s1:2, t2:'Ecuador',    s2:1 },
+        { t1:'Tjeckien',  s1:1, t2:'England',    s2:3 },
+        { t1:'Österrike', s1:2, t2:'Turkiet',    s2:0 },
+        { t1:'Schweiz',   s1:1, t2:'Portugal',   s2:2 },
+      ]},
+      { name: 'Kvartsfinaler', matches: [
+        { t1:'Tyskland',  s1:3, t2:'Kanada',   s2:1 },
+        { t1:'Spanien',   s1:2, t2:'USA',      s2:1 },
+        { t1:'Brasilien', s1:1, t2:'England',  s2:2 },
+        { t1:'Österrike', s1:2, t2:'Portugal', s2:1 },
+      ]},
+      { name: 'Semifinaler', matches: [
+        { t1:'Tyskland', s1:3, t2:'Spanien',    s2:2 },
+        { t1:'England',  s1:3, t2:'Österrike',  s2:2 },
+      ]},
+      { name: 'Final 🏆', isFinal: true, matches: [
+        { t1:'Tyskland', s1:1, t2:'England', s2:2 },
+      ]},
+      { name: 'Bronsmatch 🥉', isBronze: true, matches: [
+        { t1:'Spanien', s1:3, t2:'Österrike', s2:2 },
+      ]},
+    ]
+  },
+
+  /* ─── LOTTA — inte klar ─── */
+  {
+    id: 'lotta', name: 'Lotta Lundgren', relation: 'Fru',
+    initials: 'LL', color: '#D4537E', done: false,
+    podium: [], rounds: []
+  },
+];
+
+/* ═══════════════════════════════════════════════════════════
+   HJÄLPFUNKTIONER
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * Bestäm vinnaren i en match.
+ * Om resultatet är oavgjort och match.winner är satt, används det.
+ * Annars: högst poäng vinner (1 = team1, 2 = team2).
+ */
+function winner(m) {
+  if (m.winner !== undefined) return m.winner;
+  return m.s1 > m.s2 ? 1 : 2;
+}
+
+/** Skapa ett hex med opacitet (t.ex. för avatar-bakgrund) */
+function hexAlpha(hex, a) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BYGG PERSONKORT
+═══════════════════════════════════════════════════════════ */
+function buildCards() {
+  const grid = document.getElementById('cardsGrid');
+  grid.innerHTML = '';
+  const medals = ['🥇','🥈','🥉','4️⃣'];
+
+  PERSONS.forEach((p, idx) => {
+    const card = document.createElement('div');
+    card.className = 'card' + (p.done ? '' : ' disabled');
+
+    // Färgstreck överst
+    card.style.setProperty('--card-color', p.color);
+    card.querySelector
+      ? null
+      : null;
+
+    // Använd style.cssText för pseudo-element via en CSS-custom-property trick
+    card.style.cssText += `--card-color:${p.color};`;
+    // Sätt border-top direkt istället
+    card.style.borderTop = `3px solid ${p.color}`;
+    if (p.done) card.style.borderColor = p.color + '55';
+
+    const podiumHTML = p.done
+      ? p.podium.map((t,i) =>
+          `<div class="podium-row">
+            <span class="medal">${medals[i]}</span>
+            <span>${t}</span>
+          </div>`
+        ).join('')
+      : `<div style="font-size:13px;color:var(--muted);font-style:italic;margin-top:4px;">Tippar snart…</div>`;
+
+    card.innerHTML = `
+      <div class="avatar" style="background:${hexAlpha(p.color,0.18)};color:${p.color};">${p.initials}</div>
+      <div class="card-name">${p.name}</div>
+      <div class="card-relation">${p.relation}</div>
+      <div class="podium-list">${podiumHTML}</div>
+      ${p.done ? '<div class="card-hint">Se slutspel →</div>' : ''}
+    `;
+
+    if (p.done) {
+      card.addEventListener('click', () => openOverlay(idx));
+    }
+
+    grid.appendChild(card);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BRACKET-OVERLAY — öppna/stäng/navigera
+═══════════════════════════════════════════════════════════ */
+
+/** Index i PERSONS-arrayen för aktuellt visad person */
+let currentIdx = 0;
+
+/** Öppna overlay och visa person idx */
+function openOverlay(idx) {
+  currentIdx = idx;
+  renderBracket(idx);
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow = 'hidden'; // låser bakgrundsscroll
+}
+
+/** Stäng overlay */
+function closeOverlay() {
+  document.getElementById('overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+/** Navigera ±1 bland tippare som är klara */
+function navPerson(dir) {
+  const done = PERSONS.filter(p => p.done);
+  const curDoneIdx = done.findIndex(p => p.id === PERSONS[currentIdx].id);
+  const nextDoneIdx = curDoneIdx + dir;
+  if (nextDoneIdx < 0 || nextDoneIdx >= done.length) return;
+  currentIdx = PERSONS.indexOf(done[nextDoneIdx]);
+  renderBracket(currentIdx);
+}
+
+/**
+ * Rendera bracket-innehållet för person idx.
+ * Skapar omgångskolumner med matchkort.
+ */
+function renderBracket(idx) {
+  const p = PERSONS[idx];
+  const wrapper = document.getElementById('roundsWrapper');
+  wrapper.innerHTML = '';
+
+  p.rounds.forEach(round => {
+    const col = document.createElement('div');
+    col.className = 'round-col'
+      + (round.isFinal  ? ' is-final'  : '')
+      + (round.isBronze ? ' is-bronze' : '');
+
+    // Matchkort-HTML: vinnarlaget markeras med grön bakgrund (eller guld/brons)
+    const matchesHTML = round.matches.map(m => {
+      const w = winner(m);
+      return `
+        <div class="bmatch">
+          <div class="brow ${w===1 ? 'win' : ''}">
+            <span>${m.t1}</span><span class="bscore">${m.s1}</span>
+          </div>
+          <div class="brow ${w===2 ? 'win' : ''}">
+            <span>${m.t2}</span><span class="bscore">${m.s2}</span>
+          </div>
+        </div>`;
+    }).join('');
+
+    col.innerHTML = `<h3>${round.name}</h3>${matchesHTML}`;
+    wrapper.appendChild(col);
+  });
+
+  // ── Uppdatera header ──
+  const av = document.getElementById('ovAvatar');
+  av.textContent = p.initials;
+  av.style.background = hexAlpha(p.color, 0.2);
+  av.style.color = p.color;
+  document.getElementById('ovName').textContent = p.name;
+  document.getElementById('ovRelation').textContent = p.relation;
+
+  // ── Nav-knappar (föregående/nästa) ──
+  const done = PERSONS.filter(x => x.done);
+  const di = done.findIndex(x => x.id === p.id);
+  document.getElementById('btnPrev').disabled = di <= 0;
+  document.getElementById('btnNext').disabled = di >= done.length - 1;
+
+  // ── Navigationsprickar ──
+  renderDots(idx);
+
+  // Scrolla bracket till vänster vid byte av person
+  document.getElementById('ovContent').scrollLeft = 0;
+}
+
+/** Rendera prickar för varje klar tippare */
+function renderDots(activeIdx) {
+  const container = document.getElementById('ovDots');
+  container.innerHTML = '';
+  PERSONS.filter(p => p.done).forEach(p => {
+    const dot = document.createElement('div');
+    const pi = PERSONS.indexOf(p);
+    dot.className = 'dot' + (pi === activeIdx ? ' active' : '');
+    dot.style.background = pi === activeIdx ? p.color : '';
+    dot.title = p.name;
+    dot.addEventListener('click', () => {
+      currentIdx = pi;
+      renderBracket(pi);
+    });
+    container.appendChild(dot);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SWIPE-HANTERING (touch) i overlay
+   — Svep vänster/höger på headern eller dotsen byter person.
+   — Svep inne i innehållsarean scrollar bracket-rundorna.
+   — Person-byte triggas bara när bracket-scrollningen är
+     vid kanten (start eller slut).
+═══════════════════════════════════════════════════════════ */
+let touchX0 = 0;
+let touchY0 = 0;
+
+const ovEl = document.getElementById('overlay');
+
+ovEl.addEventListener('touchstart', e => {
+  touchX0 = e.touches[0].clientX;
+  touchY0 = e.touches[0].clientY;
+}, { passive: true });
+
+ovEl.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchX0;
+  const dy = e.changedTouches[0].clientY - touchY0;
+
+  // Ignorera om det mest är ett vertikalt svep
+  if (Math.abs(dy) > Math.abs(dx)) return;
+  if (Math.abs(dx) < 60) return; // för litet svep
+
+  const content = document.getElementById('ovContent');
+  const atLeft  = content.scrollLeft < 5;
+  const atRight = content.scrollLeft + content.clientWidth >= content.scrollWidth - 5;
+
+  // Svep höger (dx > 0) = gå till föregående person (bara om vi är vid vänsterkanten)
+  if (dx > 0 && atLeft)  navPerson(-1);
+  // Svep vänster (dx < 0) = gå till nästa person (bara om vi är vid högerkanten)
+  if (dx < 0 && atRight) navPerson(1);
+}, { passive: true });
+
+/* Stäng overlay med Escape-tangent */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeOverlay();
+  if (e.key === 'ArrowLeft')  navPerson(-1);
+  if (e.key === 'ArrowRight') navPerson(1);
+});
+
+/* ═══════════════════════════════════════════════════════════
+   STARTA SIDAN
+═══════════════════════════════════════════════════════════ */
+buildCards();
+</script>
+</body>
+</html>
