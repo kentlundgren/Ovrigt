@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kent Lundgrens VM-tips 2026</title>
+  <style>
+    /* ─── Grundläggande reset och typografi ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0a0e1a;
+      color: #e8eaf6;
+      min-height: 100vh;
+    }
+
+    /* ─── Sidhuvud ─── */
+    header {
+      background: linear-gradient(135deg, #1a1f3a 0%, #0d1b2a 50%, #1a0a2e 100%);
+      padding: 48px 24px 40px;
+      text-align: center;
+      border-bottom: 2px solid #ffd700;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before {
+      content: '⚽';
+      font-size: 200px;
+      position: absolute;
+      top: -40px;
+      right: -30px;
+      opacity: 0.05;
+    }
+
+    header .tournament-label {
+      font-size: 13px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: #ffd700;
+      margin-bottom: 10px;
+    }
+
+    header h1 {
+      font-size: clamp(28px, 5vw, 52px);
+      font-weight: 800;
+      color: #fff;
+      text-shadow: 0 2px 20px rgba(255,215,0,0.3);
+      margin-bottom: 8px;
+    }
+
+    header .subtitle {
+      font-size: 16px;
+      color: #8892b0;
+    }
+
+    /* ─── Vinnarpodium ─── */
+    .podium-section {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 24px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #ffd700;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .podium {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 12px;
+    }
+
+    .podium-item {
+      background: linear-gradient(160deg, #1e2a3a, #141c2a);
+      border-radius: 16px;
+      padding: 24px 16px;
+      text-align: center;
+      border: 1px solid #2a3550;
+      transition: transform 0.2s;
+    }
+
+    .podium-item:hover { transform: translateY(-4px); }
+
+    .podium-item.gold   { border-top: 3px solid #ffd700; }
+    .podium-item.silver { border-top: 3px solid #c0c0c0; }
+    .podium-item.bronze { border-top: 3px solid #cd7f32; }
+    .podium-item.fourth { border-top: 3px solid #4a5568; }
+
+    .podium-medal {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .podium-rank {
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #8892b0;
+      margin-bottom: 6px;
+    }
+
+    .podium-team {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .podium-item.gold .podium-team { color: #ffd700; }
+
+    /* ─── Finalresultat ─── */
+    .final-box {
+      max-width: 500px;
+      margin: 32px auto;
+      padding: 0 24px;
+    }
+
+    .match-card {
+      background: linear-gradient(135deg, #1e2a3a, #141c2a);
+      border-radius: 20px;
+      padding: 28px;
+      border: 1px solid #2a3550;
+      text-align: center;
+    }
+
+    .match-card .match-label {
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #ffd700;
+      margin-bottom: 16px;
+    }
+
+    .match-teams {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .match-score {
+      background: #ffd700;
+      color: #0a0e1a;
+      border-radius: 10px;
+      padding: 6px 18px;
+      font-size: 26px;
+      font-weight: 800;
+      min-width: 80px;
+    }
+
+    .team-name { color: #e8eaf6; }
+    .team-name.winner { color: #ffd700; }
+
+    /* ─── Innehållsgrid ─── */
+    .content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 60px;
+    }
+
+    /* ─── Slutspelsbracket ─── */
+    .bracket-section { margin: 40px 0; }
+
+    .rounds-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .round-column h3 {
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #ffd700;
+      margin-bottom: 14px;
+      text-align: center;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #2a3550;
+    }
+
+    .bracket-match {
+      background: #141c2a;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 10px;
+      border: 1px solid #2a3550;
+    }
+
+    .bracket-team {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      font-size: 13px;
+      transition: background 0.15s;
+    }
+
+    .bracket-team:first-child { border-bottom: 1px solid #1e2a3a; }
+    .bracket-team.winner-team { background: #1a2a1a; color: #4ade80; font-weight: 600; }
+
+    .bracket-score {
+      font-weight: 700;
+      color: #8892b0;
+      font-size: 14px;
+      min-width: 20px;
+      text-align: right;
+    }
+
+    .bracket-team.winner-team .bracket-score { color: #4ade80; }
+
+    /* ─── Gruppspelstabell ─── */
+    .groups-section { margin: 40px 0; }
+
+    .groups-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .group-card {
+      background: #141c2a;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid #2a3550;
+    }
+
+    .group-card h3 {
+      background: #1e2a3a;
+      padding: 12px 16px;
+      font-size: 12px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #ffd700;
+      border-bottom: 1px solid #2a3550;
+    }
+
+    .group-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .group-table thead tr {
+      background: #0d1520;
+    }
+
+    .group-table th {
+      padding: 6px 8px;
+      color: #5a6a8a;
+      font-weight: 600;
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-align: right;
+    }
+
+    .group-table th:first-child { text-align: left; }
+
+    .group-table td {
+      padding: 8px 8px;
+      border-bottom: 1px solid #1a2235;
+      text-align: right;
+    }
+
+    .group-table td:first-child { text-align: left; padding-left: 14px; }
+    .group-table tr:last-child td { border-bottom: none; }
+
+    /* Grön bakgrund för lag som går vidare (topp 2) */
+    .group-table tr:nth-child(2),
+    .group-table tr:nth-child(3) {
+      background: rgba(74, 222, 128, 0.04);
+    }
+
+    .group-table tr:nth-child(2) td:first-child,
+    .group-table tr:nth-child(3) td:first-child {
+      border-left: 3px solid #4ade80;
+    }
+
+    .group-table .pts {
+      font-weight: 700;
+      color: #e8eaf6;
+    }
+
+    /* ─── Footer ─── */
+    footer {
+      text-align: center;
+      padding: 24px;
+      color: #4a5568;
+      font-size: 12px;
+      border-top: 1px solid #1e2a3a;
+    }
+
+    footer a { color: #ffd700; text-decoration: none; }
+
+    /* ─── Responsiv ─── */
+    @media (max-width: 600px) {
+      .podium { grid-template-columns: 1fr 1fr; }
+      .rounds-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════ SIDHUVUD ════════════════ -->
+<header>
+  <div class="tournament-label">FIFA VM 2026 · USA · Kanada · Mexiko</div>
+  <h1>Kent Lundgrens VM-tips</h1>
+  <div class="subtitle">masterskapstipset.se · tippat före turneringen</div>
+</header>
+
+<!-- ════════════════ PODIUM ════════════════ -->
+<div class="podium-section">
+  <div class="section-title">🏆 Kents tippade slutplaceringar</div>
+  <div class="podium">
+    <div class="podium-item gold">
+      <div class="podium-medal">🥇</div>
+      <div class="podium-rank">Mästare</div>
+      <div class="podium-team">Spanien</div>
+    </div>
+    <div class="podium-item silver">
+      <div class="podium-medal">🥈</div>
+      <div class="podium-rank">Tvåa</div>
+      <div class="podium-team">England</div>
+    </div>
+    <div class="podium-item bronze">
+      <div class="podium-medal">🥉</div>
+      <div class="podium-rank">Trea</div>
+      <div class="podium-team">Frankrike</div>
+    </div>
+    <div class="podium-item fourth">
+      <div class="podium-medal">4️⃣</div>
+      <div class="podium-rank">Fyra</div>
+      <div class="podium-team">Argentina</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ FINAL ════════════════ -->
+<div class="final-box">
+  <div class="match-card">
+    <div class="match-label">🏟️ Final</div>
+    <div class="match-teams">
+      <span class="team-name winner">Spanien</span>
+      <span class="match-score">2 – 1</span>
+      <span class="team-name">England</span>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- ════════════════ SLUTSPEL ════════════════ -->
+  <div class="bracket-section">
+    <div class="section-title">⚔️ Slutspel</div>
+    <div class="rounds-grid">
+
+      <!-- Sextondelfinaler (urval av de viktigaste) -->
+      <div class="round-column">
+        <h3>Sextondelfinaler (1)</h3>
+
+        <div class="bracket-match">
+          <div class="bracket-team winner-team"><span>Tyskland</span><span class="bracket-score">1</span></div>
+          <div class="bracket-team"><span>Paraguay</span><span class="bracket-score">0</span></div>
+        </div>
+        <div class="bracket-match">
+          <div class="bracket-team winner-team"><span>Frankrike</span><span class="bracket-score">1</span></div>
+          <div class="bracket-team"><span>Japan</span><span class="bracket-score">0</span></div>
+        </div>
+        <div class="bracket-match">
+          <div class="bracket-team"><span>Sydkorea</span><span class="bracket-score">1</span></div>
+          <div class="bracket-team winner-team"><span>Kanada</span><span class="bracket-score">2</span></div>
+        </div>
+        <div class="bracket-match">
+          <div class="bracket-team winner-team"><span>Nederländerna</span><span class="bracket-score">1</span></div>
+          <div class="bracket-team"><span>Marocko</span><span class="bracket-score">0</span></div>
+        </div>
+        <div class="bracket-match">
+          <div class="bracket-team"><span>Colombia</span><span class="bracket-score">1</span></div>
+          <div class="bracket-team winner-team"><span>Kroatien</span><span class="bracket-score">2</span></div>
+        </div>
+        <div class="bracket-match">
+          <div class="bracket-team winner-team"><span>Spanien</span><span class="bracket-score">2</span></div>
+          <div class="bracket-team"><span>Österrike</span><span class="bracket-score">1</span></div>
+        </div>
+        <div class="bracket-match">
+          <div class="bracket-team winner-team"><span>USA</span><span class="bracket-score">2</span></div>
+          <div class="bracket-team"><span>Bosnien</span><span class="bracket-score">1</span></div>
+        </div>
+        <div class="bracket-match">
+          <div class="bracket-team winner-team"><span>Belgien</span><span class="bracket-score">2</span></div>
+          <div class="bracket-team"><span>Tjeckien</span><span class="bracket-score">1</span></div>
+        </div>
+      </div>
+
+      <!-- Sextondelfinaler del 2 -->
+      <div class="round-column">
+        <h3>Sextondelfinaler (2)</h3>
+
+        <div class="bracket-match">
+          <div class="bracket-team winner-team"><span>Brasilien</span><span class="bracket-score">2</span></div>
+          <div class="bracket-team"><span>Sverige</span><span class="bracket-score">1</span></div>
+        </div>
+        <div class="bracket-match">
+          <div class="bracket-team"><span>Elfenbenskusten</span><span class="bracket-score">2</span></div>
+          <div class="bracket-team winner-team"><span>Senegal</span><span class="bracket-score">2</span></div>
+        </div>
+        <div class="bracket-match">
+          <div class="bracket-team winner-team"><span>Mexiko</span><span class="bracket-score">2</span></div>
+          <div class="bracket-team"><span>Skottland</span><span class="bracket-score">1</span></div>
+        </div>
+        <div class="bracket-match">
+          <div class="bracket-team winner-team"><span>England</span><span class="bracket-score">2</span></div>
+          <div class="bracket-team"><span>Uzbekistan</span><span class="bracket-score">0</span></div>
+        </div>
+        <div class="bracket-match">
+          <div class="bracket-team winner-team"><span>Argentina</span><span class="bracket-score">2</span></div>
+          <div class="bracket-team"><span>Uruguay</span><span class="bracket-score">0</span></div>
+        </div>
+        <div class="bracket-match">
+          <div class="bracket-team winner-team"><span>Turkiet</span><span class="bracket-score">2</span></div>
+          <div class="bracket-team"><span>Egypten</span><span class="bracket-score">1</span></div>
+        </div>
+        <div class="bracket-match">
+          <div class="bracket-team winner-team"><span>Schweiz</span><span class="bracket-score">2</span></div>
+          <div class="bracket-team"><span>Irak</span><span class="bracket-score">0</span></div>
+        </div>
+        <div class="bracket-match">
+          <div class="bracket-team winner-team"><span>Portugal</span><span class="bracket-score">2</span></div>
+          <div class="bracket-team"><span>Ghana</span><span class="bracket-score">1</span></div>
+        </div>
+      </div>
+
+      <!-- Åttondelsfinaler -->
+      <div class="round-column">
+        <h3>Åttondelsfinaler</h3>
+
+        <div class="bracket-match">
+          <div class="bracket-team"><span>Tyskland</span><span class="bracket-score">1</span></div>
+          <div class="bracket-team winner-team"><span>Frankrike</span><span class="bracket-score">2</span></div>
+        </div>
+        <div class="bracket-match">
+          <div class="bracket-team"><span>Kanada</span><span class="bracket-score">1</span></div>
+          <div class="bracket-team winner-team"><span>Nederländerna</span><span class="bracket-score">2</span></div>
+        </div>
+        <div class="bracket-match">
+          <div class="bracket-team"><span>Kroatien</span><span class="bracket-score">0</span></div>
+          <div class="bracket-team winner-team"><span>Spanien</span><span class="bracket-score">2</span></div>
+        </div>
+        <div class="bracket-match">
+          <div class="bracket-team"><span>USA</span><span class="bracket-score">1</span></div>
+          <div class="bracket-team winner-team"><span>Belgien</span><span class="bracket-score">2</span></div>
+        </div>
+        <div class="bracket-match">
+          <div class="bracket-team winner-team"><span>Brasilien</span><span class="bracket-score">2</span></div>
+          <div class="bracket-team"><span>Senegal</span><span class="bracket-score">1</span></div>
+        </div>
+        <div class="bracket-match">
+          <div class="bracket-team"><span>Mexiko</span><span class="bracket-score">1</span></div>
+          <div class="bracket-team winner-team"><span>England</span><span class="bracket-score">2</span></div>
+        </div>
+        <div class="bracket-match">
+          <div class="bracket-team winner-team"><span>Argentina</span><span class="bracket-score">2</span></div>
+          <div class="bracket-team"><span>Turkiet</span><span class="bracket-score">0</span></div>
+        </div>
+        <div class="bracket-match">
+          <div class="bracket-team"><span>Schweiz</span><span class="bracket-score">1</span></div>
+          <div class="bracket-team winner-team"><span>Portugal</span><span class="bracket-score">2</span></div>
+        </div>
+      </div>
+
+      <!-- Kvartsfinaler -->
+      <div class="round-column">
+        <h3>Kvartsfinaler</h3>
+
+        <div class="bracket-match">
+          <div class="bracket-team winner-team"><span>Frankrike</span><span class="bracket-score">1</span></div>
+          <div class="bracket-team"><span>Nederländerna</span><span class="bracket-score">0</span></div>
+        </div>
+        <div class="bracket-match">
+          <div class="bracket-team winner-team"><span>Spanien</span><span class="bracket-score">2</span></div>
+          <div class="bracket-team"><span>Belgien</span><span class="bracket-score">0</span></div>
+        </div>
+        <div class="bracket-match">
+          <div class="bracket-team"><span>Brasilien</span><span class="bracket-score">0</span></div>
+          <div class="bracket-team winner-team"><span>England</span><span class="bracket-score">1</span></div>
+        </div>
+        <div class="bracket-match">
+          <div class="bracket-team winner-team"><span>Argentina</span><span class="bracket-score">2</span></div>
+          <div class="bracket-team"><span>Portugal</span><span class="bracket-score">1</span></div>
+        </div>
+      </div>
+
+      <!-- Semifinaler -->
+      <div class="round-column">
+        <h3>Semifinaler</h3>
+
+        <div class="bracket-match">
+          <div class="bracket-team"><span>Frankrike</span><span class="bracket-score">1</span></div>
+          <div class="bracket-team winner-team"><span>Spanien</span><span class="bracket-score">2</span></div>
+        </div>
+        <div class="bracket-match">
+          <div class="bracket-team winner-team"><span>England</span><span class="bracket-score">2</span></div>
+          <div class="bracket-team"><span>Argentina</span><span class="bracket-score">1</span></div>
+        </div>
+      </div>
+
+      <!-- Final + Brons -->
+      <div class="round-column">
+        <h3>Final &amp; Brons</h3>
+
+        <div class="bracket-match" style="border: 1px solid #ffd70055; background: linear-gradient(135deg,#1a1a0a,#141c2a);">
+          <div class="bracket-team winner-team" style="color:#ffd700;"><span>🏆 Spanien</span><span class="bracket-score" style="color:#ffd700;">2</span></div>
+          <div class="bracket-team"><span>England</span><span class="bracket-score">1</span></div>
+        </div>
+
+        <div style="margin-top: 20px;"></div>
+
+        <div class="bracket-match" style="border: 1px solid #cd7f3255;">
+          <div class="bracket-team winner-team" style="color:#cd7f32;"><span>🥉 Frankrike</span><span class="bracket-score" style="color:#cd7f32;">2</span></div>
+          <div class="bracket-team"><span>Argentina</span><span class="bracket-score">1</span></div>
+        </div>
+      </div>
+
+    </div><!-- /rounds-grid -->
+  </div><!-- /bracket-section -->
+
+
+  <!-- ════════════════ GRUPPSPEL ════════════════ -->
+  <div class="groups-section">
+    <div class="section-title">📊 Gruppspel – tippade tabeller</div>
+    <div class="groups-grid">
+
+      <!-- Grupp A -->
+      <div class="group-card">
+        <h3>Grupp A</h3>
+        <table class="group-table">
+          <thead><tr><th>Lag</th><th>S</th><th>V</th><th>O</th><th>F</th><th>G</th><th class="pts">P</th></tr></thead>
+          <tbody>
+            <tr><td>Mexiko</td><td>3</td><td>2</td><td>1</td><td>0</td><td>4–2</td><td class="pts">7</td></tr>
+            <tr><td>Sydkorea</td><td>3</td><td>2</td><td>1</td><td>0</td><td>4–2</td><td class="pts">7</td></tr>
+            <tr><td>Tjeckien</td><td>3</td><td>1</td><td>0</td><td>2</td><td>2–3</td><td class="pts">3</td></tr>
+            <tr><td>Sydafrika</td><td>3</td><td>0</td><td>0</td><td>3</td><td>1–4</td><td class="pts">0</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Grupp B -->
+      <div class="group-card">
+        <h3>Grupp B</h3>
+        <table class="group-table">
+          <thead><tr><th>Lag</th><th>S</th><th>V</th><th>O</th><th>F</th><th>G</th><th class="pts">P</th></tr></thead>
+          <tbody>
+            <tr><td>Schweiz</td><td>3</td><td>2</td><td>1</td><td>0</td><td>4–2</td><td class="pts">7</td></tr>
+            <tr><td>Kanada</td><td>3</td><td>2</td><td>0</td><td>1</td><td>3–2</td><td class="pts">6</td></tr>
+            <tr><td>Bosnien-Herz.</td><td>3</td><td>0</td><td>2</td><td>1</td><td>2–3</td><td class="pts">2</td></tr>
+            <tr><td>Qatar</td><td>3</td><td>0</td><td>1</td><td>2</td><td>1–3</td><td class="pts">1</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Grupp C -->
+      <div class="group-card">
+        <h3>Grupp C</h3>
+        <table class="group-table">
+          <thead><tr><th>Lag</th><th>S</th><th>V</th><th>O</th><th>F</th><th>G</th><th class="pts">P</th></tr></thead>
+          <tbody>
+            <tr><td>Brasilien</td><td>3</td><td>2</td><td>1</td><td>0</td><td>3–1</td><td class="pts">7</td></tr>
+            <tr><td>Marocko</td><td>3</td><td>1</td><td>2</td><td>0</td><td>4–3</td><td class="pts">5</td></tr>
+            <tr><td>Skottland</td><td>3</td><td>0</td><td>2</td><td>1</td><td>3–4</td><td class="pts">2</td></tr>
+            <tr><td>Haiti</td><td>3</td><td>0</td><td>1</td><td>2</td><td>1–3</td><td class="pts">1</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Grupp D -->
+      <div class="group-card">
+        <h3>Grupp D</h3>
+        <table class="group-table">
+          <thead><tr><th>Lag</th><th>S</th><th>V</th><th>O</th><th>F</th><th>G</th><th class="pts">P</th></tr></thead>
+          <tbody>
+            <tr><td>USA</td><td>3</td><td>2</td><td>0</td><td>1</td><td>4–2</td><td class="pts">6</td></tr>
+            <tr><td>Turkiet</td><td>3</td><td>1</td><td>2</td><td>0</td><td>4–3</td><td class="pts">5</td></tr>
+            <tr><td>Paraguay</td><td>3</td><td>0</td><td>2</td><td>1</td><td>2–3</td><td class="pts">2</td></tr>
+            <tr><td>Australien</td><td>3</td><td>0</td><td>2</td><td>1</td><td>2–4</td><td class="pts">2</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Grupp E -->
+      <div class="group-card">
+        <h3>Grupp E</h3>
+        <table class="group-table">
+          <thead><tr><th>Lag</th><th>S</th><th>V</th><th>O</th><th>F</th><th>G</th><th class="pts">P</th></tr></thead>
+          <tbody>
+            <tr><td>Tyskland</td><td>3</td><td>3</td><td>0</td><td>0</td><td>5–1</td><td class="pts">9</td></tr>
+            <tr><td>Elfenbenskusten</td><td>3</td><td>2</td><td>0</td><td>1</td><td>3–2</td><td class="pts">6</td></tr>
+            <tr><td>Curaçao</td><td>3</td><td>0</td><td>1</td><td>2</td><td>0–2</td><td class="pts">1</td></tr>
+            <tr><td>Ecuador</td><td>3</td><td>0</td><td>1</td><td>2</td><td>0–3</td><td class="pts">1</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Grupp F -->
+      <div class="group-card">
+        <h3>Grupp F</h3>
+        <table class="group-table">
+          <thead><tr><th>Lag</th><th>S</th><th>V</th><th>O</th><th>F</th><th>G</th><th class="pts">P</th></tr></thead>
+          <tbody>
+            <tr><td>Nederländerna</td><td>3</td><td>2</td><td>1</td><td>0</td><td>4–2</td><td class="pts">7</td></tr>
+            <tr><td>Sverige</td><td>3</td><td>1</td><td>1</td><td>1</td><td>4–4</td><td class="pts">4</td></tr>
+            <tr><td>Japan</td><td>3</td><td>1</td><td>0</td><td>2</td><td>2–3</td><td class="pts">3</td></tr>
+            <tr><td>Tunisien</td><td>3</td><td>0</td><td>2</td><td>1</td><td>2–3</td><td class="pts">2</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Grupp G -->
+      <div class="group-card">
+        <h3>Grupp G</h3>
+        <table class="group-table">
+          <thead><tr><th>Lag</th><th>S</th><th>V</th><th>O</th><th>F</th><th>G</th><th class="pts">P</th></tr></thead>
+          <tbody>
+            <tr><td>Belgien</td><td>3</td><td>2</td><td>1</td><td>0</td><td>4–2</td><td class="pts">7</td></tr>
+            <tr><td>Egypten</td><td>3</td><td>1</td><td>2</td><td>0</td><td>3–2</td><td class="pts">5</td></tr>
+            <tr><td>Iran</td><td>3</td><td>0</td><td>2</td><td>1</td><td>1–2</td><td class="pts">2</td></tr>
+            <tr><td>Nya Zeeland</td><td>3</td><td>0</td><td>1</td><td>2</td><td>1–3</td><td class="pts">1</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Grupp H -->
+      <div class="group-card">
+        <h3>Grupp H</h3>
+        <table class="group-table">
+          <thead><tr><th>Lag</th><th>S</th><th>V</th><th>O</th><th>F</th><th>G</th><th class="pts">P</th></tr></thead>
+          <tbody>
+            <tr><td>Spanien</td><td>3</td><td>2</td><td>1</td><td>0</td><td>4–1</td><td class="pts">7</td></tr>
+            <tr><td>Uruguay</td><td>3</td><td>1</td><td>2</td><td>0</td><td>3–2</td><td class="pts">5</td></tr>
+            <tr><td>Kap Verde</td><td>3</td><td>0</td><td>2</td><td>1</td><td>2–4</td><td class="pts">2</td></tr>
+            <tr><td>Saudiarabien</td><td>3</td><td>0</td><td>1</td><td>2</td><td>1–3</td><td class="pts">1</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Grupp I -->
+      <div class="group-card">
+        <h3>Grupp I</h3>
+        <table class="group-table">
+          <thead><tr><th>Lag</th><th>S</th><th>V</th><th>O</th><th>F</th><th>G</th><th class="pts">P</th></tr></thead>
+          <tbody>
+            <tr><td>Frankrike</td><td>3</td><td>2</td><td>1</td><td>0</td><td>4–1</td><td class="pts">7</td></tr>
+            <tr><td>Senegal</td><td>3</td><td>0</td><td>3</td><td>0</td><td>3–3</td><td class="pts">3</td></tr>
+            <tr><td>Irak</td><td>3</td><td>0</td><td>2</td><td>1</td><td>1–2</td><td class="pts">2</td></tr>
+            <tr><td>Norge</td><td>3</td><td>0</td><td>2</td><td>1</td><td>1–3</td><td class="pts">2</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Grupp J -->
+      <div class="group-card">
+        <h3>Grupp J</h3>
+        <table class="group-table">
+          <thead><tr><th>Lag</th><th>S</th><th>V</th><th>O</th><th>F</th><th>G</th><th class="pts">P</th></tr></thead>
+          <tbody>
+            <tr><td>Argentina</td><td>3</td><td>2</td><td>1</td><td>0</td><td>5–2</td><td class="pts">7</td></tr>
+            <tr><td>Österrike</td><td>3</td><td>2</td><td>1</td><td>0</td><td>3–1</td><td class="pts">7</td></tr>
+            <tr><td>Jordanien</td><td>3</td><td>0</td><td>1</td><td>2</td><td>2–4</td><td class="pts">1</td></tr>
+            <tr><td>Algeriet</td><td>3</td><td>0</td><td>1</td><td>2</td><td>1–4</td><td class="pts">1</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Grupp K -->
+      <div class="group-card">
+        <h3>Grupp K</h3>
+        <table class="group-table">
+          <thead><tr><th>Lag</th><th>S</th><th>V</th><th>O</th><th>F</th><th>G</th><th class="pts">P</th></tr></thead>
+          <tbody>
+            <tr><td>Portugal</td><td>3</td><td>2</td><td>1</td><td>0</td><td>3–1</td><td class="pts">7</td></tr>
+            <tr><td>Colombia</td><td>3</td><td>1</td><td>2</td><td>0</td><td>3–2</td><td class="pts">5</td></tr>
+            <tr><td>Uzbekistan</td><td>3</td><td>0</td><td>2</td><td>1</td><td>2–3</td><td class="pts">2</td></tr>
+            <tr><td>DR Kongo</td><td>3</td><td>0</td><td>1</td><td>2</td><td>1–3</td><td class="pts">1</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Grupp L -->
+      <div class="group-card">
+        <h3>Grupp L</h3>
+        <table class="group-table">
+          <thead><tr><th>Lag</th><th>S</th><th>V</th><th>O</th><th>F</th><th>G</th><th class="pts">P</th></tr></thead>
+          <tbody>
+            <tr><td>England</td><td>3</td><td>2</td><td>1</td><td>0</td><td>4–2</td><td class="pts">7</td></tr>
+            <tr><td>Kroatien</td><td>3</td><td>1</td><td>2</td><td>0</td><td>3–2</td><td class="pts">5</td></tr>
+            <tr><td>Ghana</td><td>3</td><td>0</td><td>2</td><td>1</td><td>4–5</td><td class="pts">2</td></tr>
+            <tr><td>Panama</td><td>3</td><td>0</td><td>1</td><td>2</td><td>2–4</td><td class="pts">1</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div><!-- /groups-grid -->
+  </div><!-- /groups-section -->
+
+</div><!-- /content -->
+
+<footer>
+  Data hämtad från <a href="https://masterskapstipset.se/vmtips2026.aspx?p=1795" target="_blank">masterskapstipset.se</a> &nbsp;·&nbsp;
+  Kent Lundgrens tips inför FIFA VM 2026
+</footer>
+
+</body>
+</html>
