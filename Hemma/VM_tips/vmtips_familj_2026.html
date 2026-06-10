@@ -351,6 +351,7 @@
   <span class="sep">›</span>
   <span class="current">Familj &amp; Vänner</span>
   <span class="sep" style="margin-left:auto;"></span>
+  <a href="analys.html">📊 Analys</a>
   <a href="kent_vmtips_2026.html">🎯 Kents tips →</a>
 </nav>
 
@@ -574,11 +575,114 @@ const PERSONS = [
     ]
   },
 
-  /* ─── LOTTA — inte klar ─── */
+  /* ─── LOTTA ─── */
   {
     id: 'lotta', name: 'Lotta Lundgren', relation: 'Fru',
-    initials: 'LL', color: '#D4537E', done: false,
-    podium: [], rounds: []
+    initials: 'LL', color: '#D4537E', done: true,
+    podium: ['Spanien','Norge','Portugal','Frankrike'],
+    rounds: [
+      { name: 'Sextondelfinaler (1)', matches: [
+        { t1:'Tyskland',      s1:2, t2:'Paraguay',    s2:1 },
+        { t1:'Frankrike',     s1:2, t2:'Nederländerna',s2:1 },
+        { t1:'Sydafrika',     s1:2, t2:'Schweiz',     s2:0 },
+        { t1:'Japan',         s1:3, t2:'Skottland',   s2:0 },
+        { t1:'DR Kongo',      s1:1, t2:'Kroatien',    s2:3 },
+        { t1:'Spanien',       s1:2, t2:'Österrike',   s2:0 },
+        { t1:'USA',           s1:1, t2:'Qatar',        s2:1, winner:2 },
+        { t1:'Belgien',       s1:0, t2:'Irak',         s2:1 },
+      ]},
+      { name: 'Sextondelfinaler (2)', matches: [
+        { t1:'Brasilien',     s1:1, t2:'Sverige',      s2:2 },
+        { t1:'Elfenbenskusten',s1:0, t2:'Norge',       s2:2 },
+        { t1:'Tjeckien',      s1:1, t2:'Curaçao',      s2:0 },
+        { t1:'England',       s1:2, t2:'Uzbekistan',   s2:0 },
+        { t1:'Argentina',     s1:3, t2:'Kap Verde',    s2:1 },
+        { t1:'Australien',    s1:1, t2:'Nya Zeeland',  s2:2 },
+        { t1:'Kanada',        s1:2, t2:'Iran',          s2:0 },
+        { t1:'Portugal',      s1:4, t2:'Panama',        s2:1 },
+      ]},
+      { name: 'Åttondelsfinaler', matches: [
+        { t1:'Tyskland',      s1:1, t2:'Frankrike',    s2:2 },
+        { t1:'Sydafrika',     s1:0, t2:'Japan',         s2:2 },
+        { t1:'Kroatien',      s1:1, t2:'Spanien',       s2:3 },
+        { t1:'Qatar',         s1:1, t2:'Irak',           s2:0 },
+        { t1:'Sverige',       s1:1, t2:'Norge',          s2:3 },
+        { t1:'Tjeckien',      s1:0, t2:'England',        s2:1 },
+        { t1:'Argentina',     s1:2, t2:'Nya Zeeland',   s2:0 },
+        { t1:'Kanada',        s1:1, t2:'Portugal',       s2:3 },
+      ]},
+      { name: 'Kvartsfinaler', matches: [
+        { t1:'Frankrike',     s1:2, t2:'Japan',          s2:0 },
+        { t1:'Spanien',       s1:3, t2:'Qatar',           s2:0 },
+        { t1:'Norge',         s1:1, t2:'England',        s2:0 },
+        { t1:'Argentina',     s1:1, t2:'Portugal',       s2:2 },
+      ]},
+      { name: 'Semifinaler', matches: [
+        { t1:'Frankrike',     s1:1, t2:'Spanien',        s2:2 },
+        { t1:'Norge',         s1:2, t2:'Portugal',       s2:1 },
+      ]},
+      { name: 'Final 🏆', isFinal: true, matches: [
+        { t1:'Spanien', s1:3, t2:'Norge', s2:2 },
+      ]},
+      { name: 'Bronsmatch 🥉', isBronze: true, matches: [
+        { t1:'Frankrike', s1:2, t2:'Portugal', s2:3 },
+      ]},
+    ]
+  },
+
+  /* ─── ERIK ─── */
+  {
+    id: 'erik', name: 'Erik Lundgren', relation: 'Son',
+    initials: 'EL', color: '#378ADD', done: true,
+    podium: ['Frankrike','Brasilien','Spanien','Portugal'],
+    rounds: [
+      { name: 'Sextondelfinaler (1)', matches: [
+        { t1:'Tyskland',      s1:3, t2:'Haiti',          s2:1 },
+        { t1:'Frankrike',     s1:3, t2:'Nederländerna',  s2:1 },
+        { t1:'Tjeckien',      s1:2, t2:'Schweiz',        s2:3 },
+        { t1:'Japan',         s1:2, t2:'Skottland',      s2:0 },
+        { t1:'Colombia',      s1:3, t2:'Kroatien',       s2:2 },
+        { t1:'Spanien',       s1:4, t2:'Österrike',      s2:1 },
+        { t1:'USA',           s1:3, t2:'Qatar',           s2:1 },
+        { t1:'Egypten',       s1:0, t2:'Mexiko',          s2:4 },
+      ]},
+      { name: 'Sextondelfinaler (2)', matches: [
+        { t1:'Brasilien',     s1:4, t2:'Sverige',        s2:0 },
+        { t1:'Ecuador',       s1:0, t2:'Norge',          s2:2 },
+        { t1:'Sydkorea',      s1:3, t2:'Saudiarabien',   s2:0 },
+        { t1:'England',       s1:2, t2:'Senegal',        s2:1 },
+        { t1:'Argentina',     s1:3, t2:'Uruguay',        s2:0 },
+        { t1:'Turkiet',       s1:3, t2:'Belgien',        s2:0 },
+        { t1:'Kanada',        s1:2, t2:'Nya Zeeland',    s2:1 },
+        { t1:'Portugal',      s1:4, t2:'Ghana',          s2:1 },
+      ]},
+      { name: 'Åttondelsfinaler', matches: [
+        { t1:'Tyskland',      s1:2, t2:'Frankrike',      s2:3 },
+        { t1:'Schweiz',       s1:3, t2:'Japan',          s2:4 },
+        { t1:'Colombia',      s1:1, t2:'Spanien',        s2:2 },
+        { t1:'USA',           s1:2, t2:'Mexiko',         s2:0 },
+        { t1:'Brasilien',     s1:4, t2:'Norge',          s2:1 },
+        { t1:'Sydkorea',      s1:0, t2:'England',        s2:3 },
+        { t1:'Argentina',     s1:3, t2:'Turkiet',        s2:1 },
+        { t1:'Kanada',        s1:2, t2:'Portugal',       s2:4 },
+      ]},
+      { name: 'Kvartsfinaler', matches: [
+        { t1:'Frankrike',     s1:2, t2:'Japan',          s2:1 },
+        { t1:'Spanien',       s1:3, t2:'USA',            s2:2 },
+        { t1:'Brasilien',     s1:2, t2:'England',        s2:1 },
+        { t1:'Argentina',     s1:1, t2:'Portugal',       s2:3 },
+      ]},
+      { name: 'Semifinaler', matches: [
+        { t1:'Frankrike',     s1:2, t2:'Spanien',        s2:1 },
+        { t1:'Brasilien',     s1:3, t2:'Portugal',       s2:1 },
+      ]},
+      { name: 'Final 🏆', isFinal: true, matches: [
+        { t1:'Frankrike', s1:2, t2:'Brasilien', s2:1 },
+      ]},
+      { name: 'Bronsmatch 🥉', isBronze: true, matches: [
+        { t1:'Spanien', s1:4, t2:'Portugal', s2:3 },
+      ]},
+    ]
   },
 ];
 

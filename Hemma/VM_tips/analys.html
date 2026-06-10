@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VM-tips 2026 – Analys</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0d1117;
+      --surface: #161b22;
+      --surface2: #21262d;
+      --border:  #30363d;
+      --text:    #e6edf3;
+      --muted:   #7d8590;
+      --gold:    #ffd700;
+      --silver:  #c0c0c0;
+      --bronze:  #cd7f32;
+      --green:   #3fb950;
+      --blue:    #58a6ff;
+      --red:     #f85149;
+      --orange:  #f0883e;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* ─── Nav ─── */
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      flex-wrap: wrap;
+    }
+    nav a { color: var(--muted); text-decoration: none; padding: 4px 10px; border-radius: 6px; transition: background 0.1s, color 0.1s; }
+    nav a:hover { background: var(--surface2); color: var(--text); }
+    nav .sep { color: var(--border); }
+    nav .current { color: var(--gold); font-weight: 600; padding: 4px 10px; }
+
+    /* ─── Header ─── */
+    header {
+      padding: 36px 24px 28px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    header .label { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+    header h1 { font-size: clamp(24px, 4vw, 40px); font-weight: 700; margin-bottom: 6px; }
+    header p { font-size: 14px; color: var(--muted); }
+
+    /* ─── Content ─── */
+    .content { max-width: 860px; margin: 0 auto; padding: 36px 24px 60px; }
+
+    /* ─── Sektioner ─── */
+    .section { margin-bottom: 44px; }
+    .section-title {
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ─── Jämförelsetabell ─── */
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .compare-table th {
+      padding: 8px 12px;
+      text-align: left;
+      color: var(--muted);
+      font-weight: 500;
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+    .compare-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--surface2);
+      vertical-align: middle;
+    }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .compare-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .compare-table .person-cell { font-weight: 600; white-space: nowrap; }
+    .compare-table .medal-cell { font-size: 16px; text-align: center; width: 32px; }
+    .medal-gold   { color: var(--gold); }
+    .medal-silver { color: var(--silver); }
+    .medal-bronze { color: var(--bronze); }
+
+    /* Chip för teamnamn */
+    .team-chip {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .chip-esp  { background: rgba(255,215,0,0.15);  color: #ffd700; }
+    .chip-eng  { background: rgba(88,166,255,0.15); color: #58a6ff; }
+    .chip-fra  { background: rgba(63,185,80,0.15);  color: #3fb950; }
+    .chip-bra  { background: rgba(240,136,62,0.15); color: #f0883e; }
+    .chip-ger  { background: rgba(192,192,192,0.15);color: #c0c0c0; }
+    .chip-arg  { background: rgba(129,184,255,0.15);color: #81b8ff; }
+    .chip-por  { background: rgba(248,81,73,0.15);  color: #f85149; }
+    .chip-nor  { background: rgba(188,140,255,0.15);color: #bc8cff; }
+    .chip-aut  { background: rgba(255,100,100,0.15);color: #ff6464; }
+    .chip-other{ background: rgba(125,133,144,0.15);color: #7d8590; }
+
+    /* ─── Popularitetsgraf ─── */
+    .pop-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px;
+    }
+    .pop-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .pop-team {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .pop-count {
+      font-size: 12px;
+      color: var(--muted);
+      background: var(--surface2);
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+    .pop-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+      font-size: 12px;
+    }
+    .pop-label { color: var(--muted); width: 16px; text-align: center; font-size: 14px; }
+    .pop-bar-bg {
+      flex: 1;
+      height: 6px;
+      background: var(--surface2);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .pop-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.5s ease;
+    }
+    .pop-names { font-size: 11px; color: var(--muted); }
+
+    /* ─── Odds-jämförelse ─── */
+    .odds-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .odds-table th {
+      padding: 8px 12px;
+      text-align: left;
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 500;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+    .odds-table td { padding: 10px 12px; border-bottom: 1px solid var(--surface2); }
+    .odds-table tr:last-child td { border-bottom: none; }
+    .odds-val { font-weight: 700; color: var(--text); font-family: monospace; font-size: 14px; }
+    .odds-pct { color: var(--muted); font-size: 12px; }
+    .who-tipped { font-size: 12px; color: var(--muted); }
+    .tipped-dot {
+      display: inline-block;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      margin-right: 4px;
+      vertical-align: middle;
+    }
+    .rank-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .rank-1 { background: rgba(255,215,0,0.15); color: var(--gold); }
+    .rank-2 { background: rgba(88,166,255,0.15); color: var(--blue); }
+    .rank-3 { background: rgba(63,185,80,0.15);  color: var(--green); }
+    .rank-x { background: rgba(125,133,144,0.15); color: var(--muted); }
+
+    /* ─── Sannolikhetsanalys ─── */
+    .person-analysis-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .person-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .person-card-header {
+      padding: 14px 16px 12px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .person-avatar {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 600; font-size: 12px;
+    }
+    .person-card-body { padding: 14px 16px; }
+    .person-card-body p { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 10px; }
+    .person-card-body p:last-child { margin-bottom: 0; }
+    .person-card-body strong { color: var(--text); }
+    .verdict {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+    .verdict-safe     { background: rgba(63,185,80,0.15);  color: var(--green); }
+    .verdict-ok       { background: rgba(88,166,255,0.15); color: var(--blue); }
+    .verdict-bold     { background: rgba(240,136,62,0.15); color: var(--orange); }
+    .verdict-wild     { background: rgba(248,81,73,0.15);  color: var(--red); }
+
+    /* ─── Final-dueller ─── */
+    .finals-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px;
+    }
+    .final-card {
+      background: var(--surface);
+      border: 1px solid rgba(255,215,0,0.2);
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+    }
+    .final-person { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+    .final-match {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .final-winner { color: var(--gold); }
+    .final-loser  { color: var(--muted); }
+    .final-score  { background: var(--surface2); border-radius: 6px; padding: 4px 12px; font-family: monospace; font-size: 16px; color: var(--text); }
+    .final-note   { font-size: 12px; color: var(--muted); }
+
+    /* ─── Konsensus-call-out ─── */
+    .callout {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--gold);
+      border-radius: 0 10px 10px 0;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+    .callout strong { color: var(--gold); }
+    .callout .callout-label { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+
+    /* ─── Footer ─── */
+    footer { text-align: center; padding: 18px 20px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--border); }
+    footer a { color: var(--gold); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<!-- ─── Nav ─── -->
+<nav>
+  <a href="index.html">⚽ Start</a>
+  <span class="sep">›</span>
+  <span class="current">Analys</span>
+  <span style="margin-left:auto;"></span>
+  <a href="vmtips_familj_2026.html">👨‍👩‍👧 Familj &amp; Vänner →</a>
+</nav>
+
+<!-- ─── Header ─── -->
+<header>
+  <div class="label">FIFA VM 2026 · Analys</div>
+  <h1>Hur har vi tippat?</h1>
+  <p>Jämförelse av familj &amp; vänners tips mot odds och statistik</p>
+</header>
+
+<div class="content">
+
+  <!-- ══════════════════════════════════════
+       1. SAMMANFATTNINGSTABELL
+  ══════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">Sammanställning — alla tips</div>
+
+    <div style="overflow-x:auto;">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Tippare</th>
+            <th>Relation</th>
+            <th style="text-align:center;">🥇</th>
+            <th style="text-align:center;">🥈</th>
+            <th style="text-align:center;">🥉</th>
+            <th style="text-align:center;">4️⃣</th>
+          </tr>
+        </thead>
+        <tbody id="summaryTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       2. TIPPADE FINALER
+  ══════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">Tippade finaler</div>
+    <div class="finals-grid" id="finalsGrid"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       3. LAGENS POPULARITET
+  ══════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">Vilket lag tippas var?</div>
+
+    <div class="callout">
+      <div class="callout-label">Konsensus</div>
+      <strong>Spanien</strong> är det enda lag som nämns i <strong>alla 5 tippares</strong> topp 4 — från 1:a till 3:e plats.
+      England och Frankrike dyker upp hos 3 av 5 tippare var.
+    </div>
+
+    <div class="pop-grid" id="popularityGrid"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       4. ODDS-JÄMFÖRELSE
+  ══════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">Oddsen inför VM (juni 2026)</div>
+
+    <p style="font-size:13px; color:var(--muted); margin-bottom:16px;">
+      Oddsuppgifter från BetMGM/FanDuel inför turneringen.
+      Lägre odds = större favorit. "+450" innebär att $100 ger $450 i vinst.
+    </p>
+
+    <div style="overflow-x:auto;">
+      <table class="odds-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Lag</th>
+            <th>Odds</th>
+            <th>Impl. sannolikhet</th>
+            <th>Tippas av</th>
+          </tr>
+        </thead>
+        <tbody id="oddsTableBody"></tbody>
+      </table>
+    </div>
+    <p style="font-size:11px; color:var(--muted); margin-top:10px;">
+      Källa: <a href="https://www.foxsports.com/stories/soccer/world-cup-2026-champion-odds" target="_blank" rel="noopener" style="color:var(--gold);">FOX Sports</a> / BetMGM, juni 2026.
+    </p>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       5. SANNOLIKHETSANALYS
+  ══════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">Mest &amp; minst sannolikt tippat</div>
+    <div class="person-analysis-grid" id="analysisGrid"></div>
+  </div>
+
+</div><!-- /content -->
+
+<footer>
+  <a href="index.html">⚽ Start</a> &nbsp;·&nbsp;
+  <a href="vmtips_familj_2026.html">👨‍👩‍👧 Familj &amp; Vänner</a> &nbsp;·&nbsp;
+  <a href="kent_vmtips_2026.html">🎯 Kents tips</a> &nbsp;·&nbsp;
+  Odds: <a href="https://www.foxsports.com/stories/soccer/world-cup-2026-champion-odds" target="_blank" rel="noopener">FOX Sports</a>
+</footer>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   DATA
+═══════════════════════════════════════════════════════════ */
+
+/** Persondata med topp-4 och final */
+const PERSONS = [
+  {
+    name:'Kent Lundgren',   relation:'Du',     initials:'KL',
+    color:'#7F77DD',
+    podium:['Spanien','England','Frankrike','Argentina'],
+    final:{ t1:'Spanien', s1:2, t2:'England', s2:1 },
+    bronze:{ t1:'Frankrike', s1:2, t2:'Argentina', s2:1 },
+  },
+  {
+    name:'Bengt Sjöquist',  relation:'Kompis', initials:'BS',
+    color:'#1D9E75',
+    podium:['England','Spanien','Argentina','Tyskland'],
+    final:{ t1:'Spanien', s1:0, t2:'England', s2:1 },
+    bronze:{ t1:'Tyskland', s1:0, t2:'Argentina', s2:2 },
+  },
+  {
+    name:'Benita Lundgren', relation:'Mamma',  initials:'BL',
+    color:'#D85A30',
+    podium:['England','Tyskland','Spanien','Österrike'],
+    final:{ t1:'Tyskland', s1:1, t2:'England', s2:2 },
+    bronze:{ t1:'Spanien', s1:3, t2:'Österrike', s2:2 },
+  },
+  {
+    name:'Lotta Lundgren',  relation:'Fru',    initials:'LL',
+    color:'#D4537E',
+    podium:['Spanien','Norge','Portugal','Frankrike'],
+    final:{ t1:'Spanien', s1:3, t2:'Norge', s2:2 },
+    bronze:{ t1:'Frankrike', s1:2, t2:'Portugal', s2:3 },
+  },
+  {
+    name:'Erik Lundgren',   relation:'Son',    initials:'EL',
+    color:'#378ADD',
+    podium:['Frankrike','Brasilien','Spanien','Portugal'],
+    final:{ t1:'Frankrike', s1:2, t2:'Brasilien', s2:1 },
+    bronze:{ t1:'Spanien', s1:4, t2:'Portugal', s2:3 },
+  },
+];
+
+/** Odds (vinnare av hela VM), BetMGM juni 2026 */
+const ODDS = [
+  { team:'Spanien',       odds:'+450',  pct:18, rank:1 },
+  { team:'Frankrike',     odds:'+500',  pct:17, rank:2 },
+  { team:'England',       odds:'+650',  pct:13, rank:3 },
+  { team:'Brasilien',     odds:'+800',  pct:11, rank:4 },
+  { team:'Portugal',      odds:'+900',  pct:10, rank:5 },
+  { team:'Argentina',     odds:'+900',  pct:10, rank:5 },
+  { team:'Tyskland',      odds:'+1400', pct:7,  rank:7 },
+  { team:'Nederländerna', odds:'+2000', pct:5,  rank:8 },
+  { team:'Norge',         odds:'+5000', pct:2,  rank:9 },
+  { team:'Österrike',     odds:'+8000', pct:1,  rank:10 },
+];
+
+/** Chip-klass per lag */
+function chipClass(team) {
+  const map = {
+    'Spanien':'chip-esp','England':'chip-eng','Frankrike':'chip-fra',
+    'Brasilien':'chip-bra','Tyskland':'chip-ger','Argentina':'chip-arg',
+    'Portugal':'chip-por','Norge':'chip-nor','Österrike':'chip-aut',
+  };
+  return map[team] || 'chip-other';
+}
+
+/** Konvertera hex till rgba */
+function hexAlpha(hex, a) {
+  const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   1. SAMMANFATTNINGSTABELL
+═══════════════════════════════════════════════════════════ */
+function buildSummaryTable() {
+  const tbody = document.getElementById('summaryTableBody');
+  const medals = ['🥇','🥈','🥉','4️⃣'];
+  PERSONS.forEach(p => {
+    const tr = document.createElement('tr');
+    const avatarBg = hexAlpha(p.color, 0.18);
+    tr.innerHTML = `
+      <td class="person-cell">
+        <span style="display:inline-flex;align-items:center;gap:8px;">
+          <span style="width:28px;height:28px;border-radius:50%;background:${avatarBg};color:${p.color};display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;">${p.initials}</span>
+          ${p.name}
+        </span>
+      </td>
+      <td style="color:var(--muted);font-size:12px;">${p.relation}</td>
+      ${p.podium.map((t,i) => `<td style="text-align:center;"><span class="team-chip ${chipClass(t)}">${t}</span></td>`).join('')}
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   2. FINALER
+═══════════════════════════════════════════════════════════ */
+function buildFinals() {
+  const grid = document.getElementById('finalsGrid');
+  PERSONS.forEach(p => {
+    const f = p.final;
+    const winner = f.s1 > f.s2 ? f.t1 : f.t2;
+    const loser  = f.s1 > f.s2 ? f.t2 : f.t1;
+    const card = document.createElement('div');
+    card.className = 'final-card';
+    card.innerHTML = `
+      <div class="final-person">${p.name}</div>
+      <div class="final-match">
+        <span class="${f.s1 > f.s2 ? 'final-winner' : 'final-loser'}">${f.t1}</span>
+        <span class="final-score">${f.s1}–${f.s2}</span>
+        <span class="${f.s2 > f.s1 ? 'final-winner' : 'final-loser'}">${f.t2}</span>
+      </div>
+      <div class="final-note">Vinnare: <span style="color:var(--gold);font-weight:600;">${winner}</span></div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   3. POPULARITET
+═══════════════════════════════════════════════════════════ */
+function buildPopularity() {
+  /* Räkna förekomster per lag per plats */
+  const teams = {};
+  PERSONS.forEach(p => {
+    p.podium.forEach((team, place) => {
+      if (!teams[team]) teams[team] = [[], [], [], []];
+      teams[team][place].push(p.name.split(' ')[0]);
+    });
+  });
+
+  /* Sortera efter totalt antal förekomster, sedan plats */
+  const sorted = Object.entries(teams).sort((a, b) => {
+    const countA = a[1].flat().length;
+    const countB = b[1].flat().length;
+    if (countB !== countA) return countB - countA;
+    const firstA = a[1].findIndex(arr => arr.length > 0);
+    const firstB = b[1].findIndex(arr => arr.length > 0);
+    return firstA - firstB;
+  });
+
+  const grid = document.getElementById('popularityGrid');
+  const medals = ['🥇','🥈','🥉','4️⃣'];
+  const barColors = ['#ffd700','#c0c0c0','#cd7f32','#7d8590'];
+
+  sorted.forEach(([team, places]) => {
+    const total = places.flat().length;
+    const card = document.createElement('div');
+    card.className = 'pop-card';
+
+    const rows = places.map((names, i) => {
+      const pct = (names.length / PERSONS.length) * 100;
+      return `
+        <div class="pop-bar-row">
+          <span class="pop-label">${medals[i]}</span>
+          <div class="pop-bar-bg">
+            <div class="pop-bar-fill" style="width:${pct}%;background:${barColors[i]};"></div>
+          </div>
+          <span class="pop-names">${names.length > 0 ? names.join(', ') : '—'}</span>
+        </div>`;
+    }).join('');
+
+    card.innerHTML = `
+      <div class="pop-team">
+        <span class="team-chip ${chipClass(team)}" style="font-size:13px;">${team}</span>
+        <span class="pop-count">${total} av ${PERSONS.length}</span>
+      </div>
+      ${rows}
+    `;
+    grid.appendChild(card);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   4. ODDSTABELL
+═══════════════════════════════════════════════════════════ */
+function buildOddsTable() {
+  const tbody = document.getElementById('oddsTableBody');
+
+  ODDS.forEach((o, i) => {
+    /* Vilka tippare har detta lag som VINNARE? */
+    const winners = PERSONS.filter(p => p.podium[0] === o.team).map(p => p.name.split(' ')[0]);
+    /* Vilka nämner laget i topp 4? */
+    const inTop4  = PERSONS.filter(p => p.podium.includes(o.team)).map(p => p.name.split(' ')[0]);
+
+    const rankClass = o.rank === 1 ? 'rank-1' : o.rank === 2 ? 'rank-2' : o.rank === 3 ? 'rank-3' : 'rank-x';
+    const rankLabel = o.rank <= 3 ? `#${o.rank} favorit` : `#${o.rank}`;
+
+    const dotsHTML = PERSONS.map(p => {
+      const isWinner = p.podium[0] === o.team;
+      const inList   = p.podium.includes(o.team);
+      const col = isWinner ? p.color : inList ? hexAlpha(p.color, 0.4) : '#2a3550';
+      const title = `${p.name.split(' ')[0]}: ${isWinner ? '🥇 vinnare' : inList ? `plats ${p.podium.indexOf(o.team)+1}` : 'ej tippat'}`;
+      return `<span class="tipped-dot" style="background:${col};" title="${title}"></span>`;
+    }).join('');
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><span class="rank-badge ${rankClass}">${rankLabel}</span></td>
+      <td><span class="team-chip ${chipClass(o.team)}">${o.team}</span></td>
+      <td><span class="odds-val">${o.odds}</span></td>
+      <td><span class="odds-pct">${o.pct}%</span></td>
+      <td>${dotsHTML} <span style="font-size:11px;color:var(--muted);margin-left:4px;">${inTop4.length > 0 ? inTop4.join(', ') : '—'}</span></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   5. PERSONANALYS
+═══════════════════════════════════════════════════════════ */
+const ANALYSIS = [
+  {
+    id: 'kent',
+    verdict: 'safe', verdictLabel: 'Välmotiverat',
+    text: `Spanien som vinnare är favorit i oddsen (+450). England på 2:a plats är tredje favorit (+650). Frankrike som trea är 2:a favorit — en stark och konsekvent tippning i linje med marknadens syn.`,
+    extra: `Kent och Bengt tippar exakt samma final (Spanien–England), men med omvänt resultat.`,
+  },
+  {
+    id: 'bengt',
+    verdict: 'ok', verdictLabel: 'Rimligt',
+    text: `England som vinnare är tredje favorit (+650) — möjligt men lite längre odds. Spanien på 2:a och Argentina på 3:e är båda välmotiverade. Att tippa England förbi Spanien kräver ett lite större risktagande.`,
+    extra: `Tyskland på 4:e plats (+1400) är en lång odds-satsning.`,
+  },
+  {
+    id: 'benita',
+    verdict: 'bold', verdictLabel: 'Djärvt',
+    text: `England som vinnare — rimligt. Men Tysklands väg till final (+1400) är den enskilt mest osannolika finalplatsen av de fem. Österrike på 4:e plats är också ett udda val.`,
+    extra: `Benita är ensam om att tippa en final utan Spanien eller Frankrike.`,
+  },
+  {
+    id: 'lotta',
+    verdict: 'wild', verdictLabel: 'Vilt!',
+    text: `Spanien som vinnare är helt rätt! Men Norge i finalen (+5000 i odds) är det mest osannolika valet av hela gruppen. Norge är inte ens nära de stora favoriterna. Ett modigt underdog-tips!`,
+    extra: `Portugal på 3:a och Frankrike på 4:a är rimliga — men Norges finalplats kräver ett historiskt mästerskapstips.`,
+  },
+  {
+    id: 'erik',
+    verdict: 'ok', verdictLabel: 'Välmotiverat',
+    text: `Frankrike som vinnare är 2:a favorit (+500) — ett utmärkt val. Brasilien på 2:a (+800) är 4:e favorit. Spanien på 3:a och Portugal på 4:a avslutar en väldigt trovärdig tippning.`,
+    extra: `Eriks tips stämmer väl med oddsen — en genomtänkt välmotiverad bedömning.`,
+  },
+];
+
+const VERDICT_CONFIG = {
+  safe:  { class: 'verdict-safe',  icon: '✓' },
+  ok:    { class: 'verdict-ok',    icon: '●' },
+  bold:  { class: 'verdict-bold',  icon: '!' },
+  wild:  { class: 'verdict-wild',  icon: '★' },
+};
+
+function buildAnalysis() {
+  const grid = document.getElementById('analysisGrid');
+  PERSONS.forEach((p, i) => {
+    const a = ANALYSIS[i];
+    const vc = VERDICT_CONFIG[a.verdict];
+    const card = document.createElement('div');
+    card.className = 'person-card';
+    card.style.borderTop = `3px solid ${p.color}`;
+    card.innerHTML = `
+      <div class="person-card-header">
+        <div class="person-avatar" style="background:${hexAlpha(p.color,0.18)};color:${p.color};">${p.initials}</div>
+        <div>
+          <div style="font-weight:600;font-size:14px;">${p.name}</div>
+          <div style="font-size:12px;color:var(--muted);">Vinnare: <span class="team-chip ${chipClass(p.podium[0])}" style="font-size:11px;padding:2px 8px;">${p.podium[0]}</span></div>
+        </div>
+      </div>
+      <div class="person-card-body">
+        <p>${a.text}</p>
+        <p style="color:var(--muted);font-style:italic;">${a.extra}</p>
+        <div class="verdict ${vc.class}">${vc.icon} ${a.verdictLabel}</div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   STARTA
+═══════════════════════════════════════════════════════════ */
+buildSummaryTable();
+buildFinals();
+buildPopularity();
+buildOddsTable();
+buildAnalysis();
+</script>
+</body>
+</html>

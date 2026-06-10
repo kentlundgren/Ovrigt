@@ -65,9 +65,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 48px 24px;
-      gap: 20px;
+      padding: 40px 24px 60px;
+      gap: 16px;
     }
 
     .choose-label {
@@ -80,15 +79,11 @@
 
     /* ─── Valkort ─── */
     .cards {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
       width: 100%;
       max-width: 680px;
-    }
-
-    @media (max-width: 520px) {
-      .cards { grid-template-columns: 1fr; }
     }
 
     .choice-card {
@@ -97,51 +92,84 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 32px 24px 28px;
-      text-align: center;
+      padding: 26px 24px 22px;
       transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
       position: relative;
       overflow: hidden;
     }
     .choice-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.4);
     }
-    /* Färgad toppkant — sätts nedan per kort */
     .choice-card::before {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
       height: 3px;
     }
-    .choice-card.kent::before   { background: #7F77DD; }
-    .choice-card.family::before { background: linear-gradient(90deg, #7F77DD, #1D9E75, #D85A30, #D4537E); }
-    .choice-card.kent:hover   { border-color: #7F77DD55; }
-    .choice-card.family:hover { border-color: #1D9E7555; }
 
-    .card-icon {
-      font-size: 48px;
-      margin-bottom: 16px;
-      display: block;
+    /* Analyskortet — framträdande */
+    .choice-card.analysis::before { background: linear-gradient(90deg, #ffd700, #f0883e); }
+    .choice-card.analysis:hover   { border-color: rgba(255,215,0,0.4); }
+
+    /* Familj-kortet */
+    .choice-card.family::before { background: linear-gradient(90deg, #7F77DD, #1D9E75, #D85A30, #D4537E, #378ADD); }
+    .choice-card.family:hover   { border-color: rgba(29,158,117,0.4); }
+
+    /* Kents kort — diskret, mindre */
+    .choice-card.kent {
+      padding: 16px 20px 14px;
+      border-radius: 10px;
+      opacity: 0.7;
     }
+    .choice-card.kent::before { background: #7F77DD; }
+    .choice-card.kent:hover   { border-color: rgba(127,119,221,0.4); opacity: 1; }
+
+    /* Kortinnehåll */
+    .card-inner { display: flex; align-items: center; gap: 18px; }
+    .card-icon  { font-size: 36px; flex-shrink: 0; }
+    .card-icon.small { font-size: 24px; }
+    .card-body  { flex: 1; }
+
     .card-title {
       font-size: 18px;
       font-weight: 600;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
       color: var(--text);
     }
+    .card-title.small { font-size: 14px; margin-bottom: 2px; }
+
     .card-desc {
       font-size: 13px;
       color: var(--muted);
       line-height: 1.5;
     }
+    .card-desc.small { font-size: 12px; }
+
+    /* Analys-förhandsgranskning */
+    .analysis-preview {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+    .preview-chip {
+      background: var(--surface2);
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+    .preview-chip .chip-label { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
+    .preview-chip .chip-val   { color: var(--text); font-weight: 600; }
+
     .card-link-hint {
-      margin-top: 20px;
+      margin-top: 14px;
       display: inline-block;
       font-size: 12px;
       color: var(--gold);
       letter-spacing: 0.5px;
     }
+    .card-link-arrow { float: right; color: var(--gold); font-size: 16px; margin-top: 2px; }
 
     /* ─── Footer ─── */
     footer {
@@ -163,28 +191,59 @@
 </header>
 
 <main>
-  <div class="choose-label">Välj vy</div>
+  <div class="choose-label">VM 2026</div>
 
   <div class="cards">
 
-    <!-- Kents egna detaljerade tips -->
-    <a href="kent_vmtips_2026.html" class="choice-card kent">
-      <span class="card-icon">🎯</span>
-      <div class="card-title">Kents tips</div>
-      <div class="card-desc">
-        Detaljerad vy med samtliga gruppspelstabeller och hela slutspelsbracket.
+    <!-- ─── Analyskortet (framträdande) ─── -->
+    <a href="analys.html" class="choice-card analysis">
+      <div class="card-inner">
+        <span class="card-icon">📊</span>
+        <div class="card-body">
+          <div class="card-title">Analys &amp; jämförelse</div>
+          <div class="card-desc">Vem har tippat mest sannolikt? Hur stämmer tipsen med oddsen? Vilka lag är favoriterna?</div>
+        </div>
+        <span class="card-link-arrow">›</span>
       </div>
-      <span class="card-link-hint">Öppna →</span>
+      <!-- Snabbfakta från analysen -->
+      <div class="analysis-preview">
+        <div class="preview-chip">
+          <div class="chip-label">Odds-favorit</div>
+          <div class="chip-val">🥇 Spanien</div>
+        </div>
+        <div class="preview-chip">
+          <div class="chip-label">Vår konsensus</div>
+          <div class="chip-val">Spanien i allas topp 4</div>
+        </div>
+        <div class="preview-chip">
+          <div class="chip-label">Vildast tips</div>
+          <div class="chip-val">Norge i final ⚡</div>
+        </div>
+      </div>
     </a>
 
-    <!-- Familj och vänners tips med personkort -->
+    <!-- ─── Familj & Vänner ─── -->
     <a href="vmtips_familj_2026.html" class="choice-card family">
-      <span class="card-icon">👨‍👩‍👧</span>
-      <div class="card-title">Familj &amp; Vänner</div>
-      <div class="card-desc">
-        Kent, Bengt, Benita och Lotta — jämför tips och se slutspel per person.
+      <div class="card-inner">
+        <span class="card-icon">👨‍👩‍👧</span>
+        <div class="card-body">
+          <div class="card-title">Familj &amp; Vänner</div>
+          <div class="card-desc">Kent, Bengt, Benita, Lotta och Erik — jämför tips och se hela slutspelsbracket per person.</div>
+        </div>
+        <span class="card-link-arrow">›</span>
       </div>
-      <span class="card-link-hint">Öppna →</span>
+    </a>
+
+    <!-- ─── Kents detaljerade tips (diskret) ─── -->
+    <a href="kent_vmtips_2026.html" class="choice-card kent">
+      <div class="card-inner">
+        <span class="card-icon small">🎯</span>
+        <div class="card-body">
+          <div class="card-title small">Kents detaljerade tips</div>
+          <div class="card-desc small">Samtliga gruppspelstabeller och fullständigt bracket.</div>
+        </div>
+        <span style="color:var(--muted);font-size:14px;flex-shrink:0;">›</span>
+      </div>
     </a>
 
   </div>
