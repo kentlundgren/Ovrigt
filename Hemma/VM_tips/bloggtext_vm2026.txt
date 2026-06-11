@@ -1,0 +1,110 @@
+En timme med ny AI — från rådata till snygg VM-presentation
+============================================================
+
+Det var en lördagseftermiddag i juni. Jag och familjen tippar på fotbolls-VM 2026
+via masterskapstipset.se — fem personer: jag, min fru Lotta, min mamma Benita, min
+son Erik och min kompis Bengt. Tipsen låg publicerade på sajten, men det fanns ingen
+samlad vy. Ingen sida där man kunde jämföra finaltipsen, se vem som var modigast,
+eller ställa dem mot vad oddsen faktiskt säger om sannolikheterna.
+
+Så jag bestämde mig för att bygga en sådan. Med lite hjälp.
+
+
+Verktygskedjan
+--------------
+
+Jag använde tre verktyg parallellt.
+
+Claude Cowork är Anthropics desktop-agent — ett program som körs direkt på datorn
+och kan utföra långa flerstegsuppgifter: skriva filer, köra kod, analysera data och,
+med ett Chrome-tillägg, styra webbläsaren. Det är Cowork som hämtade tipsen och
+byggde HTML-filerna.
+
+Cursor är en AI-driven kodredigerare. Jag använde den parallellt med Cowork för att
+snabbt tweaka detaljer utan att behöva formulera varje liten ändring som ett
+instruktionsmeddelande till agenten.
+
+GitHub Pages är Githubs gratistjänst för att publicera statiska webbsidor direkt
+från ett repository. Resultatet hamnar på en riktig webbadress, utan kostnad och
+utan serverkrångel.
+
+
+Det första hindret: inloggning
+-------------------------------
+
+masterskapstipset.se kräver inloggning för att se tipsen. Vanlig web fetch räckte
+inte — sidan returnerade bara ett tomt HTML-skal utan innehåll.
+
+Lösningen var Claude in Chrome, ett beta-tillägg till Chrome som ingår i Anthropics
+Max-plan. Det låter Claude styra en redan inloggad Chrome-session. Med det
+installerat navigerade Claude till varje persons tippsida och läste av hela
+slutspelsbracketens matchresultat: p=1795 (Kent), p=2336 (Bengt), p=2310 (Benita),
+p=2380 (Lotta), p=2511 (Erik).
+
+
+Vad som byggdes
+---------------
+
+Totalt fem HTML-filer, korsrefererade med varandra.
+
+Startsidan (index.html) har tre kort: ett analyskort längst upp, ett familj-och-
+vänner-kort i mitten, och mitt eget detaljerade tips lite diskret längst ner.
+
+Familjekortsidan (vmtips_familj_2026.html) visar ett personkort per person. Klickar
+man på ett kort öppnas hela slutspelsbracket i en overlay. På mobil kan man svepa
+vänster/höger för att bläddra mellan personerna — en detalj som tog ett par
+iterationer att få rätt, eftersom swipe-rörelsen kolliderade med scroll inuti
+bracket-bilden.
+
+Analyssidan (analys.html) jämför alla fem tipparnas val mot aktuella odds från
+BetMGM (juni 2026): Spanien +450, Frankrike +500, England +650, Brasilien +800,
+Portugal +900, Argentina +900, Tyskland +1 400, Norge +5 000.
+
+
+Det som sticker ut i analysen
+------------------------------
+
+Spanien är det enda lag som alla fem har med i sin topp 4. Från mig och Lotta som
+tippar dem som mästare, till Bengt, Benita och Erik som har dem på 2:a, 3:e plats.
+En ovanlig konsensus för ett mästerskap med 48 lag.
+
+Det roligaste tipset är Lottas: Norge i finalen. Odds för det? +5 000. Vi märkte
+tipset som "Vilt! ⚡" i analysen. Det är inte nödvändigtvis fel — uppsettar händer
+i fotboll — men oddsen är tydliga om vad statistiken säger.
+
+Erik tippade Frankrike som mästare. Faktiskt välmotiverat: de är 2:a favorit på
++500 i oddsen.
+
+
+Vad det visar
+-------------
+
+Det här projektet är litet i absoluta mått — fem HTML-filer, lite JavaScript, ingen
+databas. Men det illustrerar något principiellt: ett komplett, fungerande och snyggt
+webbprojekt går att sätta ihop på under en timme med generativ AI som motor. Utan
+att man behöver vara webbutvecklare.
+
+Det som tidigare krävde en halvdag av kodning och felsökning — responsiv layout,
+touch events, dynamiska bracket-overlays, odds-analys — är nu tillgängligt för vem
+som helst som kan beskriva vad de vill ha.
+
+Frågan jag funderar på efteråt är inte teknisk. Det är snarare: vilka problem på
+jobbet — i controlling, i ekonomistyrning, i offentlig sektor — hade en liknande
+lösning om man bara tog en timme att prova?
+
+Live-presentation: https://kentlundgren.github.io/Ovrigt/Hemma/VM_tips/index.html
+
+
+────────────────────────────────────────────────────
+Källförteckning (Harvard)
+
+Anthropic (2026). Claude in Chrome [Beta Chrome-tillägg]. Anthropic.
+  https://claude.ai/chrome
+
+BetMGM (2026). FIFA World Cup 2026 Odds. BetMGM Sportsbook. [Hämtad juni 2026].
+  https://www.betmgm.com
+
+GitHub (2026). GitHub Pages — Hosted directly from your GitHub repository.
+  https://pages.github.com
+
+masterskapstipset.se (2026). VM-tipset 2026. https://masterskapstipset.se
