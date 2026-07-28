@@ -340,20 +340,11 @@
     <table class="sched" id="costTable"></table>
   </details>
 
-  <details class="schedule">
-    <summary>Tidsschema – dagsresa från Lund via Puttgarden</summary>
-    <table class="sched">
-      <tr><td>Avgång Lund</td><td>08:00</td></tr>
-      <tr><td>Framme Rødby (212 km)</td><td>ca 10:15</td></tr>
-      <tr><td>Marginal + incheckning</td><td>10:15–10:45</td></tr>
-      <tr><td>Överfart Rødby–Puttgarden</td><td>10:45–11:30</td></tr>
-      <tr><td>Shopping</td><td>11:30–12:30</td></tr>
-      <tr><td>Marginal + incheckning</td><td>12:30–13:00</td></tr>
-      <tr><td>Överfart Puttgarden–Rødby</td><td>13:00–13:45</td></tr>
-      <tr><td>Hemma i Lund igen</td><td>ca 16:00</td></tr>
-    </table>
-    <p class="srclist" style="margin-top:10px;">Cirka 8 timmar totalt, gott om marginal. Från Kalmar/Jönköping krävs avgång redan 07:30–08:00 för att vara hem till kvällen; från Stockholm ryms resan inte på en dag utan övernattning.
-    <br><a href="https://www.scandlines.se/avgangar/" target="_blank" rel="noopener">Se aktuell tidtabell hos Scandlines ↗</a></p>
+  <details class="schedule" id="scheduleBox">
+    <!-- Uppdatering 2026-07-29: tidsschema räknas om utifrån startort + destination -->
+    <summary id="scheduleTitle">Tidsschema</summary>
+    <table class="sched" id="scheduleTable"></table>
+    <p class="srclist" id="scheduleNote" style="margin-top:10px;"></p>
   </details>
 
   <details class="sources">
@@ -381,7 +372,7 @@
 const NOTES = {
   bridge: {status:'sourced', text:'Öresundsbron, personbil enkel resa: 745 kr ordinarie, 620 kr med förbokad onlinebiljett.', source:'Öresundsbron (2026) Priser', url:'https://www.oresundsbron.com/sv/priser'},
   ferryPuttgarden: {status:'sourced', text:'Scandlines Rødby–Puttgarden, personbil enkel resa: Early Booker ca 590 kr, Standard ca 930 kr, Flex ca 1270 kr.', source:'Scandlines prislista', url:'https://www.scandlines.se/priser/rodby-puttgarden/'},
-  ferryRostock: {status:'assumed', text:'Ingen fast prislista (dynamisk prissättning som flygbiljetter). Baserat på ett sökbaserat snitt (kr 272–5268, snitt ca 2800–3400) har vi satt 1900/2800/4500 kr enkel resa som exempel.'},
+  ferryRostock: {status:'assumed', text:'Stena Line Trelleborg–Rostock har dynamisk prissättning. "Från ca 707–724 kr" enkel resa (bil + förare) är lägsta marknadsförda nivå; typiska priser ligger högre beroende på datum och säsong. Vi använder 750 / 1 600 / 2 800 kr som lågt/troligt/högt exempel – inte en fast prislista.', source:'Stena Line Trelleborg–Rostock', url:'https://www.stenaline.se/rutter/trelleborg-rostock'},
   distances: {status:'sourced', text:'Körsträckor via Himmera.se, sammansatta av flera delsträckor för Jönköping och Stockholm (via Köpenhamn–Rødby).', url:'https://se.vagavstand.himmera.com/'},
   distancesRostock: {status:'assumed', text:'Körsträckor till Trelleborg för Kalmar/Jönköping/Stockholm är uppskattade utifrån kända avstånd till Malmö, inte direktkällade.'},
   carRate: {status:'assumed', text:'Kr/mil (inkluderar bränsle, värdeminskning, service m.m.) satt inom det intervall M Sverige anger: cirka 20 kr/mil för billiga bilar upp till 80 kr/mil eller mer för dyra. Exakt tal per prisklass är vårt antagande, inte hämtat direkt ur deras kalkylator.', source:'M Sverige, Bilkostnadskalkylen', url:'https://msverige.se/allt-om-bilen/vad-kostar-det-att-ha-bil/sa-har-vi-raknat/'},
@@ -426,10 +417,148 @@ const DISTANCES = {
   rostock:{lund:30, malmo:30, kalmar:310, jonkoping:310, stockholm:645}
 };
 
+/* Här skedde en uppdatering 2026-07-29:
+   Färjepriserna byttes inte när man valde Rostock – dropdown behöll
+   Puttgarden-värdena (590/930/1270). Nu finns separata nivåer per destination. */
+const FERRY_TIERS = {
+  puttgarden: [
+    {value:590, label:'Billigare'},
+    {value:930, label:'Trolig'},
+    {value:1270, label:'Dyrare'}
+  ],
+  rostock: [
+    {value:750, label:'Billigare'},
+    {value:1600, label:'Trolig'},
+    {value:2800, label:'Dyrare'}
+  ]
+};
+
+let lastFerryDest = null;
+
+function syncFerryOptions(dest){
+  const sel = document.getElementById('ferryTier');
+  if (lastFerryDest === dest) return;
+  // Behåll vald nivå (0/1/2) när destination byts, byt bara priserna
+  const prevIdx = sel.selectedIndex >= 0 ? sel.selectedIndex : 1;
+  const tiers = FERRY_TIERS[dest];
+  sel.innerHTML = tiers.map(function(t){
+    return '<option value="' + t.value + '">' + t.label + ' (' + t.value + ' kr)</option>';
+  }).join('');
+  sel.selectedIndex = Math.min(prevIdx, tiers.length - 1);
+  lastFerryDest = dest;
+}
+
 const LEGAL_LIMIT_LITERS = 110;
 const PASSENGER_ALLOWANCE_KG = 90;
 
 function fmt(n){ return Math.round(n).toLocaleString('sv-SE'); }
+
+const START_LABELS = {
+  lund:'Lund', malmo:'Malmö', kalmar:'Kalmar', jonkoping:'Jönköping', stockholm:'Stockholm'
+};
+
+/* Hjälpfunktioner för tidsschema (inga ES2023-funktioner) */
+function pad2(n){ return (n < 10 ? '0' : '') + n; }
+function minutesToClock(totalMin){
+  const m = ((totalMin % (24 * 60)) + (24 * 60)) % (24 * 60);
+  return pad2(Math.floor(m / 60)) + ':' + pad2(m % 60);
+}
+function addMin(clock, add){
+  const parts = clock.split(':');
+  return minutesToClock(parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10) + add);
+}
+function driveMinutes(km){
+  // Schablon ca 80 km/h inkl. lite kö/pauser – avrundat till närmaste 5 min
+  return Math.max(20, Math.round(km / 80 * 60 / 5) * 5);
+}
+function scheduleRowsHtml(rows){
+  return rows.map(function(r){
+    return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td></tr>';
+  }).join('');
+}
+
+function updateSchedule(start, dest, distKm){
+  const city = START_LABELS[start] || start;
+  const title = document.getElementById('scheduleTitle');
+  const table = document.getElementById('scheduleTable');
+  const note = document.getElementById('scheduleNote');
+  const driveMin = driveMinutes(distKm);
+
+  if (dest === 'puttgarden'){
+    // Dagsresa via Öresundsbron + Rødby–Puttgarden (~45 min överfart)
+    // Bas: Lund avgår 08:00; andra orter justeras med skillnad i körtid
+    const baseDrive = driveMinutes(DISTANCES.puttgarden.lund);
+    const dep = addMin('08:00', baseDrive - driveMin); // längre körning → tidigare avgång
+    const atRodby = addMin(dep, driveMin);
+    const checkInEnd = addMin(atRodby, 30);
+    const ferryArrive = addMin(checkInEnd, 45);
+    const shopEnd = addMin(ferryArrive, 60);
+    const returnCheck = addMin(shopEnd, 30);
+    const returnArrive = addMin(returnCheck, 45);
+    const home = addMin(returnArrive, driveMin);
+
+    title.textContent = 'Tidsschema – dagsresa från ' + city + ' via Puttgarden';
+    table.innerHTML = scheduleRowsHtml([
+      ['Avgång ' + city, dep],
+      ['Framme Rødby (' + distKm + ' km)', 'ca ' + atRodby],
+      ['Marginal + incheckning', atRodby + '–' + checkInEnd],
+      ['Överfart Rødby–Puttgarden', checkInEnd + '–' + ferryArrive],
+      ['Shopping', ferryArrive + '–' + shopEnd],
+      ['Marginal + incheckning', shopEnd + '–' + returnCheck],
+      ['Överfart Puttgarden–Rødby', returnCheck + '–' + returnArrive],
+      ['Hemma i ' + city + ' igen', 'ca ' + home]
+    ]);
+
+    let extra = 'Exempel på dagsresa (Scandlines ca 45 min överfart). Tider är ungefärliga.';
+    if (start === 'stockholm'){
+      extra = 'Från Stockholm ryms resan normalt inte på en dag utan övernattning – schemat är bara vägledande.';
+    } else if (start === 'kalmar' || start === 'jonkoping'){
+      extra = 'Från ' + city + ' behövs tidig avgång för att vara hem till kvällen. Kontrollera färjetider.';
+    }
+    note.innerHTML = extra +
+      '<br><a href="https://www.scandlines.se/avgangar/" target="_blank" rel="noopener">Se aktuell tidtabell hos Scandlines ↗</a>';
+    return;
+  }
+
+  // Rostock: lång överfart (ca 6 h) – exempel med morgonfärja ut och eftermiddagsfärja hem
+  // Uppdatering 2026-07-29: eget schema för Trelleborg–Rostock
+  const dep = addMin('06:00', driveMinutes(DISTANCES.rostock.lund) - driveMin);
+  const atTrelleborg = addMin(dep, driveMin);
+  const checkInEnd = addMin(atTrelleborg, 30);
+  // Typisk dagfärja ca 07:30–13:30 (6 h) – justera start till närmaste "checkInEnd" om senare
+  let ferryOutStart = '07:30';
+  if (checkInEnd > ferryOutStart){
+    // Om man inte hinner 07:30-avgången, visa istället nästa typiska (15:00) – men för schemat
+    // behåller vi 07:30 som riktmärke och flaggar i noten om check-in blir sent.
+    ferryOutStart = checkInEnd;
+  }
+  const ferryOutEnd = addMin(ferryOutStart, 6 * 60);
+  const shopEnd = addMin(ferryOutEnd, 90); // ca 1,5 h shopping – knappt för dagsresa
+  const ferryBackStart = addMin(shopEnd, 30); // incheckning
+  // Sikta på ca 15:00-retur om möjligt, annars direkt efter shopping
+  let ferryBackDep = '15:00';
+  if (ferryBackStart > ferryBackDep) ferryBackDep = ferryBackStart;
+  const ferryBackEnd = addMin(ferryBackDep, 6 * 60);
+  const home = addMin(ferryBackEnd, driveMin);
+
+  title.textContent = 'Tidsschema – resa från ' + city + ' via Rostock (Trelleborg)';
+  table.innerHTML = scheduleRowsHtml([
+    ['Avgång ' + city, dep],
+    ['Framme Trelleborg (' + distKm + ' km)', 'ca ' + atTrelleborg],
+    ['Marginal + incheckning', atTrelleborg + '–' + addMin(atTrelleborg, 30)],
+    ['Överfart Trelleborg–Rostock (ca 6 h)', ferryOutStart + '–' + ferryOutEnd],
+    ['Shopping (kort fönster på dagsresa)', ferryOutEnd + '–' + shopEnd],
+    ['Marginal + incheckning', shopEnd + '–' + addMin(shopEnd, 30)],
+    ['Överfart Rostock–Trelleborg (ca 6 h)', ferryBackDep + '–' + ferryBackEnd],
+    ['Hemma i ' + city + ' igen', 'ca ' + home]
+  ]);
+
+  note.innerHTML =
+    'Rostock-färjan tar ca 6–7 timmar enkel väg (Stena Line / TT-Line), till skillnad från ca 45 min till Puttgarden. ' +
+    'En ren dagsresa blir lång och shoppingfönstret knappt – många tar nattfärja åt ena hållet och sover ombord.' +
+    '<br><a href="https://www.stenaline.se/rutter/trelleborg-rostock" target="_blank" rel="noopener">Tidtabell Stena Line ↗</a>' +
+    ' · <a href="https://www.ttline.com/sv/farjor-tyskland/trelleborg-rostock/" target="_blank" rel="noopener">TT-Line ↗</a>';
+}
 
 function calc(){
   const start = document.getElementById('start').value;
@@ -444,6 +573,8 @@ function calc(){
     'Färja ' + (dest === 'puttgarden'
       ? '<span class="badge src" data-note="ferryPuttgarden">K</span>'
       : '<span class="badge assume" data-note="ferryRostock">A</span>');
+  // Uppdatering 2026-07-29: byt färjepriser när destination byts
+  syncFerryOptions(dest);
   attachBadgeHandlers();
 
   const bridgeCost = dest === 'puttgarden' ? parseFloat(document.getElementById('bridgeTier').value) : 0;
@@ -487,6 +618,9 @@ function calc(){
   document.getElementById('costTable').innerHTML = rows.map(function(r){
     return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td></tr>';
   }).join('');
+
+  // Uppdatering 2026-07-29: tidsschema följer startort + destination
+  updateSchedule(start, dest, distKm);
 
   const se = parseFloat(document.getElementById('sePrice').value);
   const de = parseFloat(document.getElementById('dePrice').value);
