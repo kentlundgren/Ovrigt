@@ -181,6 +181,14 @@
   }
   .beer-show-again:hover{ opacity:1; }
   .beer-show-again[hidden]{ display:none; }
+
+  /* Uppdatering 2026-07-29: länkar till Bordershop (aktuella ölpriser) */
+  .shop-links{
+    margin:12px 0 0; padding:10px 12px; font-size:13px; line-height:1.45;
+    color:var(--text-secondary); background:var(--accent-bg); border-radius:8px;
+  }
+  .shop-links a{ color:var(--accent); font-weight:500; }
+  .shop-links strong{ color:var(--text); font-weight:600; }
 </style>
 </head>
 <body>
@@ -256,6 +264,8 @@
         </select>
       </div>
     </div>
+    <!-- Uppdatering 2026-07-29: länkar till Bordershop beroende på destination -->
+    <p class="shop-links" id="shopLinks"></p>
   </div>
 
   <div class="card">
@@ -315,6 +325,7 @@
       <label>Pris Tyskland, kr/st (eget värde går bra)</label>
       <input id="dePrice" type="number" step="0.1">
     </div>
+    <p class="shop-links" id="shopLinksBeer" style="margin-top:10px;"></p>
   </div>
 
   <div class="result">
@@ -477,6 +488,39 @@ function scheduleRowsHtml(rows){
   }).join('');
 }
 
+/* Uppdatering 2026-07-29: Bordershop-länkar per destination (aktuella ölpriser) */
+const SHOP_LINKS = {
+  puttgarden: {
+    name: 'BorderShop Puttgarden',
+    shopUrl: 'https://www.bordershop.com/en/global/bordershop-puttgarden',
+    beerUrl: 'https://www.bordershop.com/se/ol-cider',
+    hint: 'Stora inköpsstället direkt vid färjeläget i Puttgarden.'
+  },
+  rostock: {
+    name: 'BorderShop Rostock',
+    shopUrl: 'https://www.bordershop.com/en/global/bordershop-rostock',
+    beerUrl: 'https://www.bordershop.com/se/ol-cider',
+    hint: 'Stora inköpsstället nära färjeterminalen i Rostock (ca 5 min från hamnen).'
+  }
+};
+
+function updateShopLinks(dest){
+  const shop = SHOP_LINKS[dest] || SHOP_LINKS.puttgarden;
+  const html =
+    '<strong>' + shop.name + '</strong> – ' + shop.hint +
+    '<br><a href="' + shop.shopUrl + '" target="_blank" rel="noopener">Om butiken ↗</a>' +
+    ' · <a href="' + shop.beerUrl + '" target="_blank" rel="noopener">Aktuella ölpriser / sortiment ↗</a>' +
+    ' · <a href="https://www.bordershop.com/se/" target="_blank" rel="noopener">bordershop.com ↗</a>';
+  const a = document.getElementById('shopLinks');
+  const b = document.getElementById('shopLinksBeer');
+  if (a) a.innerHTML = html;
+  if (b){
+    b.innerHTML =
+      'Kolla verkliga priser innan du reser: ' +
+      '<a href="' + shop.beerUrl + '" target="_blank" rel="noopener">Öl &amp; cider hos ' + shop.name + ' ↗</a>';
+  }
+}
+
 function updateSchedule(start, dest, distKm){
   const city = START_LABELS[start] || start;
   const title = document.getElementById('scheduleTitle');
@@ -516,7 +560,8 @@ function updateSchedule(start, dest, distKm){
       extra = 'Från ' + city + ' behövs tidig avgång för att vara hem till kvällen. Kontrollera färjetider.';
     }
     note.innerHTML = extra +
-      '<br><a href="https://www.scandlines.se/avgangar/" target="_blank" rel="noopener">Se aktuell tidtabell hos Scandlines ↗</a>';
+      '<br><a href="https://www.scandlines.se/avgangar/" target="_blank" rel="noopener">Se aktuell tidtabell hos Scandlines ↗</a>' +
+      ' · <a href="' + SHOP_LINKS.puttgarden.beerUrl + '" target="_blank" rel="noopener">Ölpriser BorderShop Puttgarden ↗</a>';
     return;
   }
 
@@ -557,7 +602,8 @@ function updateSchedule(start, dest, distKm){
     'Rostock-färjan tar ca 6–7 timmar enkel väg (Stena Line / TT-Line), till skillnad från ca 45 min till Puttgarden. ' +
     'En ren dagsresa blir lång och shoppingfönstret knappt – många tar nattfärja åt ena hållet och sover ombord.' +
     '<br><a href="https://www.stenaline.se/rutter/trelleborg-rostock" target="_blank" rel="noopener">Tidtabell Stena Line ↗</a>' +
-    ' · <a href="https://www.ttline.com/sv/farjor-tyskland/trelleborg-rostock/" target="_blank" rel="noopener">TT-Line ↗</a>';
+    ' · <a href="https://www.ttline.com/sv/farjor-tyskland/trelleborg-rostock/" target="_blank" rel="noopener">TT-Line ↗</a>' +
+    ' · <a href="' + SHOP_LINKS.rostock.beerUrl + '" target="_blank" rel="noopener">Ölpriser BorderShop Rostock ↗</a>';
 }
 
 function calc(){
@@ -575,6 +621,7 @@ function calc(){
       : '<span class="badge assume" data-note="ferryRostock">A</span>');
   // Uppdatering 2026-07-29: byt färjepriser när destination byts
   syncFerryOptions(dest);
+  updateShopLinks(dest);
   attachBadgeHandlers();
 
   const bridgeCost = dest === 'puttgarden' ? parseFloat(document.getElementById('bridgeTier').value) : 0;
