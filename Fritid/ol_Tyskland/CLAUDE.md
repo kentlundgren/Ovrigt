@@ -2,7 +2,7 @@
 
 **Mapp:** `Ovrigt/Fritid/ol_Tyskland`
 **Live:** https://kentlundgren.github.io/Ovrigt/Fritid/ol_Tyskland/index.html
-**Senast uppdaterad:** 2026-07-28
+**Senast uppdaterad:** 2026-07-29
 
 ---
 
@@ -27,3 +27,17 @@ Följ alltid [`../../CLAUDE.md`](../../CLAUDE.md):
 - Indatafält har **gul bakgrund** (`--input-bg`)
 - Vid större omskrivning av `index.html`: fråga Kent om befintlig fil ska
   uppdateras eller om `index_verX.html` ska skapas
+
+### Löpande text – ta aktivt hänsyn till humanizer_ton
+
+När blogginlägg, längre prosa, synliga texter på sidan eller annan löpande
+text ska **skrivas, granskas eller skrivas om**:
+
+1. Läs och följ användarskillen  
+   `C:\Users\kentl\.claude\skills\humanizer_ton\SKILL.md`
+2. Läs vid behov även `humanizer.md` i samma skill-mapp
+3. Gör detta **aktivt** – vänta inte på att Kent säger “kör humanizer”
+
+Gäller tillsammans med skrivstil-skillen `kent-skrivstil` när nya blogginlägg
+skapas. Humanizer_ton är förmågan som gör texten mer mänsklig; använd den
+medvetet i det här projektet.

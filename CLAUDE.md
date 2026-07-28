@@ -3,8 +3,8 @@
 **Mapp:** `C:\Users\kentl\OneDrive\AI\Claude\Ovrigt`
 **Repo:** [kentlundgren/Ovrigt](https://github.com/kentlundgren/Ovrigt)
 **Live:** https://kentlundgren.github.io/Ovrigt/
-**Senast uppdaterad:** 2026-07-28
-**Version:** 1.0
+**Senast uppdaterad:** 2026-07-29
+**Version:** 1.1
 
 ---
 
@@ -20,6 +20,15 @@ Samlar övriga webbprojekt (inte Ekonomi, inte ArbetenSokta):
 
 Det finns **ingen** `agents.md` i detta repo. Regler för Claude ligger i denna fil
 samt i eventuella undermappars egna `CLAUDE.md`.
+
+### Skills för löpande text
+
+Humanizer ligger som **användarskill** (inte i detta repo):
+
+`C:\Users\kentl\.claude\skills\humanizer_ton\SKILL.md`
+
+Aktivera den när blogginlägg eller annan löpande text ska skrivas/granskas.
+(Originalet finns kvar i Ekonomi-repot under `skills/humanizer_ton/`.)
 
 Referens för samma nav-/README-mönster: Ekonomi-projektets
 `CLAUDE.md` och `skills/projekt_struktur/SKILL.md`.
@@ -103,4 +112,4 @@ git push
 
 ---
 
-_CLAUDE.md v1.0, 2026-07-28_
+_CLAUDE.md v1.1, 2026-07-29_
