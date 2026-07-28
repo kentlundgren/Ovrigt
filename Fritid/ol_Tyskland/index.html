@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ölkalkylen – lönar det sig att köra till Tyskland?</title>
+<style>
+  :root{
+    --bg:#f5f4f1; --card:#ffffff; --border:#e2e0da; --border-strong:#c9c6bd;
+    --text:#26241f; --text-secondary:#6b675e; --text-muted:#98948a;
+    --accent:#185fa5; --accent-bg:#e6f1fb;
+    --warn:#854f0b; --warn-bg:#faeeda;
+    --danger:#a32d2d; --danger-bg:#fcebeb;
+    --input-bg:#fffbe0; --input-border:#e9dfa0;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg); color:var(--text); line-height:1.5;
+  }
+  .wrap{max-width:720px; margin:0 auto; padding:1.5rem 1rem 6rem;}
+  h1{font-size:22px; font-weight:600; margin:0 0 4px;}
+  .sub{font-size:14px; color:var(--text-secondary); margin:0 0 1.5rem;}
+  .card{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1rem 1.1rem; margin-bottom:12px;}
+  .card h2{font-size:15px; font-weight:600; margin:0 0 10px; display:flex; align-items:center; gap:6px;}
+  .row{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;}
+  .row.two{grid-template-columns:1fr 1fr;}
+  @media (max-width:520px){ .row, .row.two{grid-template-columns:1fr;} }
+  label{font-size:12.5px; color:var(--text-secondary); display:block; margin-bottom:3px;}
+  select, input[type=number]{
+    width:100%; padding:8px 9px; font-size:14px; border-radius:8px;
+    border:1px solid var(--input-border); background:var(--input-bg); color:var(--text);
+  }
+  select:focus, input:focus{outline:2px solid var(--accent); outline-offset:1px;}
+  .field{margin-bottom:2px;}
+  .badge{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:16px; height:16px; border-radius:50%; font-size:10px; font-weight:600;
+    border:none; cursor:pointer; vertical-align:middle; margin-left:4px; padding:0;
+  }
+  .badge.src{background:var(--accent-bg); color:var(--accent);}
+  .badge.assume{background:var(--warn-bg); color:var(--warn);}
+  #tooltip{
+    position:fixed; max-width:280px; background:var(--text); color:#fff;
+    font-size:12.5px; padding:8px 10px; border-radius:8px; z-index:50; display:none; line-height:1.4;
+  }
+  #tooltip a{color:#bcd7f5;}
+  .result{background:var(--accent-bg); border-radius:12px; padding:1.25rem; text-align:center; margin-bottom:12px;}
+  .result .label{font-size:13px; color:var(--accent); margin:0 0 4px;}
+  .result .big{font-size:30px; font-weight:600; margin:0; color:var(--accent);}
+  .result .sub2{font-size:14px; color:var(--accent); margin:6px 0 0;}
+  .result .breakdown{font-size:12.5px; color:var(--accent); margin-top:10px; opacity:0.85;}
+  .warning{background:var(--warn-bg); color:var(--warn); border-radius:10px; padding:10px 12px; font-size:13px; margin-top:10px; text-align:left; display:none;}
+  .warning.show{display:block;}
+  .warning + .warning{margin-top:6px;}
+  .danger{background:var(--danger-bg); color:var(--danger);}
+  details.schedule, details.sources{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:0.9rem 1.1rem; margin-bottom:12px;}
+  summary{font-size:14px; font-weight:600; cursor:pointer;}
+  table.sched{width:100%; border-collapse:collapse; margin-top:10px; font-size:13px;}
+  table.sched td{padding:4px 0; border-top:1px solid var(--border);}
+  table.sched td:last-child{text-align:right; color:var(--text-secondary);}
+  .srclist{margin-top:10px; font-size:12.5px; color:var(--text-secondary);}
+  .srclist .item{padding:8px 0; border-top:1px solid var(--border);}
+  .srclist .tag{font-size:10.5px; font-weight:600; padding:1px 6px; border-radius:20px; margin-right:6px;}
+  .srclist .tag.src{background:var(--accent-bg); color:var(--accent);}
+  .srclist .tag.assume{background:var(--warn-bg); color:var(--warn);}
+  .srclist a{color:var(--accent);}
+  #techbtn{
+    position:fixed; right:14px; bottom:14px; width:34px; height:34px; border-radius:50%;
+    border:1px solid var(--border-strong); background:var(--card); opacity:0.5; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; font-size:14px; color:var(--text-secondary);
+  }
+  #techbtn:hover{opacity:1;}
+  #techpanel{
+    position:fixed; right:14px; bottom:56px; width:250px; background:var(--card);
+    border:1px solid var(--border); border-radius:12px; padding:12px 14px; font-size:12.5px;
+    color:var(--text-secondary); display:none; box-shadow:0 4px 16px rgba(0,0,0,0.12);
+  }
+  .foot{font-size:12px; color:var(--text-muted); text-align:center; margin-top:1rem;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Hur många öl måste du köpa för att Tysklandsresan ska löna sig?</h1>
+  <p class="sub">Fyll i din resa, bil och ölval nedan – resultatet räknas om direkt. Gula fält är sådant du kan ändra. <span class="badge src">K</span> = källbelagt värde, <span class="badge assume">A</span> = eget rimlighetsantagande, klicka för förklaring.</p>
+
+  <div class="card">
+    <h2>Resa</h2>
+    <div class="row">
+      <div class="field">
+        <label for="start">Startort</label>
+        <select id="start">
+          <option value="lund" selected>Lund</option>
+          <option value="malmo">Malmö</option>
+          <option value="kalmar">Kalmar</option>
+          <option value="jonkoping">Jönköping</option>
+          <option value="stockholm">Stockholm</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="dest">Köpställe i Tyskland</label>
+        <select id="dest">
+          <option value="puttgarden" selected>Puttgarden (bro + färja)</option>
+          <option value="rostock">Rostock (direktfärja Trelleborg)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Antal i bilen</label>
+        <select id="pax">
+          <option value="1">1</option>
+          <option value="2" selected>2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+      </div>
+    </div>
+    <div class="row two" style="margin-top:10px;">
+      <div class="field" id="bridgeField">
+        <label>Öresundsbron <span class="badge src" data-note="bridge">K</span></label>
+        <select id="bridgeTier">
+          <option value="745">Ordinarie pris</option>
+          <option value="620">Rabatterat (onlinebiljett)</option>
+        </select>
+      </div>
+      <div class="field" id="ferryField">
+        <label>Färja <span class="badge src" data-note="ferryPuttgarden">K</span></label>
+        <select id="ferryTier">
+          <option value="590">Billigare</option>
+          <option value="930" selected>Trolig</option>
+          <option value="1270">Dyrare</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Bil</h2>
+    <div class="row two">
+      <div class="field">
+        <label>Bilvärde <span class="badge assume" data-note="carRate">A</span></label>
+        <select id="carClass">
+          <option value="20000">Cirka 20 000 kr</option>
+          <option value="100000" selected>Cirka 100 000 kr</option>
+          <option value="400000">Cirka 400 000 kr</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Nyttolast (kg) <span class="badge assume" data-note="carLoad">A</span></label>
+        <input id="carLoadOverride" type="number" step="10">
+      </div>
+    </div>
+    <div class="field" id="fuskField" style="margin-top:10px; padding:8px 10px; border-radius:8px;">
+      <label style="display:flex; align-items:center; gap:6px; margin:0;">
+        <input type="checkbox" id="fuskMode" style="width:auto;">
+        Bara bränsle (fusk, inte rekommenderat) <span class="badge assume" data-note="fusk">A</span>
+      </label>
+    </div>
+    <details class="schedule" style="margin-top:10px; margin-bottom:0;" open>
+      <summary>Så räknas kr/mil fram</summary>
+      <table class="sched" id="rateTable"></table>
+      <p class="srclist" style="margin-top:10px;">Vill du räkna på din egen bil istället för våra tre schablonklasser? <a href="https://msverige.se/allt-om-bilen/vad-kostar-det-att-ha-bil/m-sveriges-bilkostnadskalkyl/" target="_blank" rel="noopener">Testa M Sveriges bilkostnadskalkyl ↗</a> – den interaktiva kalkylatorn vår uppdelning bygger på.</p>
+    </details>
+  </div>
+
+  <div class="card">
+    <h2>Öl</h2>
+    <div class="field" style="margin-bottom:10px;">
+      <label for="pack">Förpackning</label>
+      <select id="pack">
+        <option value="burk33" selected>33 cl burk</option>
+        <option value="glas33">33 cl glas</option>
+        <option value="burk45">45 cl burk</option>
+      </select>
+    </div>
+    <div class="row two">
+      <div class="field">
+        <label>Pris Sverige, kr/st <span class="badge" id="seBadge">K</span></label>
+        <input id="sePrice" type="number" step="0.1">
+      </div>
+      <div class="field">
+        <label>Prisnivå Tyskland <span class="badge" id="deBadge">K</span></label>
+        <select id="deTier">
+          <option value="low">Lägre</option>
+          <option value="mid" selected>Trolig</option>
+          <option value="high">Högre</option>
+        </select>
+      </div>
+    </div>
+    <div class="field" style="margin-top:8px;">
+      <label>Pris Tyskland, kr/st (eget värde går bra)</label>
+      <input id="dePrice" type="number" step="0.1">
+    </div>
+  </div>
+
+  <div class="result">
+    <p class="label">Du behöver köpa</p>
+    <p class="big" id="outBeers">– öl</p>
+    <p class="sub2" id="outBoxes">– flak</p>
+    <div class="breakdown" id="outBreakdown"></div>
+    <div class="warning" id="warnWeight"></div>
+    <div class="warning danger" id="warnLegal"></div>
+  </div>
+
+  <details class="schedule" open>
+    <summary>Så räknas resekostnaden fram</summary>
+    <table class="sched" id="costTable"></table>
+  </details>
+
+  <details class="schedule">
+    <summary>Tidsschema – dagsresa från Lund via Puttgarden</summary>
+    <table class="sched">
+      <tr><td>Avgång Lund</td><td>08:00</td></tr>
+      <tr><td>Framme Rødby (212 km)</td><td>ca 10:15</td></tr>
+      <tr><td>Marginal + incheckning</td><td>10:15–10:45</td></tr>
+      <tr><td>Överfart Rødby–Puttgarden</td><td>10:45–11:30</td></tr>
+      <tr><td>Shopping</td><td>11:30–12:30</td></tr>
+      <tr><td>Marginal + incheckning</td><td>12:30–13:00</td></tr>
+      <tr><td>Överfart Puttgarden–Rødby</td><td>13:00–13:45</td></tr>
+      <tr><td>Hemma i Lund igen</td><td>ca 16:00</td></tr>
+    </table>
+    <p class="srclist" style="margin-top:10px;">Cirka 8 timmar totalt, gott om marginal. Från Kalmar/Jönköping krävs avgång redan 07:30–08:00 för att vara hem till kvällen; från Stockholm ryms resan inte på en dag utan övernattning.
+    <br><a href="https://www.scandlines.se/avgangar/" target="_blank" rel="noopener">Se aktuell tidtabell hos Scandlines ↗</a></p>
+  </details>
+
+  <details class="sources">
+    <summary>Källor och antaganden</summary>
+    <div class="srclist" id="sourceList"></div>
+  </details>
+
+  <p class="foot">Alla belopp är exempel för planering, inte bindande priser. Kontrollera aktuella priser innan du bokar.</p>
+</div>
+
+<div id="tooltip"></div>
+<button id="techbtn" aria-label="Visa teknikinformation">&lt;/&gt;</button>
+<div id="techpanel">
+  <p style="margin:0 0 6px; font-weight:600; color:var(--text);">Om den här sidan</p>
+  <p style="margin:0 0 6px;">Byggd med enbart HTML, CSS och JavaScript. Inga bibliotek, ingen server – alla beräkningar sker i din webbläsare.</p>
+  <p style="margin:0;">Källor och antaganden: se avsnittet "Källor och antaganden" ovan.</p>
+</div>
+
+<script>
+/*
+  DATA-schema: varje värde har status "sourced" (källbelagt, med citation+url)
+  eller "assumed" (eget rimlighetsantagande, med rationale). Detta driver både
+  K/A-badgarna i UI och listan i "Källor och antaganden".
+*/
+const NOTES = {
+  bridge: {status:'sourced', text:'Öresundsbron, personbil enkel resa: 745 kr ordinarie, 620 kr med förbokad onlinebiljett.', source:'Öresundsbron (2026) Priser', url:'https://www.oresundsbron.com/sv/priser'},
+  ferryPuttgarden: {status:'sourced', text:'Scandlines Rødby–Puttgarden, personbil enkel resa: Early Booker ca 590 kr, Standard ca 930 kr, Flex ca 1270 kr.', source:'Scandlines prislista', url:'https://www.scandlines.se/priser/rodby-puttgarden/'},
+  ferryRostock: {status:'assumed', text:'Ingen fast prislista (dynamisk prissättning som flygbiljetter). Baserat på ett sökbaserat snitt (kr 272–5268, snitt ca 2800–3400) har vi satt 1900/2800/4500 kr enkel resa som exempel.'},
+  distances: {status:'sourced', text:'Körsträckor via Himmera.se, sammansatta av flera delsträckor för Jönköping och Stockholm (via Köpenhamn–Rødby).', url:'https://se.vagavstand.himmera.com/'},
+  distancesRostock: {status:'assumed', text:'Körsträckor till Trelleborg för Kalmar/Jönköping/Stockholm är uppskattade utifrån kända avstånd till Malmö, inte direktkällade.'},
+  carRate: {status:'assumed', text:'Kr/mil (inkluderar bränsle, värdeminskning, service m.m.) satt inom det intervall M Sverige anger: cirka 20 kr/mil för billiga bilar upp till 80 kr/mil eller mer för dyra. Exakt tal per prisklass är vårt antagande, inte hämtat direkt ur deras kalkylator.', source:'M Sverige, Bilkostnadskalkylen', url:'https://msverige.se/allt-om-bilen/vad-kostar-det-att-ha-bil/sa-har-vi-raknat/'},
+  carLoad: {status:'assumed', text:'Nyttolast (bilens maxlast inkl. passagerare, bränsle och last) satt till 450/520/600 kg för de tre prisklasserna, inom det intervall (ofta 500–600 kg för kombibilar) som anges som typiskt.', source:'Motointegrator', url:'https://www.motointegrator.se/blog/tjaenstevikt-och-totalvikt-fakta-du-behoever-veta/'},
+  seBurk: {status:'sourced', text:'Svensk Starköl, 33 cl burk: 9,50 kr.', source:'Systembolaget produktsida', url:'https://www.systembolaget.se/produkt/ol/svensk-starkol-169912/'},
+  deBurk: {status:'sourced', text:'Exempelpriser Bordershop/gränshandel, 33 cl burk: Carlsberg 67 kr/flak (2,79 kr/st), Norrlandsguld 86 kr/flak (3,58 kr/st), billigaste enskilda burk 2 kr.', source:'Bästaprylar; Ellman Travel Guide', url:'https://bastaprylar.se/bordershop/'},
+  seGlas: {status:'assumed', text:'Inget specifikt produktexempel hämtat för 33 cl glas – satt något högre än burkpriset som ett rimligt antagande.'},
+  deGlas: {status:'assumed', text:'Inget specifikt produktexempel hämtat för tysk glasöl – extrapolerat uppåt från burkpriserna.'},
+  seBurk45: {status:'assumed', text:'Inget specifikt produktexempel hämtat för 45 cl burk – satt något högre än 33 cl som ett rimligt antagande.'},
+  deBurk45: {status:'assumed', text:'Inget specifikt produktexempel hämtat för tysk 45 cl burk – extrapolerat från 33 cl-priserna.'},
+  legalLimit: {status:'sourced', text:'EU:s vägledande referensvärde för privat införsel: 110 liter öl <strong>per person</strong> (rådets direktiv 2008/118/EG, artikel 32.3b) – reser flera tillsammans i bilen räknas gränsen samman, t.ex. 220 liter för två personer. Inte en absolut gräns, men Tullverket kan börja ifrågasätta syftet över den nivån. Se även <a href="https://lawline.se/answers/hur-mycket-alkohol-far-man-ta-in-i-sverige-fran-tyskland" target="_blank" rel="noopener">Lawline ↗</a>.', source:'Europeiska kommissionen, Your Europe', url:'https://europa.eu/youreurope/citizens/travel/carry/alcohol-tobacco-cash/index_sv.htm'},
+  packageWeight: {status:'assumed', text:'Vikt per öl (inkl. förpackning): 33 cl burk ca 0,35 kg, 33 cl glas ca 0,53 kg, 45 cl burk ca 0,47 kg. Egna schablonberäkningar, inte källbelagda produktvikter.'},
+  passengerAllowance: {status:'assumed', text:'90 kg per person i bilen (kropp + eget bagage) dras av från nyttolasten innan resten räknas som utrymme för öl. Eget rimlighetsantagande.'},
+  fuelPrice: {status:'sourced', text:'Bensin 95, snittpris: 15,99 kr/liter (27 juli 2026).', source:'Bensinpriserna.se', url:'https://bensinpriserna.se/'},
+  fuelConsumption: {status:'sourced', text:'Genomsnittlig bränsleförbrukning blandad körning: liten bil 0,5–0,6 l/mil, mellanklass 0,7–0,8 l/mil, stor bil ca 0,9 l/mil. Vi har kopplat detta till bilprisklasserna 20 000/100 000/400 000 kr.', source:'Advisa', url:'https://advisa.se/billan/hur-mycket-bensin-drar-en-bil/'},
+  rateSplit: {status:'assumed', text:'Kr/mil-totalen (22/45/75 kr) är byggd av en källbelagd bränslekostnad, plus en egen, icke källbelagd uppdelning av resten på "värdeminskning" (65 %) och "skatt, försäkring, service m.m." (35 %). M Sverige har en egen interaktiv kalkylator där du kan mata in din faktiska bil och köra ut en mer exakt siffra än vår schablon.', source:'M Sveriges bilkostnadskalkyl (interaktiv)', url:'https://msverige.se/allt-om-bilen/vad-kostar-det-att-ha-bil/m-sveriges-bilkostnadskalkyl/'},
+  fusk: {status:'assumed', text:'"Fusk"-läget räknar bara med bränslekostnaden (förbrukning × bränslepris) och ignorerar värdeminskning, kapitalkostnad, skatt, försäkring och service. Ger en klart för låg bild av vad resan egentligen kostar dig – tänk på det innan du jämför siffror mot vänner.'}
+};
+
+const PACKAGES = {
+  burk33:{label:'33 cl burk', unitsPerBox:24, liter:0.33, weight:0.35, se:9.5, de:{low:2, mid:3.5, high:5}, seNote:'seBurk', deNote:'deBurk'},
+  glas33:{label:'33 cl glas', unitsPerBox:24, liter:0.33, weight:0.53, se:11, de:{low:3, mid:4.5, high:6.5}, seNote:'seGlas', deNote:'deGlas'},
+  burk45:{label:'45 cl burk', unitsPerBox:24, liter:0.45, weight:0.47, se:13, de:{low:3.5, mid:5, high:7}, seNote:'seBurk45', deNote:'deBurk45'}
+};
+
+const FUEL_PRICE = 15.99;
+const CAR_CLASSES = {
+  20000:{rate:22, load:450, consumption:0.55, label:'liten bil'},
+  100000:{rate:45, load:520, consumption:0.75, label:'mellanklass'},
+  400000:{rate:75, load:600, consumption:0.9, label:'stor bil'}
+};
+Object.keys(CAR_CLASSES).forEach(function(k){
+  const c = CAR_CLASSES[k];
+  c.fuelRate = Math.round(c.consumption * FUEL_PRICE * 10) / 10;
+  const rest = c.rate - c.fuelRate;
+  c.depreciationRate = Math.round(rest * 0.65 * 10) / 10;
+  c.otherRate = Math.round((rest - c.depreciationRate) * 10) / 10;
+});
+
+const DISTANCES = {
+  puttgarden:{lund:212, malmo:191, kalmar:475, jonkoping:497, stockholm:818},
+  rostock:{lund:30, malmo:30, kalmar:310, jonkoping:310, stockholm:645}
+};
+
+const LEGAL_LIMIT_LITERS = 110;
+const PASSENGER_ALLOWANCE_KG = 90;
+
+function fmt(n){ return Math.round(n).toLocaleString('sv-SE'); }
+
+function calc(){
+  const start = document.getElementById('start').value;
+  const dest = document.getElementById('dest').value;
+  const pax = parseFloat(document.getElementById('pax').value);
+  const carClass = document.getElementById('carClass').value;
+  const packKey = document.getElementById('pack').value;
+  const pkg = PACKAGES[packKey];
+
+  document.getElementById('bridgeField').style.display = dest === 'puttgarden' ? '' : 'none';
+  document.getElementById('ferryField').querySelector('label').innerHTML =
+    'Färja ' + (dest === 'puttgarden'
+      ? '<span class="badge src" data-note="ferryPuttgarden">K</span>'
+      : '<span class="badge assume" data-note="ferryRostock">A</span>');
+  attachBadgeHandlers();
+
+  const bridgeCost = dest === 'puttgarden' ? parseFloat(document.getElementById('bridgeTier').value) : 0;
+  const ferryCost = parseFloat(document.getElementById('ferryTier').value);
+
+  const distKm = DISTANCES[dest][start];
+  const distMil = distKm / 10;
+  const cc = CAR_CLASSES[carClass];
+  const fuskOn = document.getElementById('fuskMode').checked;
+  const carRate = fuskOn ? cc.fuelRate : cc.rate;
+  const drivingCost = distMil * 2 * carRate;
+
+  document.getElementById('fuskField').style.background = fuskOn ? 'var(--danger-bg)' : '';
+
+  const rateRows = [
+    ['Bränsle (' + cc.consumption + ' l/mil × ' + FUEL_PRICE + ' kr/l)', cc.fuelRate.toFixed(1) + ' kr/mil']
+  ];
+  if (fuskOn){
+    rateRows.push(['Värdeminskning, skatt, försäkring, service', 'ignoreras i fusk-läge']);
+    rateRows.push(['<strong>Totalt (fusk-läge)</strong>', '<strong>' + cc.fuelRate.toFixed(1) + ' kr/mil</strong>']);
+  } else {
+    rateRows.push(['Värdeminskning (uppskattat)', cc.depreciationRate.toFixed(1) + ' kr/mil']);
+    rateRows.push(['Skatt, försäkring, service m.m. (uppskattat)', cc.otherRate.toFixed(1) + ' kr/mil']);
+    rateRows.push(['<strong>Totalt</strong>', '<strong>' + cc.rate.toFixed(1) + ' kr/mil</strong>']);
+  }
+  document.getElementById('rateTable').innerHTML = rateRows.map(function(r){
+    return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td></tr>';
+  }).join('');
+  const tollCost = (bridgeCost + ferryCost) * 2;
+  const totalCost = tollCost + drivingCost;
+
+  const totalMil = (distMil * 2).toLocaleString('sv-SE', {maximumFractionDigits:1});
+  const rows = [];
+  if (dest === 'puttgarden'){
+    rows.push(['Öresundsbron, tur och retur', fmt(bridgeCost) + ' × 2 = ' + fmt(bridgeCost*2) + ' kr']);
+  }
+  rows.push(['Färja, tur och retur', fmt(ferryCost) + ' × 2 = ' + fmt(ferryCost*2) + ' kr']);
+  rows.push(['Körsträcka', fmt(distKm) + ' km × 2 = ' + totalMil + ' mil']);
+  rows.push(['Bilkostnad (' + carRate.toFixed(1) + ' kr/mil' + (fuskOn ? ', fusk-läge' : '') + ')', totalMil + ' mil × ' + carRate.toFixed(1) + ' kr/mil = ' + fmt(drivingCost) + ' kr']);
+  rows.push(['<strong>Total resekostnad</strong>', '<strong>' + fmt(totalCost) + ' kr</strong>']);
+  document.getElementById('costTable').innerHTML = rows.map(function(r){
+    return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td></tr>';
+  }).join('');
+
+  const se = parseFloat(document.getElementById('sePrice').value);
+  const de = parseFloat(document.getElementById('dePrice').value);
+  const saving = Math.max(se - de, 0.1);
+
+  const beers = Math.ceil(totalCost / saving);
+  const boxes = Math.ceil(beers / pkg.unitsPerBox);
+  const liters = beers * pkg.liter;
+
+  document.getElementById('outBeers').textContent = fmt(beers) + ' öl';
+  document.getElementById('outBoxes').textContent = boxes + ' flak à ' + pkg.unitsPerBox + ' st (' + Math.round(liters) + ' liter)';
+  document.getElementById('outBreakdown').textContent =
+    'Resekostnad t/r: ' + fmt(totalCost) + ' kr · Besparing per öl: ' + saving.toFixed(1) + ' kr';
+
+  const carLoadOverride = parseFloat(document.getElementById('carLoadOverride').value);
+  const carLoad = isNaN(carLoadOverride) ? CAR_CLASSES[carClass].load : carLoadOverride;
+  const remainingLoad = Math.max(carLoad - pax * PASSENGER_ALLOWANCE_KG, 0);
+  const maxByWeight = Math.floor(remainingLoad / pkg.weight);
+
+  const warnWeight = document.getElementById('warnWeight');
+  if (beers > maxByWeight){
+    warnWeight.textContent = 'Får troligen inte plats: bilens nyttolast (' + carLoad + ' kg, minus ' + pax + ' person(er)) räcker till ungefär ' + fmt(maxByWeight) + ' öl av den här sorten.';
+    warnWeight.classList.add('show');
+  } else {
+    warnWeight.classList.remove('show');
+  }
+
+  const warnLegal = document.getElementById('warnLegal');
+  const legalLimitTotal = LEGAL_LIMIT_LITERS * pax;
+  if (liters > legalLimitTotal){
+    warnLegal.innerHTML = 'Överskrider EU:s vägledande riktmärke på ' + LEGAL_LIMIT_LITERS + ' liter öl per person (' + legalLimitTotal + ' liter för ' + pax + ' person(er) i bilen) för privat införsel – du har räknat fram ' + Math.round(liters) + ' liter. <a href="https://europa.eu/youreurope/citizens/travel/carry/alcohol-tobacco-cash/index_sv.htm" target="_blank" rel="noopener">Källa: Your Europe (EU) ↗</a>';
+    warnLegal.classList.add('show');
+  } else {
+    warnLegal.classList.remove('show');
+  }
+}
+
+function updatePackageDefaults(){
+  const packKey = document.getElementById('pack').value;
+  const pkg = PACKAGES[packKey];
+  const tier = document.getElementById('deTier').value;
+  document.getElementById('sePrice').value = pkg.se;
+  document.getElementById('dePrice').value = pkg.de[tier];
+  document.getElementById('seBadge').className = 'badge ' + (NOTES[pkg.seNote].status === 'sourced' ? 'src' : 'assume');
+  document.getElementById('seBadge').dataset.note = pkg.seNote;
+  document.getElementById('deBadge').className = 'badge ' + (NOTES[pkg.deNote].status === 'sourced' ? 'src' : 'assume');
+  document.getElementById('deBadge').dataset.note = pkg.deNote;
+  attachBadgeHandlers();
+  calc();
+}
+
+function updateCarDefaults(){
+  const carClass = document.getElementById('carClass').value;
+  document.getElementById('carLoadOverride').value = CAR_CLASSES[carClass].load;
+  calc();
+}
+
+function showTooltip(el){
+  const note = NOTES[el.dataset.note];
+  if (!note) return;
+  const tip = document.getElementById('tooltip');
+  let html = note.text;
+  if (note.url){
+    html += ' <a href="' + note.url + '" target="_blank" rel="noopener">' + (note.source || 'Källa') + ' ↗</a>';
+  }
+  tip.innerHTML = html;
+  const rect = el.getBoundingClientRect();
+  tip.style.display = 'block';
+  const top = rect.bottom + 6;
+  let left = rect.left;
+  if (left + 280 > window.innerWidth) left = window.innerWidth - 290;
+  tip.style.top = top + 'px';
+  tip.style.left = left + 'px';
+}
+
+function attachBadgeHandlers(){
+  document.querySelectorAll('.badge[data-note]').forEach(function(b){
+    b.onclick = function(e){ e.stopPropagation(); showTooltip(b); };
+  });
+}
+
+document.addEventListener('click', function(){ document.getElementById('tooltip').style.display = 'none'; });
+
+function renderSourceList(){
+  const list = document.getElementById('sourceList');
+  const order = Object.keys(NOTES);
+  list.innerHTML = order.map(function(key){
+    const n = NOTES[key];
+    const tagClass = n.status === 'sourced' ? 'src' : 'assume';
+    const tagText = n.status === 'sourced' ? 'Källa' : 'Antagande';
+    const link = n.url ? ' <a href="' + n.url + '" target="_blank" rel="noopener">' + (n.source || 'Länk') + ' ↗</a>' : '';
+    return '<div class="item"><span class="tag ' + tagClass + '">' + tagText + '</span>' + n.text + link + '</div>';
+  }).join('');
+}
+
+['start','dest','pax','bridgeTier','ferryTier','carClass','carLoadOverride','sePrice','dePrice','fuskMode'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', calc);
+  document.getElementById(id).addEventListener('change', calc);
+});
+document.getElementById('pack').addEventListener('change', updatePackageDefaults);
+document.getElementById('deTier').addEventListener('change', updatePackageDefaults);
+document.getElementById('carClass').addEventListener('change', updateCarDefaults);
+
+const techbtn = document.getElementById('techbtn');
+const techpanel = document.getElementById('techpanel');
+techbtn.addEventListener('click', function(e){
+  e.stopPropagation();
+  techpanel.style.display = techpanel.style.display === 'none' ? 'block' : 'none';
+});
+
+attachBadgeHandlers();
+renderSourceList();
+updateCarDefaults();
+updatePackageDefaults();
+</script>
+</body>
+</html>
