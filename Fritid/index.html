@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fritid – Ovrigt</title>
+  <style>
+    body {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.05em;
+      line-height: 1.75;
+      color: #222;
+      background: #fafaf8;
+      margin: 0;
+      padding: 0;
+    }
+    .site-nav {
+      display: flex;
+      align-items: center;
+      background: #1a3a5c;
+      color: #fff;
+      padding: 0 20px;
+      height: 44px;
+      gap: 4px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      overflow-x: auto;
+    }
+    .site-nav .nav-brand {
+      font-family: "Courier New", monospace;
+      font-weight: bold;
+      font-size: 1.05em;
+      color: #fff;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .site-nav .nav-brand:hover { color: #c8d8e8; }
+    .nav-sep {
+      color: #7a9bbf;
+      margin: 0 5px;
+      font-family: "Courier New", monospace;
+      font-size: 0.95em;
+    }
+    .nav-crumb {
+      color: #9ab4cc;
+      text-decoration: none;
+      font-family: "Courier New", monospace;
+      font-size: 0.95em;
+      white-space: nowrap;
+    }
+    .nav-crumb:hover { color: #fff; }
+    .nav-crumb.active { color: #fff; }
+    .nav-author {
+      color: #566e88;
+      font-size: 0.9em;
+      white-space: nowrap;
+      margin-left: auto;
+      padding-left: 16px;
+      font-family: "Courier New", monospace;
+    }
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+    h1 { font-size: 1.6em; color: #1a3a5c; margin-bottom: 6px; }
+    .meta { color: #888; font-size: 0.88em; margin-bottom: 28px; }
+    .section-card {
+      display: block;
+      border: 1px solid #d0dce8;
+      border-radius: 6px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+      text-decoration: none;
+      color: inherit;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .section-card:hover {
+      background: #f0f6ff;
+      border-color: #1a6eb5;
+    }
+    .section-card h2 {
+      margin: 0 0 6px;
+      font-size: 1.15em;
+      color: #1a3a5c;
+      font-family: "Courier New", monospace;
+    }
+    .section-card p { margin: 0; color: #555; font-size: 0.95em; }
+    .section-card .path {
+      display: inline-block;
+      margin-top: 10px;
+      font-family: "Courier New", monospace;
+      font-size: 0.8em;
+      color: #1a6eb5;
+    }
+    .github-corner {
+      position: fixed; bottom: 14px; left: 14px;
+      font-family: "Courier New", monospace; font-size: 0.78em;
+      color: #aaa; text-decoration: none; opacity: 0.55;
+      transition: opacity 0.2s, color 0.2s; z-index: 999;
+    }
+    .github-corner:hover { opacity: 1; color: #1a3a5c; }
+  </style>
+</head>
+<body>
+  <!-- Uppdatering 2026-07-28: Sektions-TOC för Fritid med breadcrumb-nav -->
+  <nav class="site-nav">
+    <a class="nav-brand" href="../index.html">{ O } Ovrigt</a>
+    <span class="nav-sep">/</span>
+    <span class="nav-crumb active">Fritid</span>
+    <span class="nav-author">Kent Lundgren</span>
+  </nav>
+
+  <div class="container">
+    <h1>Fritid</h1>
+    <p class="meta">Fritidsprojekt inom Ovrigt-repot</p>
+
+    <a class="section-card" href="ol_Tyskland/index.html">
+      <h2>Ölkalkylen</h2>
+      <p>Hur många öl måste du köpa för att Tysklandsresan ska löna sig? Interaktiv break-even-kalkyl.</p>
+      <span class="path">Fritid/ol_Tyskland/</span>
+    </a>
+  </div>
+
+  <a class="github-corner" href="https://github.com/kentlundgren/Ovrigt" target="_blank" rel="noopener">{ } GitHub</a>
+</body>
+</html>

@@ -1,6 +1,14 @@
 # Ovrigt – Kent Lundgrens övriga projekt
 
-_Version 1.1, 2026-05-21_
+_Version 1.2, 2026-07-28_
+
+---
+
+## Live-sida
+
+| Sida | URL |
+| ---- | --- |
+| Ovrigt – startsida | [index.html – live](https://kentlundgren.github.io/Ovrigt/) |
 
 ---
 
@@ -8,8 +16,27 @@ _Version 1.1, 2026-05-21_
 
 | Mapp / Fil | Projekt |
 | ---------- | ------- |
-| `Hemma/laddboxar/` | Utredning av elbilsladdning – Långkatekesens Samfällighetsförening |
+| [`Hemma/laddboxar/`](Hemma/laddboxar/) | Utredning av elbilsladdning – Långkatekesens Samfällighetsförening |
+| [`Hemma/VM_tips/`](Hemma/VM_tips/) | VM 2026-tips (familjetips och analys) |
+| [`Fritid/ol_Tyskland/`](Fritid/ol_Tyskland/) | Ölkalkylen – lönar det sig att köra till Tyskland? |
 | `main_has_no_remote_branch.html` | Biprojekt: Git & GitHub-guide – koppla Cursor till GitHub |
+
+---
+
+## Fritid / Ölkalkylen
+
+### Live-sidor (GitHub Pages)
+
+| Sida | URL |
+| ---- | --- |
+| Fritid – översikt | [index.html – live](https://kentlundgren.github.io/Ovrigt/Fritid/index.html) |
+| Ölkalkylen | [index.html – live](https://kentlundgren.github.io/Ovrigt/Fritid/ol_Tyskland/index.html) |
+
+### Om projektet
+
+Interaktiv kalkylator som räknar ut hur många öl du behöver köpa i Tyskland för att resan ska löna sig, givet startort, bil, bro/färja och ölpriser.
+
+Se mer i [`Fritid/ol_Tyskland/README.md`](Fritid/ol_Tyskland/README.md).
 
 ---
 
@@ -69,4 +96,4 @@ Commit och push är alltid användarens (Kents) ansvar.
 
 ---
 
-_README v1.1, 2026-05-21_
+_README v1.2, 2026-07-28_

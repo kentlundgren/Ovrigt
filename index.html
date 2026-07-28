@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ovrigt – Kent Lundgrens övriga projekt</title>
+  <style>
+    body {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.05em;
+      line-height: 1.75;
+      color: #222;
+      background: #fafaf8;
+      margin: 0;
+      padding: 0;
+    }
+    .site-nav {
+      display: flex;
+      align-items: center;
+      background: #1a3a5c;
+      color: #fff;
+      padding: 0 20px;
+      height: 44px;
+      gap: 8px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .site-nav .nav-brand {
+      font-family: "Courier New", monospace;
+      font-weight: bold;
+      font-size: 1.05em;
+      color: #fff;
+      text-decoration: none;
+      margin-right: 16px;
+      white-space: nowrap;
+    }
+    .nav-group {
+      position: relative;
+      border-left: 1px solid #2d5278;
+      padding-left: 10px;
+      margin-left: 4px;
+    }
+    .nav-group > a {
+      color: #c8d8e8;
+      text-decoration: none;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-family: "Courier New", monospace;
+      font-size: 0.88em;
+      white-space: nowrap;
+      transition: background 0.15s, color 0.15s;
+      display: inline-block;
+      line-height: 44px;
+    }
+    .nav-group > a:hover { color: #fff; }
+    .nav-group > a .arrow {
+      font-size: 0.7em;
+      margin-left: 3px;
+      opacity: 0.6;
+      vertical-align: middle;
+    }
+    .nav-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: #14304f;
+      border: 1px solid #2d5278;
+      border-top: none;
+      border-radius: 0 0 6px 6px;
+      min-width: 160px;
+      z-index: 200;
+      padding: 4px 0;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+    }
+    .nav-group:hover .nav-dropdown { display: block; }
+    .nav-dropdown a {
+      display: block;
+      padding: 7px 16px;
+      color: #9ab4cc;
+      text-decoration: none;
+      font-family: "Courier New", monospace;
+      font-size: 0.84em;
+      white-space: nowrap;
+      transition: background 0.12s, color 0.12s;
+    }
+    .nav-dropdown a:hover { background: #1e4a7f; color: #fff; }
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: auto;
+    }
+    .nav-right span {
+      color: #566e88;
+      font-family: "Courier New", monospace;
+      font-size: 0.82em;
+      white-space: nowrap;
+    }
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+    h1 { font-size: 1.6em; color: #1a3a5c; margin-bottom: 6px; }
+    .meta { color: #888; font-size: 0.88em; margin-bottom: 32px; }
+    .intro { margin-bottom: 28px; color: #333; }
+    .section-card {
+      display: block;
+      border: 1px solid #d0dce8;
+      border-radius: 6px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+      text-decoration: none;
+      color: inherit;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .section-card:hover {
+      background: #f0f6ff;
+      border-color: #1a6eb5;
+    }
+    .section-card h2 {
+      margin: 0 0 6px;
+      font-size: 1.15em;
+      color: #1a3a5c;
+      font-family: "Courier New", monospace;
+    }
+    .section-card p { margin: 0; color: #555; font-size: 0.95em; }
+    .section-card .path {
+      display: inline-block;
+      margin-top: 10px;
+      font-family: "Courier New", monospace;
+      font-size: 0.8em;
+      color: #1a6eb5;
+    }
+    .github-corner {
+      position: fixed; bottom: 14px; left: 14px;
+      font-family: "Courier New", monospace; font-size: 0.78em;
+      color: #aaa; text-decoration: none; opacity: 0.55;
+      transition: opacity 0.2s, color 0.2s; z-index: 999;
+    }
+    .github-corner:hover { opacity: 1; color: #1a3a5c; }
+  </style>
+</head>
+<body>
+  <!-- Uppdatering 2026-07-28: Rot-TOC med site-nav, samma mönster som Ekonomi -->
+  <nav class="site-nav">
+    <a class="nav-brand" href="index.html">{ O } Ovrigt</a>
+
+    <div class="nav-group">
+      <a href="Hemma/laddboxar/index.html">Hemma <span class="arrow">▾</span></a>
+      <div class="nav-dropdown">
+        <a href="Hemma/laddboxar/index.html">Laddboxar</a>
+        <a href="Hemma/VM_tips/index.html">VM-tips</a>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <a href="Fritid/index.html">Fritid <span class="arrow">▾</span></a>
+      <div class="nav-dropdown">
+        <a href="Fritid/ol_Tyskland/index.html">Ölkalkylen</a>
+      </div>
+    </div>
+
+    <div class="nav-right">
+      <span>Kent Lundgren</span>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1>Ovrigt</h1>
+    <p class="meta">Kent Lundgrens övriga projekt – under uppbyggnad</p>
+    <p class="intro">
+      Här samlas webbprojekt som inte hör till Ekonomi eller ArbetenSokta:
+      hemmautredningar, fritidskalkyler och mindre guider.
+    </p>
+
+    <a class="section-card" href="Hemma/laddboxar/index.html">
+      <h2>Hemma / laddboxar</h2>
+      <p>Utredning av elbilsladdning för Långkatekesens Samfällighetsförening (23 garage).</p>
+      <span class="path">Hemma/laddboxar/</span>
+    </a>
+
+    <a class="section-card" href="Fritid/index.html">
+      <h2>Fritid</h2>
+      <p>Fritidsprojekt och hobbykalkyler – bland annat Ölkalkylen för Tysklandsresor.</p>
+      <span class="path">Fritid/</span>
+    </a>
+
+    <a class="section-card" href="main_has_no_remote_branch.html">
+      <h2>Git &amp; GitHub-guide</h2>
+      <p>Referens om att koppla Cursor till GitHub och sätta upp GitHub Pages.</p>
+      <span class="path">main_has_no_remote_branch.html</span>
+    </a>
+  </div>
+
+  <a class="github-corner" href="https://github.com/kentlundgren/Ovrigt" target="_blank" rel="noopener">{ } GitHub</a>
+</body>
+</html>

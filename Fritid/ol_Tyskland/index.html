@@ -78,9 +78,48 @@
     color:var(--text-secondary); display:none; box-shadow:0 4px 16px rgba(0,0,0,0.12);
   }
   .foot{font-size:12px; color:var(--text-muted); text-align:center; margin-top:1rem;}
+
+  /* Här skedde en uppdatering 2026-07-28: site-nav (breadcrumb) som i Ekonomi-projektet */
+  .site-nav{
+    display:flex; align-items:center; background:#1a3a5c; color:#fff;
+    padding:0 20px; height:44px; gap:4px; position:sticky; top:0; z-index:100;
+    overflow-x:auto;
+  }
+  .site-nav .nav-brand{
+    font-family:"Courier New",monospace; font-weight:bold; font-size:1.05em;
+    color:#fff; text-decoration:none; white-space:nowrap;
+  }
+  .site-nav .nav-brand:hover{color:#c8d8e8;}
+  .nav-sep{color:#7a9bbf; margin:0 5px; font-family:"Courier New",monospace; font-size:0.95em;}
+  .nav-crumb{
+    color:#9ab4cc; text-decoration:none; font-family:"Courier New",monospace;
+    font-size:0.95em; white-space:nowrap;
+  }
+  .nav-crumb:hover{color:#fff;}
+  .nav-crumb.active{color:#fff;}
+  .nav-author{
+    color:#566e88; font-size:0.9em; white-space:nowrap; margin-left:auto;
+    padding-left:16px; font-family:"Courier New",monospace;
+  }
+  .github-corner{
+    position:fixed; bottom:14px; left:14px;
+    font-family:"Courier New",monospace; font-size:0.78em;
+    color:#aaa; text-decoration:none; opacity:0.55;
+    transition:opacity 0.2s, color 0.2s; z-index:999;
+  }
+  .github-corner:hover{opacity:1; color:#1a3a5c;}
 </style>
 </head>
 <body>
+<!-- Uppdatering 2026-07-28: breadcrumb { O } Ovrigt / Fritid / Ölkalkylen -->
+<nav class="site-nav">
+  <a class="nav-brand" href="../../index.html">{ O } Ovrigt</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-crumb" href="../index.html">Fritid</a>
+  <span class="nav-sep">/</span>
+  <span class="nav-crumb active">Ölkalkylen</span>
+  <span class="nav-author">Kent Lundgren</span>
+</nav>
 <div class="wrap">
   <h1>Hur många öl måste du köpa för att Tysklandsresan ska löna sig?</h1>
   <p class="sub">Fyll i din resa, bil och ölval nedan – resultatet räknas om direkt. Gula fält är sådant du kan ändra. <span class="badge src">K</span> = källbelagt värde, <span class="badge assume">A</span> = eget rimlighetsantagande, klicka för förklaring.</p>
@@ -470,5 +509,7 @@ renderSourceList();
 updateCarDefaults();
 updatePackageDefaults();
 </script>
+<!-- Uppdatering 2026-07-28: GitHub-hörna, samma mönster som Ekonomi -->
+<a class="github-corner" href="https://github.com/kentlundgren/Ovrigt" target="_blank" rel="noopener">{ } GitHub</a>
 </body>
 </html>
