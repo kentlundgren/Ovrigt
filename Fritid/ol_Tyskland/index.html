@@ -108,6 +108,79 @@
     transition:opacity 0.2s, color 0.2s; z-index:999;
   }
   .github-corner:hover{opacity:1; color:#1a3a5c;}
+
+  /*
+    Här skedde en uppdatering 2026-07-29:
+    Kul ölbilder – splash vid start + stängbar resultatbild efter beräkning.
+  */
+  .beer-splash{
+    position:fixed; inset:0; z-index:2000;
+    display:flex; align-items:flex-end; justify-content:center;
+    background:#1a1a18 center/cover no-repeat;
+    transition:opacity 0.45s ease, visibility 0.45s;
+  }
+  .beer-splash::before{
+    content:""; position:absolute; inset:0;
+    background:linear-gradient(to top, rgba(20,18,14,0.82) 0%, rgba(20,18,14,0.25) 45%, rgba(20,18,14,0.35) 100%);
+  }
+  .beer-splash.hide{
+    opacity:0; visibility:hidden; pointer-events:none;
+  }
+  .beer-splash-inner{
+    position:relative; z-index:1; text-align:center;
+    color:#fff; padding:2rem 1.25rem 2.5rem; max-width:420px;
+  }
+  .beer-splash-inner h2{
+    margin:0 0 6px; font-size:1.55rem; font-weight:600; letter-spacing:-0.02em;
+  }
+  .beer-splash-inner p{
+    margin:0 0 1.25rem; font-size:0.95rem; opacity:0.9; line-height:1.45;
+  }
+  .beer-splash-btn{
+    appearance:none; border:none; cursor:pointer;
+    background:#fff; color:#1a1a18; font:inherit; font-weight:600; font-size:0.95rem;
+    padding:12px 22px; border-radius:999px;
+    box-shadow:0 4px 18px rgba(0,0,0,0.25);
+  }
+  .beer-splash-btn:hover{ background:#fffbe0; }
+  .beer-splash-hint{
+    display:block; margin-top:12px; font-size:12px; opacity:0.7;
+  }
+
+  .result{ position:relative; overflow:hidden; }
+  .beer-result-card{
+    display:none; margin-bottom:14px; border-radius:10px; overflow:hidden;
+    border:1px solid rgba(24,95,165,0.2); background:#fff;
+    text-align:left;
+  }
+  .beer-result-card.show{ display:block; animation:beerPop 0.45s ease; }
+  @keyframes beerPop{
+    from{ opacity:0; transform:translateY(8px) scale(0.98); }
+    to{ opacity:1; transform:none; }
+  }
+  .beer-result-card img{
+    display:block; width:100%; height:160px; object-fit:cover;
+  }
+  .beer-result-bar{
+    display:flex; align-items:center; gap:10px;
+    padding:8px 10px; background:var(--accent-bg);
+  }
+  .beer-result-bar p{
+    margin:0; flex:1; font-size:12.5px; color:var(--accent); line-height:1.35;
+  }
+  .beer-result-close{
+    appearance:none; border:1px solid rgba(24,95,165,0.25); background:#fff;
+    color:var(--accent); width:28px; height:28px; border-radius:50%;
+    cursor:pointer; font-size:16px; line-height:1; flex-shrink:0;
+  }
+  .beer-result-close:hover{ background:var(--accent); color:#fff; }
+  .beer-show-again{
+    appearance:none; border:none; background:transparent; cursor:pointer;
+    color:var(--accent); font:inherit; font-size:12.5px; text-decoration:underline;
+    padding:0; margin-top:8px; opacity:0.85;
+  }
+  .beer-show-again:hover{ opacity:1; }
+  .beer-show-again[hidden]{ display:none; }
 </style>
 </head>
 <body>
@@ -120,6 +193,17 @@
   <span class="nav-crumb active">Ölkalkylen</span>
   <span class="nav-author">Kent Lundgren</span>
 </nav>
+
+<!-- Uppdatering 2026-07-29: välkomstbild (tva_kalla_ol) – stängs med knapp, klick eller Esc -->
+<div id="beerSplash" class="beer-splash" style="background-image:url('tva_kalla_ol.jpg');" role="dialog" aria-modal="true" aria-labelledby="beerSplashTitle">
+  <div class="beer-splash-inner">
+    <h2 id="beerSplashTitle">Ölkalkylen</h2>
+    <p>Två kalla öl. Men hur många måste du egentligen köpa för att resan till Tyskland ska löna sig?</p>
+    <button type="button" class="beer-splash-btn" id="beerSplashBtn">Börja räkna</button>
+    <span class="beer-splash-hint">Eller tryck Esc / klicka utanför texten</span>
+  </div>
+</div>
+
 <div class="wrap">
   <h1>Hur många öl måste du köpa för att Tysklandsresan ska löna sig?</h1>
   <p class="sub">Fyll i din resa, bil och ölval nedan – resultatet räknas om direkt. Gula fält är sådant du kan ändra. <span class="badge src">K</span> = källbelagt värde, <span class="badge assume">A</span> = eget rimlighetsantagande, klicka för förklaring.</p>
@@ -234,12 +318,21 @@
   </div>
 
   <div class="result">
+    <!-- Uppdatering 2026-07-29: stängbar ölbild när kalkylen landat (Mariestad / flaskor) -->
+    <div id="beerResultCard" class="beer-result-card" aria-live="polite">
+      <img id="beerResultImg" src="Mariestad.jpg" alt="Rader med ölburkar – det här är vad kalkylen handlar om">
+      <div class="beer-result-bar">
+        <p id="beerResultCaption">Så här kan resultatet se ut i verkligheten.</p>
+        <button type="button" class="beer-result-close" id="beerResultClose" aria-label="Stäng ölbilden">×</button>
+      </div>
+    </div>
     <p class="label">Du behöver köpa</p>
     <p class="big" id="outBeers">– öl</p>
     <p class="sub2" id="outBoxes">– flak</p>
     <div class="breakdown" id="outBreakdown"></div>
     <div class="warning" id="warnWeight"></div>
     <div class="warning danger" id="warnLegal"></div>
+    <button type="button" class="beer-show-again" id="beerShowAgain" hidden>Visa ölbild igen</button>
   </div>
 
   <details class="schedule" open>
@@ -408,6 +501,11 @@ function calc(){
   document.getElementById('outBreakdown').textContent =
     'Resekostnad t/r: ' + fmt(totalCost) + ' kr · Besparing per öl: ' + saving.toFixed(1) + ' kr';
 
+  // Uppdatering 2026-07-29: text till resultatbilden (om den visas)
+  if (typeof updateBeerResultCaption === 'function'){
+    updateBeerResultCaption(beers, boxes, packKey);
+  }
+
   const carLoadOverride = parseFloat(document.getElementById('carLoadOverride').value);
   const carLoad = isNaN(carLoadOverride) ? CAR_CLASSES[carClass].load : carLoadOverride;
   const remainingLoad = Math.max(carLoad - pax * PASSENGER_ALLOWANCE_KG, 0);
@@ -508,6 +606,96 @@ attachBadgeHandlers();
 renderSourceList();
 updateCarDefaults();
 updatePackageDefaults();
+
+/*
+  Här skedde en uppdatering 2026-07-29:
+  Ölbilder – splash vid start + stängbar resultatbild när användaren räknat.
+  Inga ES2023-funktioner; vanlig ES5-vänlig stil som resten av filen.
+*/
+(function setupBeerMoments(){
+  const splash = document.getElementById('beerSplash');
+  const splashBtn = document.getElementById('beerSplashBtn');
+  const resultCard = document.getElementById('beerResultCard');
+  const resultImg = document.getElementById('beerResultImg');
+  const resultClose = document.getElementById('beerResultClose');
+  const showAgain = document.getElementById('beerShowAgain');
+
+  let splashOpen = true;
+  let userHasEdited = false;
+  let resultDismissed = false;
+  let settleTimer = null;
+
+  function dismissSplash(){
+    if (!splashOpen) return;
+    splashOpen = false;
+    splash.classList.add('hide');
+    splash.setAttribute('aria-hidden', 'true');
+  }
+
+  splashBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    dismissSplash();
+  });
+  // Klick var som helst på startbilden stänger den
+  splash.addEventListener('click', dismissSplash);
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && splashOpen) dismissSplash();
+  });
+  // Snabb startbild – försvinner automatiskt efter 2,6 s om man inte stängt själv
+  setTimeout(dismissSplash, 2600);
+
+  function pickResultImage(packKey){
+    // Flaskor till glasöl, burkrader till burk – speglar vad som kalkyleras
+    return packKey === 'glas33' ? 'olflaskor.jpg' : 'Mariestad.jpg';
+  }
+
+  window.updateBeerResultCaption = function(beers, boxes, packKey){
+    const caption = document.getElementById('beerResultCaption');
+    const img = pickResultImage(packKey);
+    resultImg.src = img;
+    resultImg.alt = packKey === 'glas33'
+      ? 'Ölflaskor – det du just räknat på'
+      : 'Rader med ölburkar – det du just räknat på';
+    caption.textContent = 'Ungefär ' + fmt(beers) + ' öl (' + boxes + ' flak). Det är det här kalkylen handlar om.';
+  };
+
+  function showResultCard(){
+    if (splashOpen || resultDismissed) return;
+    resultCard.classList.add('show');
+    showAgain.hidden = true;
+  }
+
+  function hideResultCard(){
+    resultCard.classList.remove('show');
+    resultDismissed = true;
+    showAgain.hidden = false;
+  }
+
+  resultClose.addEventListener('click', hideResultCard);
+  showAgain.addEventListener('click', function(){
+    resultDismissed = false;
+    showResultCard();
+  });
+
+  function onUserEdit(){
+    if (splashOpen) return;
+    userHasEdited = true;
+    resultDismissed = false;
+    clearTimeout(settleTimer);
+    // När inmatningen "lugnat sig" räknas det som färdigberäknat
+    settleTimer = setTimeout(function(){
+      if (userHasEdited) showResultCard();
+    }, 700);
+  }
+
+  ['start','dest','pax','bridgeTier','ferryTier','carClass','carLoadOverride','sePrice','dePrice','fuskMode','pack','deTier']
+    .forEach(function(id){
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener('input', onUserEdit);
+      el.addEventListener('change', onUserEdit);
+    });
+})();
 </script>
 <!-- Uppdatering 2026-07-28: GitHub-hörna, samma mönster som Ekonomi -->
 <a class="github-corner" href="https://github.com/kentlundgren/Ovrigt" target="_blank" rel="noopener">{ } GitHub</a>

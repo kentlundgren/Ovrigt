@@ -29,14 +29,24 @@ Du fyller i:
 
 Kalkylen räknar om direkt och visar break-even: hur många öl som behövs för att täcka rese- och transportkostnaden, med källbelagda värden (**K**) och rimlighetsantaganden (**A**).
 
+### Ölbilder (kul lager)
+
+- Vid start visas en snabb bild med två kalla öl (`tva_kalla_ol.jpg`) – stäng med knappen, klick, Esc eller vänta ca 2,6 s.
+- När du ändrat något i kalkylen visas en stängbar ölbild i resultatboxen (Mariestads-burkar eller flaskor beroende på förpackning).
+- Stängda bilder går att visa igen via länken *Visa ölbild igen*.
+
 ---
 
 ## Filer
 
 | Fil | Innehåll |
 | --- | -------- |
-| [`index.html`](https://kentlundgren.github.io/Ovrigt/Fritid/ol_Tyskland/index.html) | Interaktiv ölkalkylator (resa, bil, ölval, resultat) |
+| [`index.html`](https://kentlundgren.github.io/Ovrigt/Fritid/ol_Tyskland/index.html) | Interaktiv ölkalkylator (resa, bil, ölval, resultat) + ölbilder |
+| `tva_kalla_ol.jpg` | Startbild (två kalla ölglas) |
+| `Mariestad.jpg` | Resultatbild för burköl |
+| `olflaskor.jpg` | Resultatbild för glasöl |
 | `README.md` | Denna fil |
+| `CLAUDE.md` | Instruktioner för AI i denna mapp |
 
 ---
 
