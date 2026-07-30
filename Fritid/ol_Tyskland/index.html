@@ -189,6 +189,17 @@
   }
   .shop-links a{ color:var(--accent); font-weight:500; }
   .shop-links strong{ color:var(--text); font-weight:600; }
+
+  /* Uppdatering 2026-07-31: panel för "vad blir det om jag köper 90 flak"-scenariot */
+  .flak90-panel{
+    display:none; margin-top:10px; padding:10px 12px; border-radius:8px;
+    background:#fff; border:1px solid rgba(24,95,165,0.2); text-align:left; font-size:13px;
+    color:var(--text);
+  }
+  .flak90-panel.show{ display:block; }
+  .flak90-panel table{ width:100%; border-collapse:collapse; margin-top:6px; }
+  .flak90-panel td{ padding:3px 0; border-top:1px solid var(--border); }
+  .flak90-panel td:last-child{ text-align:right; color:var(--text-secondary); }
 </style>
 </head>
 <body>
@@ -240,12 +251,16 @@
         <label>Antal i bilen</label>
         <select id="pax">
           <option value="1">1</option>
-          <option value="2" selected>2</option>
-          <option value="3">3</option>
+          <option value="2">2</option>
+          <option value="3" selected>3</option>
           <option value="4">4</option>
           <option value="5">5</option>
         </select>
       </div>
+    </div>
+    <div class="field" style="margin-top:10px;">
+      <label for="depTime">Avgångstid <span class="badge assume" data-note="depTime">A</span></label>
+      <select id="depTime"></select>
     </div>
     <div class="row two" style="margin-top:10px;">
       <div class="field" id="bridgeField">
@@ -297,6 +312,42 @@
     </details>
   </div>
 
+  <!-- Uppdatering 2026-07-31: Släp-kort, se PRD_slap.md för bakgrund och antaganden -->
+  <div class="card">
+    <h2>Släp</h2>
+    <label style="display:flex; align-items:center; gap:6px; margin:0;">
+      <input type="checkbox" id="trailerMode" style="width:auto;">
+      Kör med släpvagn (750 kg-klass) <span class="badge assume" data-note="trailerSpec">A</span>
+    </label>
+    <div id="trailerOptions" style="display:none; margin-top:10px;">
+      <div class="row two">
+        <div class="field">
+          <label style="display:flex; align-items:center; gap:6px; font-size:13px; color:var(--text);">
+            <input type="radio" name="trailerCost" id="trailerCostFree" style="width:auto;">
+            Lånat släp (gratis)
+          </label>
+        </div>
+        <div class="field">
+          <label style="display:flex; align-items:center; gap:6px; font-size:13px; color:var(--text);">
+            <input type="radio" name="trailerCost" id="trailerCostPaid" style="width:auto;" checked>
+            Hyrt släp (rimlig kostnad) <span class="badge src" data-note="trailerRental">K</span>
+          </label>
+        </div>
+      </div>
+      <div class="field" style="margin-top:10px;">
+        <label>Släpets nyttolast (kg) <span class="badge assume" data-note="trailerSpec">A</span></label>
+        <input id="trailerLoadOverride" type="number" step="10" value="600">
+      </div>
+      <details class="schedule" style="margin-top:10px; margin-bottom:0;">
+        <summary>Antaganden och regler för släpet</summary>
+        <p class="srclist" style="margin-top:10px;">Antagen 750 kg-klass, obromsad kaross-släpvagn: ~600 kg nyttolast, lastyta ca 250×125 cm, sidohöjd ca 35–40 cm. <span class="badge assume" data-note="trailerSpec">A</span></p>
+        <p class="srclist">Broavgift och färja blir dyrare med släp, och bränsleförbrukningen ökar. <span class="badge assume" data-note="trailerFuelSurcharge">A</span></p>
+        <p class="srclist">Hastighet: ett obromsat släp får köras i max 80 km/h i Sverige bara om släpets lastade vikt är högst halva bilens tjänstevikt – annars gäller 40 km/h. <span class="badge src" data-note="speedLimitSweden">K</span> I Danmark och Tyskland gäller istället 80 km/h oavsett vikt-förhållande. <span class="badge src" data-note="speedLimitDenmarkGermany">K</span></p>
+      </details>
+      <div class="warning" id="warnSpeed"></div>
+    </div>
+  </div>
+
   <div class="card">
     <h2>Öl</h2>
     <div class="field" style="margin-bottom:10px;">
@@ -342,8 +393,12 @@
     <p class="sub2" id="outBoxes">– flak</p>
     <div class="breakdown" id="outBreakdown"></div>
     <div class="warning" id="warnWeight"></div>
+    <div class="warning" id="warnVolume"></div>
     <div class="warning danger" id="warnLegal"></div>
     <button type="button" class="beer-show-again" id="beerShowAgain" hidden>Visa ölbild igen</button>
+    <!-- Uppdatering 2026-07-31: fast scenario, 90 flak 33 cl, oavsett vald förpackning i Öl-kortet -->
+    <button type="button" class="beer-show-again" id="show90Flak">Visa: vad blir det om jag köper 90 flak (33 cl)?</button>
+    <div class="flak90-panel" id="flak90Panel"></div>
   </div>
 
   <details class="schedule" open>
@@ -400,7 +455,19 @@ const NOTES = {
   fuelPrice: {status:'sourced', text:'Bensin 95, snittpris: 15,99 kr/liter (27 juli 2026).', source:'Bensinpriserna.se', url:'https://bensinpriserna.se/'},
   fuelConsumption: {status:'sourced', text:'Genomsnittlig bränsleförbrukning blandad körning: liten bil 0,5–0,6 l/mil, mellanklass 0,7–0,8 l/mil, stor bil ca 0,9 l/mil. Vi har kopplat detta till bilprisklasserna 20 000/100 000/400 000 kr.', source:'Advisa', url:'https://advisa.se/billan/hur-mycket-bensin-drar-en-bil/'},
   rateSplit: {status:'assumed', text:'Kr/mil-totalen (22/45/75 kr) är byggd av en källbelagd bränslekostnad, plus en egen, icke källbelagd uppdelning av resten på "värdeminskning" (65 %) och "skatt, försäkring, service m.m." (35 %). M Sverige har en egen interaktiv kalkylator där du kan mata in din faktiska bil och köra ut en mer exakt siffra än vår schablon.', source:'M Sveriges bilkostnadskalkyl (interaktiv)', url:'https://msverige.se/allt-om-bilen/vad-kostar-det-att-ha-bil/m-sveriges-bilkostnadskalkyl/'},
-  fusk: {status:'assumed', text:'"Fusk"-läget räknar bara med bränslekostnaden (förbrukning × bränslepris) och ignorerar värdeminskning, kapitalkostnad, skatt, försäkring och service. Ger en klart för låg bild av vad resan egentligen kostar dig – tänk på det innan du jämför siffror mot vänner.'}
+  fusk: {status:'assumed', text:'"Fusk"-läget räknar bara med bränslekostnaden (förbrukning × bränslepris) och ignorerar värdeminskning, kapitalkostnad, skatt, försäkring och service. Ger en klart för låg bild av vad resan egentligen kostar dig – tänk på det innan du jämför siffror mot vänner.'},
+  depTime: {status:'assumed', text:'Avgångstid är ett fritt val (hela klockslag 04–20), inte källbelagt – bara en utgångspunkt för tidsschemat.'},
+  trailerSpec: {status:'assumed', text:'Antagen 750 kg-klass, obromsad kaross-släpvagn: totalvikt 750 kg, nyttolast ca 600 kg, lastyta ca 250×125 cm, sidohöjd ca 35–40 cm (ca 1 170 liter volym). Baserat på bilderna i projektmappen, inte ett specifikt fabrikat.'},
+  curbWeight: {status:'assumed', text:'Bilens tjänstevikt (används bara för att avgöra 40 vs 80 km/h-regeln med obromsat släp): liten bil ca 1 050 kg, mellanklass ca 1 450 kg, stor bil ca 1 900 kg. Eget rimlighetsantagande, inte kopplat till en specifik bilmodell.'},
+  trunkVolume: {status:'assumed', text:'Antagen bagagevolym: liten bil ca 320 liter, mellanklass ca 420 liter, stor bil ca 550 liter. Används för volym-rimlighetskontrollen, inte källbelagt.'},
+  packagingVolume: {status:'assumed', text:'Ett flak (24 × 33 cl) tar ungefär 13 liter kartongvolym, mot ca 7,9 liter ren vätska – en schablonfaktor på ca 1,6 används för att räkna om liter öl till ungefärlig lastvolym. Egen uppskattning, inte källbelagd.'},
+  trailerFuelSurcharge: {status:'assumed', text:'Med släp antas bränsleförbrukningen (och därmed bränsledelen av kr/mil) öka med 25 %. Inget exakt källbelagt tal hittades för just en lätt, öppen 750 kg-släpvagn – husvagnar ligger ofta på 40–60 % men har mer luftmotstånd. Ligger i koden som konstanten TRAILER_FUEL_SURCHARGE.'},
+  trailerRental: {status:'sourced', text:'Hyra av 750 kg-släp: Circle K ca 369 kr/dygn (100 km fritt), OKQ8 ca 339 kr/dygn. Vi använder 350 kr/dygn som schablon.', source:'Circle K / OKQ8', url:'https://www.circlek.se/biluthyrning-slap'},
+  bridgeTrailer: {status:'sourced', text:'Öresundsbron med släp kostar ungefär dubbelt så mycket som utan: 745 kr blir 1 490 kr i ordinarie prisläge. Samma fördubbling antas gälla proportionerligt för det rabatterade priset.', source:'Öresundsbron (2026) Priser', url:'https://www.oresundsbron.com/sv/priser'},
+  ferryPuttgardenTrailer: {status:'assumed', text:'Scandlines tar ut ett längdtillägg för längre fordonskombinationer (uppges från ca 340 kr per extra två löpmeter). Vi räknar inte på exakt fordonslängd, utan använder ett schablontillägg på 340 kr per resa.', source:'Scandlines prislista', url:'https://www.scandlines.se/priser/rodby-puttgarden/'},
+  ferryRostockTrailer: {status:'assumed', text:'Ingen källa hittad för Stena Lines släptillägg Trelleborg–Rostock. Vi antar att släp ungefär fördubblar priset, i linje med mönstret på Öresundsbron – en ren extrapolering, inte källbelagt.'},
+  speedLimitSweden: {status:'sourced', text:'I Sverige gäller för obromsat släp: max 80 km/h om släpets lastade totalvikt (eller tjänstevikt olastat) är högst halva bilens tjänstevikt – annars max 40 km/h. Bromsat släp: alltid max 80 km/h.', source:'Transportstyrelsen', url:'https://www.transportstyrelsen.se/sv/vagtrafik/fordon/fordonsregler/regler-for-olika-fordonsslag/slap/slapvagn-husvagn/'},
+  speedLimitDenmarkGermany: {status:'sourced', text:'I Danmark och Tyskland gäller max 80 km/h med släp oavsett vikt-förhållande (mot 130 km/h utan släp i Danmark). I Tyskland går det att höja till 100 km/h med ett Tempo 100-intyg (DEKRA, ca 1 990 kr).', source:'DEKRA / gällande trafikregler', url:'https://dekra-bilbesiktning.se/utbud/ovriga-tjanster/tempo-100/'}
 };
 
 const PACKAGES = {
@@ -411,9 +478,9 @@ const PACKAGES = {
 
 const FUEL_PRICE = 15.99;
 const CAR_CLASSES = {
-  20000:{rate:22, load:450, consumption:0.55, label:'liten bil'},
-  100000:{rate:45, load:520, consumption:0.75, label:'mellanklass'},
-  400000:{rate:75, load:600, consumption:0.9, label:'stor bil'}
+  20000:{rate:22, load:450, consumption:0.55, label:'liten bil', curbWeight:1050, trunkVolume:320},
+  100000:{rate:45, load:520, consumption:0.75, label:'mellanklass', curbWeight:1450, trunkVolume:420},
+  400000:{rate:75, load:600, consumption:0.9, label:'stor bil', curbWeight:1900, trunkVolume:550}
 };
 Object.keys(CAR_CLASSES).forEach(function(k){
   const c = CAR_CLASSES[k];
@@ -422,6 +489,19 @@ Object.keys(CAR_CLASSES).forEach(function(k){
   c.depreciationRate = Math.round(rest * 0.65 * 10) / 10;
   c.otherRate = Math.round((rest - c.depreciationRate) * 10) / 10;
 });
+
+/* Uppdatering 2026-07-31: Släp-konstanter, se PRD_slap.md för bakgrund och antaganden */
+const TRAILER = {
+  totalWeight: 750,      // kg, antagen 750 kg-klass
+  load: 600,             // kg nyttolast, antaget default (redigerbart i UI)
+  volume: 1170,          // liter (ca 250×125×37,5 cm lastyta)
+  rentalPerDay: 350       // kr/dygn, K (Circle K/OKQ8-snitt)
+};
+const TRAILER_FUEL_SURCHARGE = 0.25;        // +25% på bränsledelen av kr/mil, A
+const PACKAGING_VOLUME_FACTOR = 1.6;        // liter vätska -> ungefärlig kartongvolym, A
+const BRIDGE_TRAILER_MULTIPLIER = 2;        // Öresundsbron, K (745 -> 1490 kr, exakt dubbelt)
+const FERRY_PUTTGARDEN_TRAILER_SURCHARGE = 340; // kr, schablon för Scandlines längdtillägg, A
+const FERRY_ROSTOCK_TRAILER_MULTIPLIER = 2; // Stena Line, A (extrapolerat, ej källbelagt)
 
 const DISTANCES = {
   puttgarden:{lund:212, malmo:191, kalmar:475, jonkoping:497, stockholm:818},
@@ -488,6 +568,17 @@ function scheduleRowsHtml(rows){
   }).join('');
 }
 
+/* Uppdatering 2026-07-31: avgångstid som eget fält, hela klockslag 04–20, default 06:00 */
+function populateDepTimes(){
+  const sel = document.getElementById('depTime');
+  const options = [];
+  for (let h = 4; h <= 20; h++){
+    const clock = pad2(h) + ':00';
+    options.push('<option value="' + clock + '"' + (h === 6 ? ' selected' : '') + '>' + clock + '</option>');
+  }
+  sel.innerHTML = options.join('');
+}
+
 /* Uppdatering 2026-07-29: Bordershop-länkar per destination (aktuella ölpriser) */
 const SHOP_LINKS = {
   puttgarden: {
@@ -521,7 +612,7 @@ function updateShopLinks(dest){
   }
 }
 
-function updateSchedule(start, dest, distKm){
+function updateSchedule(start, dest, distKm, depTimeValue){
   const city = START_LABELS[start] || start;
   const title = document.getElementById('scheduleTitle');
   const table = document.getElementById('scheduleTable');
@@ -529,10 +620,8 @@ function updateSchedule(start, dest, distKm){
   const driveMin = driveMinutes(distKm);
 
   if (dest === 'puttgarden'){
-    // Dagsresa via Öresundsbron + Rødby–Puttgarden (~45 min överfart)
-    // Bas: Lund avgår 08:00; andra orter justeras med skillnad i körtid
-    const baseDrive = driveMinutes(DISTANCES.puttgarden.lund);
-    const dep = addMin('08:00', baseDrive - driveMin); // längre körning → tidigare avgång
+    // Uppdatering 2026-07-31: avgångstid är nu ett fritt val istället för bakåträknat från fast bastid
+    const dep = depTimeValue;
     const atRodby = addMin(dep, driveMin);
     const checkInEnd = addMin(atRodby, 30);
     const ferryArrive = addMin(checkInEnd, 45);
@@ -566,8 +655,8 @@ function updateSchedule(start, dest, distKm){
   }
 
   // Rostock: lång överfart (ca 6 h) – exempel med morgonfärja ut och eftermiddagsfärja hem
-  // Uppdatering 2026-07-29: eget schema för Trelleborg–Rostock
-  const dep = addMin('06:00', driveMinutes(DISTANCES.rostock.lund) - driveMin);
+  // Uppdatering 2026-07-31: avgångstid är nu ett fritt val istället för bakåträknat från fast bastid
+  const dep = depTimeValue;
   const atTrelleborg = addMin(dep, driveMin);
   const checkInEnd = addMin(atTrelleborg, 30);
   // Typisk dagfärja ca 07:30–13:30 (6 h) – justera start till närmaste "checkInEnd" om senare
@@ -606,6 +695,38 @@ function updateSchedule(start, dest, distKm){
     ' · <a href="' + SHOP_LINKS.rostock.beerUrl + '" target="_blank" rel="noopener">Ölpriser BorderShop Rostock ↗</a>';
 }
 
+/* Uppdatering 2026-07-31: fast scenario "90 flak 33 cl" – oberoende av vald förpackning ovan */
+function updateFlak90Panel(carLoad, trailerOn, trailerLoad, pax){
+  const panel = document.getElementById('flak90Panel');
+  if (!panel) return;
+  const burk = PACKAGES.burk33;
+  const totalFlak = 90;
+  const totalBeers = totalFlak * burk.unitsPerBox;
+  const weightPerFlak = burk.unitsPerBox * burk.weight;
+
+  const trailerMaxFlak = trailerOn ? Math.floor(trailerLoad / weightPerFlak) : 0;
+  const flakOnTrailer = Math.min(totalFlak, trailerMaxFlak);
+  const flakInCar = totalFlak - flakOnTrailer;
+  const carWeightNeeded = flakInCar * weightPerFlak;
+  const carRemainingLoad = Math.max(carLoad - pax * PASSENGER_ALLOWANCE_KG, 0);
+  const fitsInCar = carWeightNeeded <= carRemainingLoad;
+
+  const totalLiters = totalBeers * burk.liter;
+  const legalLimitTotal = LEGAL_LIMIT_LITERS * pax;
+  const overLegal = totalLiters > legalLimitTotal;
+
+  let html = '<p style="margin:0 0 6px; font-weight:600;">90 flak (33 cl) = ' + fmt(totalBeers) + ' öl, ' + fmt(totalLiters) + ' liter</p>';
+  html += '<table><tr><td>På släpet' + (trailerOn ? '' : ' (inget släp valt just nu – allt måste i bilen)') + '</td><td>' + flakOnTrailer + ' flak</td></tr>';
+  html += '<tr><td>I bilen</td><td>' + flakInCar + ' flak (' + fmt(carWeightNeeded) + ' kg)</td></tr></table>';
+  if (!fitsInCar){
+    html += '<p style="margin:8px 0 0; color:var(--danger);">Får troligen inte plats: bilens kvarvarande nyttolast (' + fmt(carRemainingLoad) + ' kg efter ' + pax + ' person(er)) räcker inte till de ' + flakInCar + ' flak som måste i bilen.</p>';
+  }
+  if (overLegal){
+    html += '<p style="margin:8px 0 0; color:var(--danger);">Överskrider EU:s riktmärke (' + fmt(legalLimitTotal) + ' liter för ' + pax + ' person(er)) – 90 flak motsvarar ' + fmt(totalLiters) + ' liter.</p>';
+  }
+  panel.innerHTML = html;
+}
+
 function calc(){
   const start = document.getElementById('start').value;
   const dest = document.getElementById('dest').value;
@@ -613,6 +734,14 @@ function calc(){
   const carClass = document.getElementById('carClass').value;
   const packKey = document.getElementById('pack').value;
   const pkg = PACKAGES[packKey];
+
+  // Uppdatering 2026-07-31: släp-läge, se PRD_slap.md
+  const trailerOn = document.getElementById('trailerMode').checked;
+  document.getElementById('trailerOptions').style.display = trailerOn ? '' : 'none';
+  const trailerLoadOverride = parseFloat(document.getElementById('trailerLoadOverride').value);
+  const trailerLoad = trailerOn ? (isNaN(trailerLoadOverride) ? TRAILER.load : trailerLoadOverride) : 0;
+  const trailerPaid = document.getElementById('trailerCostPaid').checked;
+  const trailerRentalCost = (trailerOn && trailerPaid) ? TRAILER.rentalPerDay : 0;
 
   document.getElementById('bridgeField').style.display = dest === 'puttgarden' ? '' : 'none';
   document.getElementById('ferryField').querySelector('label').innerHTML =
@@ -626,48 +755,59 @@ function calc(){
 
   const bridgeCost = dest === 'puttgarden' ? parseFloat(document.getElementById('bridgeTier').value) : 0;
   const ferryCost = parseFloat(document.getElementById('ferryTier').value);
+  // Uppdatering 2026-07-31: bro/färja blir dyrare med släp
+  const effectiveBridgeCost = bridgeCost * (trailerOn ? BRIDGE_TRAILER_MULTIPLIER : 1);
+  const effectiveFerryCost = dest === 'puttgarden'
+    ? ferryCost + (trailerOn ? FERRY_PUTTGARDEN_TRAILER_SURCHARGE : 0)
+    : ferryCost * (trailerOn ? FERRY_ROSTOCK_TRAILER_MULTIPLIER : 1);
 
   const distKm = DISTANCES[dest][start];
   const distMil = distKm / 10;
   const cc = CAR_CLASSES[carClass];
   const fuskOn = document.getElementById('fuskMode').checked;
-  const carRate = fuskOn ? cc.fuelRate : cc.rate;
+  // Uppdatering 2026-07-31: bränsledelen ökar med släp (TRAILER_FUEL_SURCHARGE)
+  const effectiveFuelRate = Math.round(cc.fuelRate * (trailerOn ? (1 + TRAILER_FUEL_SURCHARGE) : 1) * 10) / 10;
+  const carRate = fuskOn ? effectiveFuelRate : (cc.depreciationRate + cc.otherRate + effectiveFuelRate);
   const drivingCost = distMil * 2 * carRate;
 
   document.getElementById('fuskField').style.background = fuskOn ? 'var(--danger-bg)' : '';
 
   const rateRows = [
-    ['Bränsle (' + cc.consumption + ' l/mil × ' + FUEL_PRICE + ' kr/l)', cc.fuelRate.toFixed(1) + ' kr/mil']
+    ['Bränsle (' + cc.consumption + ' l/mil × ' + FUEL_PRICE + ' kr/l' + (trailerOn ? ', +25% för släp' : '') + ')', effectiveFuelRate.toFixed(1) + ' kr/mil']
   ];
   if (fuskOn){
     rateRows.push(['Värdeminskning, skatt, försäkring, service', 'ignoreras i fusk-läge']);
-    rateRows.push(['<strong>Totalt (fusk-läge)</strong>', '<strong>' + cc.fuelRate.toFixed(1) + ' kr/mil</strong>']);
+    rateRows.push(['<strong>Totalt (fusk-läge)</strong>', '<strong>' + effectiveFuelRate.toFixed(1) + ' kr/mil</strong>']);
   } else {
     rateRows.push(['Värdeminskning (uppskattat)', cc.depreciationRate.toFixed(1) + ' kr/mil']);
     rateRows.push(['Skatt, försäkring, service m.m. (uppskattat)', cc.otherRate.toFixed(1) + ' kr/mil']);
-    rateRows.push(['<strong>Totalt</strong>', '<strong>' + cc.rate.toFixed(1) + ' kr/mil</strong>']);
+    rateRows.push(['<strong>Totalt</strong>', '<strong>' + carRate.toFixed(1) + ' kr/mil</strong>']);
   }
   document.getElementById('rateTable').innerHTML = rateRows.map(function(r){
     return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td></tr>';
   }).join('');
-  const tollCost = (bridgeCost + ferryCost) * 2;
-  const totalCost = tollCost + drivingCost;
+  const tollCost = (effectiveBridgeCost + effectiveFerryCost) * 2;
+  const totalCost = tollCost + drivingCost + trailerRentalCost;
 
   const totalMil = (distMil * 2).toLocaleString('sv-SE', {maximumFractionDigits:1});
   const rows = [];
   if (dest === 'puttgarden'){
-    rows.push(['Öresundsbron, tur och retur', fmt(bridgeCost) + ' × 2 = ' + fmt(bridgeCost*2) + ' kr']);
+    rows.push(['Öresundsbron, tur och retur' + (trailerOn ? ' (med släp)' : ''), fmt(effectiveBridgeCost) + ' × 2 = ' + fmt(effectiveBridgeCost*2) + ' kr']);
   }
-  rows.push(['Färja, tur och retur', fmt(ferryCost) + ' × 2 = ' + fmt(ferryCost*2) + ' kr']);
+  rows.push(['Färja, tur och retur' + (trailerOn ? ' (med släp)' : ''), fmt(effectiveFerryCost) + ' × 2 = ' + fmt(effectiveFerryCost*2) + ' kr']);
   rows.push(['Körsträcka', fmt(distKm) + ' km × 2 = ' + totalMil + ' mil']);
   rows.push(['Bilkostnad (' + carRate.toFixed(1) + ' kr/mil' + (fuskOn ? ', fusk-läge' : '') + ')', totalMil + ' mil × ' + carRate.toFixed(1) + ' kr/mil = ' + fmt(drivingCost) + ' kr']);
+  if (trailerOn && trailerRentalCost > 0){
+    rows.push(['Släpvagnshyra (1 dygn)', fmt(trailerRentalCost) + ' kr']);
+  }
   rows.push(['<strong>Total resekostnad</strong>', '<strong>' + fmt(totalCost) + ' kr</strong>']);
   document.getElementById('costTable').innerHTML = rows.map(function(r){
     return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td></tr>';
   }).join('');
 
-  // Uppdatering 2026-07-29: tidsschema följer startort + destination
-  updateSchedule(start, dest, distKm);
+  // Uppdatering 2026-07-31: tidsschema följer startort + destination + vald avgångstid
+  const depTimeValue = document.getElementById('depTime').value;
+  updateSchedule(start, dest, distKm, depTimeValue);
 
   const se = parseFloat(document.getElementById('sePrice').value);
   const de = parseFloat(document.getElementById('dePrice').value);
@@ -689,24 +829,60 @@ function calc(){
 
   const carLoadOverride = parseFloat(document.getElementById('carLoadOverride').value);
   const carLoad = isNaN(carLoadOverride) ? CAR_CLASSES[carClass].load : carLoadOverride;
-  const remainingLoad = Math.max(carLoad - pax * PASSENGER_ALLOWANCE_KG, 0);
+  // Uppdatering 2026-07-31: släpets nyttolast läggs till bilens vid teknisk viktgräns
+  const remainingLoad = Math.max((carLoad + trailerLoad) - pax * PASSENGER_ALLOWANCE_KG, 0);
   const maxByWeight = Math.floor(remainingLoad / pkg.weight);
 
   const warnWeight = document.getElementById('warnWeight');
   if (beers > maxByWeight){
-    warnWeight.textContent = 'Får troligen inte plats: bilens nyttolast (' + carLoad + ' kg, minus ' + pax + ' person(er)) räcker till ungefär ' + fmt(maxByWeight) + ' öl av den här sorten.';
+    warnWeight.textContent = 'Tekniskt max (vikt): bilens nyttolast' + (trailerOn ? ' + släpets nyttolast (' + fmt(trailerLoad) + ' kg)' : '') + ' (' + fmt(carLoad + trailerLoad) + ' kg, minus ' + pax + ' person(er)) räcker till ungefär ' + fmt(maxByWeight) + ' öl av den här sorten.';
     warnWeight.classList.add('show');
   } else {
     warnWeight.classList.remove('show');
   }
 
+  // Uppdatering 2026-07-31: ny volymbaserad rimlighetskontroll, vid sidan av vikt och lag
+  const availableVolume = cc.trunkVolume + (trailerOn ? TRAILER.volume : 0);
+  const boxVolume = liters * PACKAGING_VOLUME_FACTOR;
+  const maxByVolume = Math.floor((availableVolume / PACKAGING_VOLUME_FACTOR) / pkg.liter);
+  const warnVolume = document.getElementById('warnVolume');
+  if (beers > maxByVolume){
+    warnVolume.textContent = 'Volymmässigt (grov uppskattning): bagageutrymmet' + (trailerOn ? ' + släpet' : '') + ' (ca ' + fmt(availableVolume) + ' liter) rymmer ungefär ' + fmt(maxByVolume) + ' öl innan det är fysiskt fullpackat – oavsett vad vikten tillåter.';
+    warnVolume.classList.add('show');
+  } else {
+    warnVolume.classList.remove('show');
+  }
+
+  // Uppdatering 2026-07-31: 40 km/h-regeln för obromsat släp (bara textvarning, påverkar inte schemat)
+  const warnSpeed = document.getElementById('warnSpeed');
+  if (trailerOn){
+    const halfCurb = cc.curbWeight / 2;
+    const speedLimited = TRAILER.totalWeight > halfCurb;
+    if (speedLimited){
+      warnSpeed.innerHTML = 'Med den här bilen (antagen tjänstevikt ' + fmt(cc.curbWeight) + ' kg) och ett fullastat obromsat släp (750 kg) gäller i Sverige max <strong>40 km/h</strong>, inte 80 km/h – släpets vikt överstiger halva bilens tjänstevikt. Gäller bara i Sverige, inte i Danmark/Tyskland. <span class="badge src" data-note="speedLimitSweden">K</span>';
+    } else {
+      warnSpeed.innerHTML = 'Med den här bilen håller släpet sig under halva bilens tjänstevikt – 80 km/h gäller som vanligt, hela vägen. <span class="badge src" data-note="speedLimitSweden">K</span>';
+    }
+    warnSpeed.classList.add('show');
+    warnSpeed.classList.toggle('danger', speedLimited);
+    attachBadgeHandlers();
+  } else {
+    warnSpeed.classList.remove('show');
+    warnSpeed.classList.remove('danger');
+  }
+
   const warnLegal = document.getElementById('warnLegal');
   const legalLimitTotal = LEGAL_LIMIT_LITERS * pax;
   if (liters > legalLimitTotal){
-    warnLegal.innerHTML = 'Överskrider EU:s vägledande riktmärke på ' + LEGAL_LIMIT_LITERS + ' liter öl per person (' + legalLimitTotal + ' liter för ' + pax + ' person(er) i bilen) för privat införsel – du har räknat fram ' + Math.round(liters) + ' liter. <a href="https://europa.eu/youreurope/citizens/travel/carry/alcohol-tobacco-cash/index_sv.htm" target="_blank" rel="noopener">Källa: Your Europe (EU) ↗</a>';
+    warnLegal.innerHTML = 'Lagligt max: överskrider EU:s vägledande riktmärke på ' + LEGAL_LIMIT_LITERS + ' liter öl per person (' + legalLimitTotal + ' liter för ' + pax + ' person(er) i bilen) för privat införsel – du har räknat fram ' + Math.round(liters) + ' liter. <a href="https://europa.eu/youreurope/citizens/travel/carry/alcohol-tobacco-cash/index_sv.htm" target="_blank" rel="noopener">Källa: Your Europe (EU) ↗</a>';
     warnLegal.classList.add('show');
   } else {
     warnLegal.classList.remove('show');
+  }
+
+  // Uppdatering 2026-07-31: 90-flak-panelen hålls i synk med resten av kalkylen
+  if (typeof updateFlak90Panel === 'function'){
+    updateFlak90Panel(carLoad, trailerOn, trailerLoad, pax);
   }
 }
 
@@ -768,13 +944,16 @@ function renderSourceList(){
   }).join('');
 }
 
-['start','dest','pax','bridgeTier','ferryTier','carClass','carLoadOverride','sePrice','dePrice','fuskMode'].forEach(function(id){
+['start','dest','pax','depTime','bridgeTier','ferryTier','carClass','carLoadOverride','sePrice','dePrice','fuskMode','trailerMode','trailerCostFree','trailerCostPaid','trailerLoadOverride'].forEach(function(id){
   document.getElementById(id).addEventListener('input', calc);
   document.getElementById(id).addEventListener('change', calc);
 });
 document.getElementById('pack').addEventListener('change', updatePackageDefaults);
 document.getElementById('deTier').addEventListener('change', updatePackageDefaults);
 document.getElementById('carClass').addEventListener('change', updateCarDefaults);
+document.getElementById('show90Flak').addEventListener('click', function(){
+  document.getElementById('flak90Panel').classList.toggle('show');
+});
 
 const techbtn = document.getElementById('techbtn');
 const techpanel = document.getElementById('techpanel');
@@ -785,6 +964,7 @@ techbtn.addEventListener('click', function(e){
 
 attachBadgeHandlers();
 renderSourceList();
+populateDepTimes();
 updateCarDefaults();
 updatePackageDefaults();
 
@@ -869,7 +1049,7 @@ updatePackageDefaults();
     }, 700);
   }
 
-  ['start','dest','pax','bridgeTier','ferryTier','carClass','carLoadOverride','sePrice','dePrice','fuskMode','pack','deTier']
+  ['start','dest','pax','depTime','bridgeTier','ferryTier','carClass','carLoadOverride','sePrice','dePrice','fuskMode','pack','deTier','trailerMode','trailerCostFree','trailerCostPaid','trailerLoadOverride']
     .forEach(function(id){
       const el = document.getElementById(id);
       if (!el) return;
