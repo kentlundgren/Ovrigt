@@ -110,11 +110,15 @@ Källa: [Transportstyrelsen – Släpvagn och husvagn](https://www.transportstyr
 
 ## 6. UI-tillägg
 
-- Kryssruta: **"Kör med släpvagn (750 kg-klass)"** – aktiverar allt ovan
-- Två kryssrutor för kostnad (ömsesidigt uteslutande):
-  - "Lånat släp (gratis)" → 0 kr
-  - "Hyrt släp (rimlig kostnad)" → ~350 kr/dygn
-- Ny varning: 40 km/h-risk baserat på vald bilklass + släpvikt
+- **Eget nytt "Släp"-kort** (samma nivå som Resa/Bil/Öl-korten, inte inbyggt i Bil-kortet):
+  - Kryssruta: **"Kör med släpvagn (750 kg-klass)"** – aktiverar allt nedan
+  - Två kryssrutor för kostnad (ömsesidigt uteslutande):
+    - "Lånat släp (gratis)" → 0 kr
+    - "Hyrt släp (rimlig kostnad)" → ~350 kr/dygn
+- Ny varning: 40 km/h-risk baserat på vald bilklass + släpvikt.
+  **Beslutat:** endast textvarning – påverkar INTE tidsschemats beräkning (som fortsätter
+  räkna med dagens ~80 km/h-schablon). Varningen förklarar bara att verklig hastighet i
+  Sverige kan bli 40 km/h med den valda kombinationen.
 - Ny volym-varning vid sidan av dagens vikt- och lag-varningar
 - Knapp/växel: **"Visa: vad blir det om jag köper 90 flak (33 cl)?"** – fast scenario,
   inte ett fritt inmatningsfält. Visar fördelning släp/bil och totalkostnad för exakt 90 flak.
@@ -134,15 +138,21 @@ Källa: [Transportstyrelsen – Släpvagn och husvagn](https://www.transportstyr
 
 ---
 
-## 8. Öppna frågor inför/under kodning
+## 8. Öppna frågor – status
 
-- [ ] Är antagna tjänstevikter (1 050/1 450/1 900 kg) rimliga, eller ska de justeras?
-- [ ] Är bagagevolym-antagandena (320/420/550 liter) rimliga?
-- [ ] Är 25 % bränslepåslag okej som schablon?
-- [ ] Ska 40 km/h-varningen påverka tidsschemat automatiskt (dubblar körtiden), eller bara visas som text?
-- [ ] Exakt UI-placering: eget "Släp"-kort, eller inbyggt i befintligt "Bil"-kort?
-- [ ] Ska släp-alternativet aktiveras för Rostock-rutten också, trots att Stena Lines
-      släptillägg är ett rent antagande?
+Alla punkter nedan är nu beslutade genom dialog. Om något visar sig fel eller
+orimligt när appen väl syns i webbläsaren tas det upp och ändras då – men det
+räknas som att fixa ett fel, inte som att ändra scope (se avsnitt 9 om PRD:ns
+livscykel i den här mappens README/CLAUDE.md-diskussion).
+
+- [x] Tjänstevikter (1 050/1 450/1 900 kg) – inga invändningar, körs som de står
+- [x] Bagagevolym-antaganden (320/420/550 liter) – inga invändningar, körs som de står
+- [x] 25 % bränslepåslag – accepterat, kodplacering specificerad i avsnitt 4
+- [x] 40 km/h-varningen: **bara textvarning**, påverkar inte tidsschemats beräkning
+- [x] UI-placering: **eget nytt "Släp"-kort**, inte inbyggt i "Bil"-kortet
+- [x] Rostock-rutten: **inkluderas**, med släptillägg som tydligt flaggat antagande (se avsnitt 4)
+
+**PRD:n är nu komplett nog för att kodning ska kunna starta.**
 
 ---
 
