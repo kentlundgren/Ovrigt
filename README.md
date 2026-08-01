@@ -118,4 +118,4 @@ Commit och push är alltid användarens (Kents) ansvar.
 
 ---
 
-_README v1.2, 2026-07-28_
+_README v1.3, 2026-08-01_
