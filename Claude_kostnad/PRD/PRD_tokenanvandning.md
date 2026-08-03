@@ -3,15 +3,32 @@
 **Namn:** PRD_tokenanvandning
 **Plats:** `Claude_kostnad/PRD/PRD_tokenanvandning.md`
 **Skapad:** 2026-08-03
-**Version:** 4 (ny delfråga i tillagd: faktura/påfyllning vs. faktisk
-förbrukning av usage credits)
-**Status:** Alla delfrågor beslutade, inklusive de två nytillkomna (h om
-boostar, i om faktura vs. förbrukning). En fräscha-ögon-genomläsning
-(Regel 7) återstår innan PRD:n kan frysas.
+**Version:** 5 (ny "Kärnfrågan"-sektion tillagd överst, så huvudfrågan inte
+tappas bort bland delfrågorna)
+**Status:** Alla delfrågor beslutade. Kärnfrågan är nu explicit och
+kopplad till respektive delfråga. En fräscha-ögon-genomläsning (Regel 7)
+återstår innan PRD:n kan frysas.
 **Typ:** Grund-PRD — helt nytt, fristående projekt i `Ovrigt`-repot. Följer
 strukturen i [PRD_generell.md](https://github.com/kentlundgren/AI-teknik/blob/main/AI_modeller/Claude/olika_Claude_modeller/PRD/PRD_generell.md)
 (AI-teknik-repot, Claude-kompassens PRD-mall) men bygger inte vidare på
 kompassen själv.
+
+## Kärnfrågan
+
+> Ligger jag i fas med mitt Pro-abonnemang — **just nu**, **senaste veckan**
+> och **denna månad (innevarande cykel)**?
+
+Det är den enda fråga verktyget faktiskt måste besvara. Allt annat i det
+här dokumentet — terminologi-mappningen, boostar (delfråga h), fakturor vs.
+förbrukning (delfråga i) — är hinder på vägen dit: saker som annars gör att
+ett rakt "ja/nej-svar just nu" blir fel om de ignoreras. Tre svar,
+kopplade till Anthropics tre faktiska cykler (se Terminologi nedan):
+
+| Kents fråga | Besvaras av | Delfråga att räkna med |
+|---|---|---|
+| Ligger jag i fas **just nu**? | Current session — förbrukat/kvar av 5h-cykeln | — |
+| Har jag legat i fas **senaste veckan**? | Weekly limits — förbrukat/kvar, omräknat mot normal baslinje om boost är aktiv | h |
+| Ligger jag i fas **denna månad**? | Usage credits — förbrukning denna cykel (Usage-sidan, inte fakturor) | i |
 
 ## 1. Bakgrund
 
@@ -82,9 +99,11 @@ hanterar detta.
 
 ## 2. Syfte
 
+- **Svara direkt på Kärnfrågan** (se ovan): ligger Kent i fas med sitt
+  Pro-abonnemang just nu, senaste veckan och denna månad — utan att han
+  själv behöver räkna om eller tolka tre olika UI-sidor mentalt varje gång.
 - Ge Kent ett sätt att på några sekunder se **förbrukat vs. kvar** i var och
-  en av de tre faktiska cyklerna (session, vecka, usage credits), i stället
-  för att tolka tre olika UI-sidor mentalt varje gång.
+  en av de tre faktiska cyklerna (session, vecka, usage credits).
 - Skapa en korrekt, källbelagd mappning mellan Kents dygn/vecka/månads-språk
   och Anthropics faktiska återställningscykler, så framtida beslut (t.ex.
   "kan jag köra en tung session till idag?") bygger på rätt modell.
@@ -252,17 +271,21 @@ terminologi-tabellen i avsnitt 1 och delfråga c.)*
 
 ## 8. Status
 
-Alla nio delfrågor (a–i) beslutade. Verktyget blir en stateless HTML-
-kalkylator (session/vecka/usage credits, inget konstruerat dygnsbegrepp),
-som dessutom räknar om veckoprocenten mot Kents normala 100%-baslinje när
-en tillfällig boost är aktiv — inte bara mot den boostade gränsen Anthropic
-själv visar — och som håller isär förbrukning (Usage-sidan, sanningskällan
-för månadsmätningen) från påfyllningshändelser (Billing-sidans fakturor,
-valfri historisk kontext). Kompletterad med en manuellt förd `data.md`-logg
-för historik och en veckovis påminnelse. Inget SPEC.md-steg behövs.
-Kvarstår innan frysning: en fräscha-ögon-genomläsning av hela dokumentet
-(Regel 7). Ingen kod skriven ännu, i linje med Kents uttryckliga instruktion
-om att detta är planeringsfasen.
+Kärnfrågan ("ligger jag i fas — just nu, senaste veckan, denna månad?")
+är nu explicit högst upp i dokumentet, med en direkt koppling till
+respektive Anthropic-cykel och delfråga, så den inte tappas bort bland
+detaljerna. Alla nio delfrågor (a–i) beslutade. Verktyget blir en stateless
+HTML-kalkylator (session/vecka/usage credits, inget konstruerat
+dygnsbegrepp), som dessutom räknar om veckoprocenten mot Kents normala
+100%-baslinje när en tillfällig boost är aktiv — inte bara mot den boostade
+gränsen Anthropic själv visar — och som håller isär förbrukning
+(Usage-sidan, sanningskällan för månadsmätningen) från
+påfyllningshändelser (Billing-sidans fakturor, valfri historisk kontext).
+Kompletterad med en manuellt förd `data.md`-logg för historik och en
+veckovis påminnelse. Inget SPEC.md-steg behövs. Kvarstår innan frysning:
+en fräscha-ögon-genomläsning av hela dokumentet (Regel 7). Ingen kod
+skriven ännu, i linje med Kents uttryckliga instruktion om att detta är
+planeringsfasen.
 
 ## Ändringslogg
 
@@ -293,3 +316,9 @@ om att detta är planeringsfasen.
   sanningskällan för månadsmätningen i `data.md`, inte fakturabeloppen —
   fakturor är valfri historisk kontext. Terminologitabellen, Bakgrund,
   Leveranser, Produktionsordning och Status uppdaterade.
+- 2026-08-03 (v5): Ny "Kärnfrågan"-sektion tillagd direkt efter header-
+  fälten, på Kents begäran — huvudfrågan ("ligger jag i fas: just nu,
+  senaste veckan, denna månad?") riskerade att drunkna bland delfrågorna
+  c–i. Sektionen kopplar varje delfråga (h, i) till exakt vilken av de tre
+  frågorna den påverkar. Syfte-avsnittets första punkt omformulerad för att
+  leda med samma formulering. Status uppdaterad.
