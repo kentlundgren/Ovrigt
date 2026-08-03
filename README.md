@@ -19,6 +19,7 @@ _Version 1.3, 2026-08-01_
 | [`Hemma/laddboxar/`](Hemma/laddboxar/) | Utredning av elbilsladdning – Långkatekesens Samfällighetsförening |
 | [`Hemma/VM_tips/`](Hemma/VM_tips/) | VM 2026-tips (familjetips och analys) |
 | [`Fritid/ol_Tyskland/`](Fritid/ol_Tyskland/) | Ölkalkylen – lönar det sig att köra till Tyskland? |
+| [`Claude_kostnad/`](Claude_kostnad/) | Claude-kostnad – ligger jag i fas med mitt Pro-abonnemang? |
 | `main_has_no_remote_branch.html` | Biprojekt: Git & GitHub-guide – koppla Cursor till GitHub |
 | `KentLundgren/` | **Gitignorerad, spåras inte i det här repot.** Se eget avsnitt nedan. |
 
@@ -38,6 +39,28 @@ _Version 1.3, 2026-08-01_
 Interaktiv kalkylator som räknar ut hur många öl du behöver köpa i Tyskland för att resan ska löna sig, givet startort, bil, bro/färja och ölpriser.
 
 Se mer i [`Fritid/ol_Tyskland/README.md`](Fritid/ol_Tyskland/README.md).
+
+---
+
+## Claude-kostnad
+
+### Live-sida (GitHub Pages)
+
+| Sida | URL |
+| ---- | --- |
+| Claude-kostnad | [index.html – live](https://kentlundgren.github.io/Ovrigt/Claude_kostnad/index.html) |
+
+### Om projektet
+
+Litet, fristående verktyg som svarar på: ligger jag i fas med mitt Claude
+Pro-abonnemang — just nu (session), senaste veckan, och denna månad (usage
+credits)? Räknar dessutom om veckoprocenten mot den normala 100%-baslinjen
+när en tillfällig gränshöjning ("boost") är aktiv. Data matas in manuellt;
+historik sparas i [`Claude_kostnad/data.md`](Claude_kostnad/data.md), inte
+i webbläsaren.
+
+Se mer i [`Claude_kostnad/README.md`](Claude_kostnad/README.md) och
+[`Claude_kostnad/PRD/PRD_tokenanvandning.md`](Claude_kostnad/PRD/PRD_tokenanvandning.md).
 
 ---
 

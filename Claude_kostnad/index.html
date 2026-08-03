@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude-kostnad – ligger jag i fas med mitt Pro-abonnemang?</title>
+<style>
+  :root{
+    --bg:#f5f4f1; --card:#ffffff; --border:#e2e0da; --border-strong:#c9c6bd;
+    --text:#26241f; --text-secondary:#6b675e; --text-muted:#98948a;
+    --accent:#185fa5; --accent-bg:#e6f1fb;
+    --ok:#1a7a4c; --ok-bg:#e4f5eb;
+    --warn:#854f0b; --warn-bg:#faeeda;
+    --danger:#a32d2d; --danger-bg:#fcebeb;
+    --input-bg:#fffbe0; --input-border:#e9dfa0;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg); color:var(--text); line-height:1.5;
+  }
+  .site-nav{
+    display:flex; align-items:center; background:#1a3a5c; color:#fff;
+    padding:0 20px; height:44px; gap:4px; position:sticky; top:0; z-index:100;
+    overflow-x:auto;
+  }
+  .site-nav .nav-brand{
+    font-family:"Courier New",monospace; font-weight:bold; font-size:1.05em;
+    color:#fff; text-decoration:none; white-space:nowrap;
+  }
+  .site-nav .nav-brand:hover{color:#c8d8e8;}
+  .nav-sep{color:#7a9bbf; margin:0 5px; font-family:"Courier New",monospace; font-size:0.95em;}
+  .nav-crumb{color:#9ab4cc; text-decoration:none; font-family:"Courier New",monospace; font-size:0.95em; white-space:nowrap;}
+  .nav-crumb:hover{color:#fff;}
+  .nav-crumb.active{color:#fff;}
+  .nav-author{color:#566e88; font-size:0.9em; white-space:nowrap; margin-left:auto; padding-left:16px; font-family:"Courier New",monospace;}
+
+  .wrap{max-width:720px; margin:0 auto; padding:1.5rem 1rem 6rem;}
+  h1{font-size:22px; font-weight:600; margin:0 0 4px;}
+  .sub{font-size:14px; color:var(--text-secondary); margin:0 0 1.25rem;}
+
+  .core{border-radius:12px; padding:1rem 1.1rem; margin-bottom:16px; text-align:center;}
+  .core .q{font-size:12.5px; text-transform:uppercase; letter-spacing:0.03em; opacity:0.85; margin:0 0 6px;}
+  .core .a{font-size:18px; font-weight:600; margin:0;}
+  .core.ok{background:var(--ok-bg); color:var(--ok);}
+  .core.warn{background:var(--warn-bg); color:var(--warn);}
+  .core.danger{background:var(--danger-bg); color:var(--danger);}
+
+  .card{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1rem 1.1rem; margin-bottom:12px;}
+  .card h2{font-size:15px; font-weight:600; margin:0 0 2px;}
+  .card .card-note{font-size:12.5px; color:var(--text-secondary); margin:0 0 10px;}
+  .row{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .row.three{grid-template-columns:1fr 1fr 1fr;}
+  @media (max-width:520px){ .row, .row.three{grid-template-columns:1fr;} }
+  label{font-size:12.5px; color:var(--text-secondary); display:block; margin-bottom:3px;}
+  select, input[type=number], input[type=date], input[type=text]{
+    width:100%; padding:8px 9px; font-size:14px; border-radius:8px;
+    border:1px solid var(--input-border); background:var(--input-bg); color:var(--text);
+  }
+  select:focus, input:focus{outline:2px solid var(--accent); outline-offset:1px;}
+  .field{margin-bottom:2px;}
+
+  .outputs{margin-top:12px; padding-top:12px; border-top:1px dashed var(--border);}
+  .outrow{display:flex; justify-content:space-between; align-items:baseline; font-size:13.5px; padding:3px 0;}
+  .outrow .k{color:var(--text-secondary);}
+  .outrow .v{font-weight:600;}
+  .status{margin-top:10px; padding:8px 10px; border-radius:8px; font-size:13px;}
+  .status.ok{background:var(--ok-bg); color:var(--ok);}
+  .status.warn{background:var(--warn-bg); color:var(--warn);}
+  .status.danger{background:var(--danger-bg); color:var(--danger);}
+
+  .logbox{margin-top:8px;}
+  .logbox textarea{
+    width:100%; min-height:64px; font-family:"Courier New",monospace; font-size:12px;
+    padding:8px; border-radius:8px; border:1px solid var(--border); background:var(--bg); color:var(--text); resize:vertical;
+  }
+  .logbtn{
+    appearance:none; border:1px solid var(--accent); background:var(--accent-bg); color:var(--accent);
+    font:inherit; font-size:13px; font-weight:600; padding:8px 14px; border-radius:8px; cursor:pointer;
+  }
+  .logbtn:hover{background:var(--accent); color:#fff;}
+  .logbtn:active{transform:translateY(1px);}
+  .copied{font-size:12.5px; color:var(--ok); margin-left:8px; display:none;}
+  .copied.show{display:inline;}
+
+  .foot{font-size:12px; color:var(--text-muted); text-align:center; margin-top:1.5rem;}
+  .foot a{color:var(--text-secondary);}
+
+  .github-corner{
+    position:fixed; bottom:14px; left:14px;
+    font-family:"Courier New",monospace; font-size:0.78em;
+    color:#aaa; text-decoration:none; opacity:0.55;
+    transition:opacity 0.2s, color 0.2s; z-index:999;
+  }
+  .github-corner:hover{opacity:1; color:#1a3a5c;}
+</style>
+</head>
+<body>
+<nav class="site-nav">
+  <a class="nav-brand" href="../index.html">{ O } Ovrigt</a>
+  <span class="nav-sep">/</span>
+  <span class="nav-crumb active">Claude-kostnad</span>
+  <span class="nav-author">Kent Lundgren</span>
+</nav>
+
+<div class="wrap">
+  <h1>Ligger jag i fas med mitt Pro-abonnemang?</h1>
+  <p class="sub">Läs av Inställningar → Usage/Billing i claude.ai och mata in siffrorna nedan. Allt beräknas direkt i webbläsaren, inget sparas här — kopiera raden längst ner till <a href="data.md">data.md</a> om du vill spara historik.</p>
+
+  <div class="core ok" id="coreBanner">
+    <p class="q">Kärnfrågan</p>
+    <p class="a" id="coreText">Fyll i siffrorna nedan för att se läget</p>
+  </div>
+
+  <!-- Session (just nu) -->
+  <div class="card">
+    <h2>Just nu — session</h2>
+    <p class="card-note">Current session i Usage-vyn. Återställs var 5:e timme — det finns ingen riktig "per dygn"-mätare hos Anthropic.</p>
+    <div class="row">
+      <div class="field">
+        <label for="sessPct">Använt av sessionsgränsen (%)</label>
+        <input id="sessPct" type="number" min="0" max="100" step="1" placeholder="t.ex. 27">
+      </div>
+      <div class="field">
+        <label for="sessReset">Återstår till reset (valfritt, t.ex. "2h 49min")</label>
+        <input id="sessReset" type="text" placeholder="2h 49min">
+      </div>
+    </div>
+    <div class="outputs">
+      <div class="outrow"><span class="k">Kvar just nu</span><span class="v" id="sessRemaining">–</span></div>
+    </div>
+    <div class="status" id="sessStatus" style="display:none;"></div>
+  </div>
+
+  <!-- Vecka (senaste veckan) -->
+  <div class="card">
+    <h2>Senaste veckan</h2>
+    <p class="card-note">Weekly limits i Usage-vyn. Kan vara tillfälligt boostad — Anthropic visar då andelen av den boostade gränsen, inte mot ditt normala abonnemang. Ange boost-% om en gäller, så räknas båda ut.</p>
+    <div class="row three">
+      <div class="field">
+        <label for="weekProduct">Produkt</label>
+        <select id="weekProduct">
+          <option value="claude-code" selected>Claude Code</option>
+          <option value="cowork">Cowork</option>
+          <option value="annat">Annat / alla modeller</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="weekPct">Använt av (ev. boostad) gräns (%)</label>
+        <input id="weekPct" type="number" min="0" max="100" step="0.1" placeholder="t.ex. 55">
+      </div>
+      <div class="field">
+        <label for="weekReset">Återställs (valfritt, t.ex. "Thu 7:59 AM")</label>
+        <input id="weekReset" type="text" placeholder="Thu 7:59 AM">
+      </div>
+    </div>
+    <div class="row" style="margin-top:10px;">
+      <div class="field">
+        <label for="boostPct">Aktiv boost just nu (%) — 0 om ingen</label>
+        <input id="boostPct" type="number" min="0" step="1" value="0">
+      </div>
+      <div class="field">
+        <label for="boostEnd">Boostens slutdatum (valfritt)</label>
+        <input id="boostEnd" type="date">
+      </div>
+    </div>
+    <div class="outputs">
+      <div class="outrow"><span class="k">Kvar mot aktiv (ev. boostad) gräns</span><span class="v" id="weekRemainingActive">–</span></div>
+      <div class="outrow"><span class="k">Motsvarar av din <strong>normala</strong> 100%-baslinje</span><span class="v" id="weekNormalPct">–</span></div>
+      <div class="outrow"><span class="k">Kvar mot normal baslinje</span><span class="v" id="weekRemainingNormal">–</span></div>
+    </div>
+    <div class="status" id="weekStatus" style="display:none;"></div>
+  </div>
+
+  <!-- Månad (usage credits denna cykel) -->
+  <div class="card">
+    <h2>Denna månad — usage credits</h2>
+    <p class="card-note">Använd "€X spent, resets [datum]" från Usage-sidan — <strong>inte</strong> fakturorna på Billing-sidan. Fakturor visar när du fyllt på saldot, inte vad du förbrukat.</p>
+    <div class="row three">
+      <div class="field">
+        <label for="creditSpent">Spenderat denna cykel (€)</label>
+        <input id="creditSpent" type="number" min="0" step="0.01" placeholder="t.ex. 6.13">
+      </div>
+      <div class="field">
+        <label for="creditLimit">Din månadsgräns (€)</label>
+        <input id="creditLimit" type="number" min="0" step="0.5" value="20">
+      </div>
+      <div class="field">
+        <label for="creditReset">Cykeln återställs</label>
+        <input id="creditReset" type="date">
+      </div>
+    </div>
+    <div class="outputs">
+      <div class="outrow"><span class="k">Andel av månadsgränsen</span><span class="v" id="creditPct">–</span></div>
+      <div class="outrow"><span class="k">Kvar i euro</span><span class="v" id="creditRemaining">–</span></div>
+      <div class="outrow"><span class="k">Dagar kvar av cykeln</span><span class="v" id="creditDaysLeft">–</span></div>
+      <div class="outrow"><span class="k">Budget kvar per dag (om du vill hålla dig inom gränsen)</span><span class="v" id="creditPerDay">–</span></div>
+    </div>
+    <div class="status" id="creditStatus" style="display:none;"></div>
+  </div>
+
+  <div class="card">
+    <h2>Kopiera rad till data.md</h2>
+    <p class="card-note">Klistra in raden i tabellen i <a href="data.md">data.md</a> för att spara en historisk avläsning.</p>
+    <div class="logbox">
+      <textarea id="logRow" readonly></textarea>
+      <div style="margin-top:8px;">
+        <button type="button" class="logbtn" id="copyBtn">Kopiera rad</button>
+        <span class="copied" id="copiedMsg">Kopierad!</span>
+      </div>
+    </div>
+  </div>
+
+  <p class="foot">Byggd med enbart HTML/CSS/JS, inga bibliotek, inget sparas mellan besök. Se <a href="PRD/PRD_tokenanvandning.md">PRD_tokenanvandning.md</a> för bakgrund och beslut.</p>
+</div>
+
+<a class="github-corner" href="https://github.com/kentlundgren/Ovrigt" target="_blank" rel="noopener">{ } GitHub</a>
+
+<script>
+function fmtPct(n){
+  if (isNaN(n)) return '–';
+  return (Math.round(n * 10) / 10).toLocaleString('sv-SE') + ' %';
+}
+function fmtEur(n){
+  if (isNaN(n)) return '–';
+  return (Math.round(n * 100) / 100).toLocaleString('sv-SE') + ' €';
+}
+function todayISO(){
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function daysBetween(fromISO, toISO){
+  if (!toISO) return NaN;
+  const from = new Date(fromISO + 'T00:00:00');
+  const to = new Date(toISO + 'T00:00:00');
+  return Math.round((to - from) / 86400000);
+}
+
+function setStatus(el, level, text){
+  el.className = 'status ' + level;
+  el.style.display = text ? 'block' : 'none';
+  el.textContent = text;
+}
+
+function calc(){
+  // --- Session ---
+  const sessPct = parseFloat(document.getElementById('sessPct').value);
+  const sessRemainingEl = document.getElementById('sessRemaining');
+  const sessStatusEl = document.getElementById('sessStatus');
+  let sessOk = true;
+  if (!isNaN(sessPct)){
+    const rem = 100 - sessPct;
+    sessRemainingEl.textContent = fmtPct(rem);
+    if (sessPct >= 100){
+      sessOk = false;
+      setStatus(sessStatusEl, 'danger', 'Sessionsgränsen är nådd. Väntar på nästa 5-timmarsreset.');
+    } else if (sessPct >= 85){
+      setStatus(sessStatusEl, 'warn', 'Nära sessionsgränsen — ' + fmtPct(rem) + ' kvar.');
+    } else {
+      setStatus(sessStatusEl, 'ok', 'Gott om utrymme kvar just nu.');
+    }
+  } else {
+    sessRemainingEl.textContent = '–';
+    setStatus(sessStatusEl, 'ok', '');
+  }
+
+  // --- Vecka ---
+  const weekPct = parseFloat(document.getElementById('weekPct').value);
+  const boostPct = parseFloat(document.getElementById('boostPct').value) || 0;
+  const weekRemActiveEl = document.getElementById('weekRemainingActive');
+  const weekNormalPctEl = document.getElementById('weekNormalPct');
+  const weekRemNormalEl = document.getElementById('weekRemainingNormal');
+  const weekStatusEl = document.getElementById('weekStatus');
+  let weekOk = true;
+  let weekHasData = !isNaN(weekPct);
+  if (weekHasData){
+    const remActive = 100 - weekPct;
+    const normalPct = weekPct * (1 + boostPct / 100);
+    const remNormal = 100 - normalPct;
+    weekRemActiveEl.textContent = fmtPct(remActive);
+    weekNormalPctEl.textContent = fmtPct(normalPct);
+    weekRemNormalEl.textContent = fmtPct(remNormal);
+
+    if (normalPct > 100 && boostPct > 0){
+      weekOk = false;
+      const boostEnd = document.getElementById('boostEnd').value;
+      setStatus(weekStatusEl, 'warn',
+        'Inom din boostade gräns, men redan ' + fmtPct(normalPct - 100).replace('%','').trim() + ' procentenheter över din normala 100%-baslinje.' +
+        (boostEnd ? ' När boosten upphör (' + boostEnd + ') återgår gränsen till normalläget.' : ' Boosten har ett slutdatum då gränsen återgår till normalläget.'));
+    } else if (weekPct >= 100){
+      weekOk = false;
+      setStatus(weekStatusEl, 'danger', 'Veckogränsen är nådd.');
+    } else if (normalPct >= 85){
+      setStatus(weekStatusEl, 'warn', 'Nära gränsen — ' + fmtPct(remNormal) + ' kvar mot din normala baslinje.');
+    } else {
+      setStatus(weekStatusEl, 'ok', 'I fas med din normala veckogräns.');
+    }
+  } else {
+    weekRemActiveEl.textContent = '–';
+    weekNormalPctEl.textContent = '–';
+    weekRemNormalEl.textContent = '–';
+    setStatus(weekStatusEl, 'ok', '');
+  }
+
+  // --- Månad / usage credits ---
+  const spent = parseFloat(document.getElementById('creditSpent').value);
+  const limit = parseFloat(document.getElementById('creditLimit').value);
+  const resetDate = document.getElementById('creditReset').value;
+  const creditPctEl = document.getElementById('creditPct');
+  const creditRemainingEl = document.getElementById('creditRemaining');
+  const creditDaysLeftEl = document.getElementById('creditDaysLeft');
+  const creditPerDayEl = document.getElementById('creditPerDay');
+  const creditStatusEl = document.getElementById('creditStatus');
+  let creditOk = true;
+  let creditHasData = !isNaN(spent) && !isNaN(limit) && limit > 0;
+  if (creditHasData){
+    const pct = (spent / limit) * 100;
+    const remaining = limit - spent;
+    creditPctEl.textContent = fmtPct(pct);
+    creditRemainingEl.textContent = fmtEur(remaining);
+
+    const daysLeft = daysBetween(todayISO(), resetDate);
+    if (!isNaN(daysLeft) && daysLeft >= 0){
+      creditDaysLeftEl.textContent = daysLeft + ' dagar';
+      if (daysLeft > 0 && remaining > 0){
+        creditPerDayEl.textContent = fmtEur(remaining / daysLeft) + ' / dag';
+      } else if (remaining <= 0){
+        creditPerDayEl.textContent = '0 € / dag (gränsen nådd)';
+      } else {
+        creditPerDayEl.textContent = '–';
+      }
+    } else {
+      creditDaysLeftEl.textContent = '–';
+      creditPerDayEl.textContent = '–';
+    }
+
+    if (spent > limit){
+      creditOk = false;
+      setStatus(creditStatusEl, 'danger', 'Du har spenderat mer än din satta månadsgräns denna cykel.');
+    } else if (pct >= 85){
+      setStatus(creditStatusEl, 'warn', 'Nära månadsgränsen — ' + fmtEur(remaining) + ' kvar.');
+    } else {
+      setStatus(creditStatusEl, 'ok', 'I fas med din månadsgräns.');
+    }
+  } else {
+    creditPctEl.textContent = '–';
+    creditRemainingEl.textContent = '–';
+    creditDaysLeftEl.textContent = '–';
+    creditPerDayEl.textContent = '–';
+    setStatus(creditStatusEl, 'ok', '');
+  }
+
+  // --- Kärnfrågan (övergripande status) ---
+  const banner = document.getElementById('coreBanner');
+  const coreText = document.getElementById('coreText');
+  const anyData = sessOk !== null && (!isNaN(sessPct) || weekHasData || creditHasData);
+  if (!anyData || (isNaN(sessPct) && !weekHasData && !creditHasData)){
+    banner.className = 'core ok';
+    coreText.textContent = 'Fyll i siffrorna nedan för att se läget';
+  } else if (!sessOk || !weekOk || !creditOk){
+    banner.className = 'core danger';
+    const parts = [];
+    if (!sessOk) parts.push('session');
+    if (!weekOk) parts.push('vecka');
+    if (!creditOk) parts.push('månad');
+    coreText.textContent = 'Inte i fas: ' + parts.join(', ');
+  } else {
+    banner.className = 'core ok';
+    coreText.textContent = 'I fas — session, vecka och månad ser bra ut';
+  }
+
+  updateLogRow();
+}
+
+function updateLogRow(){
+  const sessPct = document.getElementById('sessPct').value || '';
+  const weekProduct = document.getElementById('weekProduct').options[document.getElementById('weekProduct').selectedIndex].text;
+  const weekPct = document.getElementById('weekPct').value || '';
+  const boostPct = document.getElementById('boostPct').value || '0';
+  const boostEnd = document.getElementById('boostEnd').value || '';
+  const weekPctNum = parseFloat(document.getElementById('weekPct').value);
+  const boostPctNum = parseFloat(document.getElementById('boostPct').value) || 0;
+  const weekNormal = !isNaN(weekPctNum) ? (Math.round(weekPctNum * (1 + boostPctNum/100) * 10) / 10) : '';
+  const creditSpent = document.getElementById('creditSpent').value || '';
+  const creditLimit = document.getElementById('creditLimit').value || '';
+
+  const row = '| ' + todayISO() + ' | ' + sessPct + ' | ' + weekProduct + ' | ' + weekPct + ' | ' + boostPct + ' | ' + boostEnd + ' | ' + weekNormal + ' | ' + creditSpent + ' | ' + creditLimit + ' | |';
+  document.getElementById('logRow').value = row;
+}
+
+document.querySelectorAll('input, select').forEach(function(el){
+  el.addEventListener('input', calc);
+  el.addEventListener('change', calc);
+});
+
+document.getElementById('copyBtn').addEventListener('click', function(){
+  const ta = document.getElementById('logRow');
+  ta.select();
+  const msg = document.getElementById('copiedMsg');
+  function showCopied(){
+    msg.classList.add('show');
+    setTimeout(function(){ msg.classList.remove('show'); }, 1800);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(ta.value).then(showCopied).catch(function(){
+      document.execCommand('copy');
+      showCopied();
+    });
+  } else {
+    document.execCommand('copy');
+    showCopied();
+  }
+});
+
+calc();
+</script>
+</body>
+</html>
