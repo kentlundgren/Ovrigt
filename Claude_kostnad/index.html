@@ -106,7 +106,7 @@
 
 <div class="wrap">
   <h1>Ligger jag i fas med mitt Pro-abonnemang?</h1>
-  <p class="sub">Läs av Inställningar → Usage/Billing i claude.ai och mata in siffrorna nedan. Allt beräknas direkt i webbläsaren, inget sparas här — kopiera raden längst ner till <a href="data.md">data.md</a> om du vill spara historik.</p>
+  <p class="sub">Läs av Inställningar → Usage i claude.ai (en enda skärmdump räcker – session, vecka och usage credits visas där tillsammans) och mata in siffrorna nedan. Allt beräknas direkt i webbläsaren, inget sparas här — kopiera raden längst ner till <a href="data.md">data.md</a> om du vill spara historik. <strong>Fälten är förifyllda med den senast kända avläsningen (3 augusti 2026, kväll)</strong> — ersätt med nya siffror nästa gång du kollar.</p>
 
   <div class="core ok" id="coreBanner">
     <p class="q">Kärnfrågan</p>
@@ -120,11 +120,11 @@
     <div class="row">
       <div class="field">
         <label for="sessPct">Använt av sessionsgränsen (%)</label>
-        <input id="sessPct" type="number" min="0" max="100" step="1" placeholder="t.ex. 27">
+        <input id="sessPct" type="number" min="0" max="100" step="1" placeholder="t.ex. 27" value="27">
       </div>
       <div class="field">
         <label for="sessReset">Återstår till reset (valfritt, t.ex. "2h 49min")</label>
-        <input id="sessReset" type="text" placeholder="2h 49min">
+        <input id="sessReset" type="text" placeholder="2h 49min" value="2h 49min">
       </div>
     </div>
     <div class="outputs">
@@ -148,21 +148,21 @@
       </div>
       <div class="field">
         <label for="weekPct">Använt av (ev. boostad) gräns (%)</label>
-        <input id="weekPct" type="number" min="0" max="100" step="0.1" placeholder="t.ex. 55">
+        <input id="weekPct" type="number" min="0" max="100" step="0.1" placeholder="t.ex. 55" value="55">
       </div>
       <div class="field">
         <label for="weekReset">Återställs (valfritt, t.ex. "Thu 7:59 AM")</label>
-        <input id="weekReset" type="text" placeholder="Thu 7:59 AM">
+        <input id="weekReset" type="text" placeholder="Thu 7:59 AM" value="Thu 7:59 AM">
       </div>
     </div>
     <div class="row" style="margin-top:10px;">
       <div class="field">
         <label for="boostPct">Aktiv boost just nu (%) — 0 om ingen</label>
-        <input id="boostPct" type="number" min="0" step="1" value="0">
+        <input id="boostPct" type="number" min="0" step="1" value="50">
       </div>
       <div class="field">
         <label for="boostEnd">Boostens slutdatum (valfritt)</label>
-        <input id="boostEnd" type="date">
+        <input id="boostEnd" type="date" value="2026-08-19">
       </div>
     </div>
     <div class="outputs">
@@ -180,7 +180,7 @@
     <div class="row three">
       <div class="field">
         <label for="creditSpent">Spenderat denna cykel (€)</label>
-        <input id="creditSpent" type="number" min="0" step="0.01" placeholder="t.ex. 6.13">
+        <input id="creditSpent" type="number" min="0" step="0.01" placeholder="t.ex. 6.13" value="6.13">
       </div>
       <div class="field">
         <label for="creditLimit">Din månadsgräns (€)</label>
@@ -188,7 +188,7 @@
       </div>
       <div class="field">
         <label for="creditReset">Cykeln återställs</label>
-        <input id="creditReset" type="date">
+        <input id="creditReset" type="date" value="2026-09-01">
       </div>
     </div>
     <div class="outputs">

@@ -3,8 +3,10 @@
 **Namn:** PRD_tokenanvandning
 **Plats:** `Claude_kostnad/PRD/PRD_tokenanvandning.md`
 **Skapad:** 2026-08-03
-**Version:** 6 (fryst)
-**Status:** **Fryst av Kent, 2026-08-03.** Kodningsfasen har börjat.
+**Version:** 7 (genomfört)
+**Status:** **Genomfört, 2026-08-03.** Verktyg, `data.md`, README/nav och
+en veckovis kalenderpåminnelse är levererade och verifierade. Väntar bara
+på att Kent committar och pushar (se Ändringslogg).
 **Typ:** Grund-PRD — helt nytt, fristående projekt i `Ovrigt`-repot. Följer
 strukturen i [PRD_generell.md](https://github.com/kentlundgren/AI-teknik/blob/main/AI_modeller/Claude/olika_Claude_modeller/PRD/PRD_generell.md)
 (AI-teknik-repot, Claude-kompassens PRD-mall) men bygger inte vidare på
@@ -220,15 +222,18 @@ månaden") eftersom de visar mönster över tid som kompletterar
 - [x] Delfråga h (boost-hantering) beslutad — dubbla procenttal, per produkt
 - [x] Delfråga i (faktura vs. förbrukning) beslutad — Usage-sidans
       förbrukningssiffra är sanningskällan, fakturor är valfri historisk kontext
-- [ ] Fräscha-ögon-genomläsning genomförd (Regel 7)
+- [x] Fräscha-ögon-genomläsning genomförd (Regel 7) — en felaktig
+      korsreferens hittad och rättad i Källor
 - [x] PRD fryst av Kent (2026-08-03)
-- [ ] `Claude_kostnad/data.md` skapad (tom logg-mall med rätt kolumner,
+- [x] `Claude_kostnad/data.md` skapad (tom logg-mall med rätt kolumner,
       inkl. boost-% och boost-slutdatum per produkt)
-- [ ] HTML-verktyg byggt (separat steg, efter frysning), med
-      boost-omräkningsformeln enligt delfråga h
-- [ ] Veckovis påminnelse (schemalagt jobb) skapad
-- [ ] README.md + site-nav + GitHub-hörna enligt `Ovrigt/CLAUDE.md` (när
-      HTML-sidan skapas)
+- [x] HTML-verktyg byggt, testat i webbläsaren (räknar korrekt: 55%×1,5
+      boost = 82,5%; gränsfallet 95%×1,5 = 142,5% ger rätt varning) —
+      boost-omräkningsformeln enligt delfråga h verifierad
+- [x] Veckovis påminnelse skapad — återkommande kalenderhändelse (måndagar
+      09:00, Europe/Stockholm), inte ett schemalagt Claude-jobb (se
+      resonemang i produktionsordningen nedan)
+- [x] README.md + site-nav + GitHub-hörna enligt `Ovrigt/CLAUDE.md`
 
 ## 6. Produktionsordning
 
@@ -244,7 +249,14 @@ månaden") eftersom de visar mönster över tid som kompletterar
    övriga kalkyler) — stateless kalkylator som läser Kents manuella
    inmatning för stunden och räknar om mot normal baslinje enligt
    formeln i delfråga h.
-6. Sätt upp den veckovisa påminnelsen (schemalagt jobb).
+6. Sätt upp den veckovisa påminnelsen. **Genomfört som:** en återkommande
+   kalenderhändelse (måndagar 09:00, Europe/Stockholm) i stället för ett
+   schemalagt Claude-jobb — avvägning gjord vid implementation: ett
+   session-bundet cron-jobb överlever inte mellan sessioner (max 7 dagar,
+   session-only), och en fullständig molnbaserad Claude Code-rutin är
+   tyngre infrastruktur än en påminnelse kräver och kan ändå inte läsa
+   Kents inloggade claude.ai-session — den skulle bara skicka ett
+   textmeddelande, precis som kalenderhändelsen redan gör.
 7. Lägg till README.md, site-nav och GitHub-hörna enligt checklistan i
    `Ovrigt/CLAUDE.md`.
 8. Påminn Kent om commit (Kent commitar och pushar själv).
@@ -279,10 +291,12 @@ gränsen Anthropic själv visar — och som håller isär förbrukning
 (Usage-sidan, sanningskällan för månadsmätningen) från
 påfyllningshändelser (Billing-sidans fakturor, valfri historisk kontext).
 Kompletterad med en manuellt förd `data.md`-logg för historik och en
-veckovis påminnelse. Inget SPEC.md-steg behövs. Kvarstår innan frysning:
-en fräscha-ögon-genomläsning av hela dokumentet (Regel 7). Ingen kod
-skriven ännu, i linje med Kents uttryckliga instruktion om att detta är
-planeringsfasen.
+veckovis kalenderpåminnelse. Inget SPEC.md-steg behövdes. Allt är nu
+byggt och verifierat: `index.html` testat i webbläsaren mot Kents egna
+siffror (inklusive gränsfallet över normal baslinje), `data.md` skapad,
+README/site-nav/GitHub-hörna på plats i både `Claude_kostnad/` och
+`Ovrigt`-roten, och en återkommande kalenderhändelse skapad (måndagar
+09:00). Enda återstående steget är att Kent committar och pushar själv.
 
 ## Ändringslogg
 
@@ -319,3 +333,13 @@ planeringsfasen.
   c–i. Sektionen kopplar varje delfråga (h, i) till exakt vilken av de tre
   frågorna den påverkar. Syfte-avsnittets första punkt omformulerad för att
   leda med samma formulering. Status uppdaterad.
+- 2026-08-03 (v6): PRD fryst av Kent. Kodningsfasen startad.
+- 2026-08-03 (v7): Genomfört. `index.html` byggt och testat i webbläsaren
+  (verifierat mot Kents egna siffror: 55%×1,5-boost → 82,5% normalbaslinje;
+  gränsfallet 95%×1,5 → 142,5% ger korrekt "inte i fas"-varning med
+  boost-slutdatum). `data.md` skapad med rätt kolumner. README.md skapad i
+  `Claude_kostnad/`, `Ovrigt/index.html` och `Ovrigt/README.md` uppdaterade
+  med länk, nav-post och section-card. Veckovis påminnelse implementerad
+  som en återkommande kalenderhändelse (måndagar 09:00, Europe/Stockholm)
+  i stället för ett schemalagt Claude-jobb — motivering i
+  Produktionsordning, punkt 6. Leveranser och Status uppdaterade.
