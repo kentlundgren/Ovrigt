@@ -155,7 +155,7 @@
   <!-- Vecka (senaste veckan) -->
   <div class="card">
     <h2>Senaste veckan</h2>
-    <p class="card-note">Weekly limits i Usage-vyn. Kan vara tillfälligt boostad — Anthropic visar då andelen av den boostade gränsen, inte mot ditt normala abonnemang. Ange boost-% om en gäller, så räknas båda ut.</p>
+    <p class="card-note">Weekly limits i Usage-vyn. Kan vara tillfälligt boostad — Anthropic visar då andelen av den boostade gränsen, inte mot ditt normala abonnemang. Byter du produkt fylls kända boost-värden i automatiskt (redigerbart). <strong>Osäkert:</strong> vi vet inte om "All models"-talet i Usage-vyn är en kombinerad siffra för Claude Code + Cowork, eller specifik för en av dem — kontrollera om Cowork har en egen separat vecko-mätare innan du återanvänder samma avlästa % för båda.</p>
     <div class="row three">
       <div class="field">
         <label for="weekProduct">Produkt</label>
@@ -263,6 +263,17 @@
 <a class="github-corner" href="https://github.com/kentlundgren/Ovrigt" target="_blank" rel="noopener">{ } GitHub</a>
 
 <script>
+// Kända tillfälliga boostar per produkt (från Kents skärmdump 2026-08-03) — används för att
+// autofylla boost-fälten när "Produkt" byts, så väljaren faktiskt påverkar uträkningen.
+const KNOWN_BOOSTS = {
+  'claude-code': {pct: 50, end: '2026-08-19'},
+  'cowork': {pct: 100, end: '2026-08-05'},
+  'annat': {pct: 0, end: ''}
+};
+
+let latestWeekTimeElapsed = NaN;
+let latestPaceBufferPP = NaN;
+
 function fmtPct(n){
   if (isNaN(n)) return '–';
   return (Math.round(n * 10) / 10).toLocaleString('sv-SE') + ' %';
@@ -373,13 +384,18 @@ function calc(){
       weekTimeElapsedEl.textContent = fmtPct(pctTimeElapsed);
 
       const paceBuffer = pctTimeElapsed - normalPct;
+      latestWeekTimeElapsed = pctTimeElapsed;
+      latestPaceBufferPP = paceBuffer;
       let paceLevel = 'ok';
-      let paceText = 'Vid linjär takt borde du ha förbrukat ' + fmtPct(pctTimeElapsed) + ' just nu (' + fmtPct(pctTimeElapsed) + ' av veckan har gått). Du ligger ' + fmtPct(Math.abs(paceBuffer)) + ' ' + (paceBuffer >= 0 ? 'under' : 'över') + ' linjär takt.';
+      const overUnder = paceBuffer >= 0 ? 'under' : 'över';
+      let paceText = 'Vid linjär takt borde du ha förbrukat ' + fmtPct(pctTimeElapsed) + ' av veckoransonen, eftersom det har gått ' + fmtPct(pctTimeElapsed) + ' av tiden till återställning. Men du har förbrukat ' + fmtPct(normalPct) + ' av en normal veckoranson. Därmed ligger du ' + fmtPct(Math.abs(paceBuffer)).replace('%','procentenheter') + ' ' + overUnder + ' linjär takt (' + fmtPct(normalPct) + ' − ' + fmtPct(pctTimeElapsed) + ').';
       if (paceBuffer < -10){ paceLevel = 'danger'; }
       else if (paceBuffer < 0){ paceLevel = 'warn'; }
       setStatus(weekPaceStatusEl, paceLevel, paceText);
     } else {
       weekTimeElapsedEl.textContent = '–';
+      latestWeekTimeElapsed = NaN;
+      latestPaceBufferPP = NaN;
       setStatus(weekPaceStatusEl, 'ok', '');
     }
 
@@ -395,9 +411,9 @@ function calc(){
       setStatus(weekStatusEl, 'danger', 'Veckogränsen är nådd.');
     } else if (normalPct >= 85){
       weekLevel = 'warn';
-      setStatus(weekStatusEl, 'warn', 'Nära gränsen — ' + fmtPct(remNormal) + ' kvar mot din normala baslinje.');
+      setStatus(weekStatusEl, 'warn', ''); // hero + takt-raden nedan täcker redan detta, ingen egen textruta
     } else {
-      setStatus(weekStatusEl, 'ok', 'I fas med din normala veckogräns.');
+      setStatus(weekStatusEl, 'ok', '');
     }
     setHero(weekHeroNumEl, weekBarEl, weekLevel, fmtPct(normalPct), normalPct);
     if (boostPct > 0){
@@ -506,14 +522,29 @@ function updateLogRow(){
   const weekNormal = !isNaN(weekPctNum) ? (Math.round(weekPctNum * (1 + boostPctNum/100) * 10) / 10) : '';
   const creditSpent = document.getElementById('creditSpent').value || '';
   const creditLimit = document.getElementById('creditLimit').value || '';
+  const timeElapsed = isNaN(latestWeekTimeElapsed) ? '' : (Math.round(latestWeekTimeElapsed * 10) / 10);
+  // Loggad med omvänt tecken mot den interna paceBuffer-variabeln: positivt tal här = över takt
+  // (normalbaslinje % − andel av veckan gången), för att matcha beskrivningen i data.md.
+  const paceBuffer = isNaN(latestPaceBufferPP) ? '' : (Math.round(-latestPaceBufferPP * 10) / 10);
 
-  const row = '| ' + todayISO() + ' | ' + sessPct + ' | ' + weekProduct + ' | ' + weekPct + ' | ' + boostPct + ' | ' + boostEnd + ' | ' + weekNormal + ' | ' + creditSpent + ' | ' + creditLimit + ' | |';
+  const row = '| ' + todayISO() + ' | ' + sessPct + ' | ' + weekProduct + ' | ' + weekPct + ' | ' + boostPct + ' | ' + boostEnd + ' | ' + weekNormal + ' | ' + timeElapsed + ' | ' + paceBuffer + ' | ' + creditSpent + ' | ' + creditLimit + ' | |';
   document.getElementById('logRow').value = row;
 }
 
 document.querySelectorAll('input, select').forEach(function(el){
   el.addEventListener('input', calc);
   el.addEventListener('change', calc);
+});
+
+// Byt produkt -> fyll i kända boost-värden för just den produkten (se KNOWN_BOOSTS ovan).
+// Går att skriva över manuellt efteråt.
+document.getElementById('weekProduct').addEventListener('change', function(){
+  const known = KNOWN_BOOSTS[this.value];
+  if (known){
+    document.getElementById('boostPct').value = known.pct;
+    document.getElementById('boostEnd').value = known.end;
+    calc();
+  }
 });
 
 document.getElementById('copyBtn').addEventListener('click', function(){

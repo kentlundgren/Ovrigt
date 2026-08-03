@@ -11,13 +11,20 @@ Kolumnen **Vecka % (normalbaslinje)** är den viktiga när en boost är aktiv
 — den visar var du står mot ditt *normala* abonnemang, inte mot den
 tillfälligt höjda gränsen. Formel: `avläst % × (1 + boost % / 100)`.
 
+Kolumnerna **Andel av veckan gången** och **Takt-avvikelse** visar om du
+ligger i fas *över tid*, inte bara just nu: andel av veckan gången jämförs
+med Vecka % (normalbaslinje) — om de är lika ligger du precis i fas.
+Takt-avvikelse = normalbaslinje % − andel av veckan gången, i
+procentenheter. Positivt tal = du ligger över linjär takt (förbrukar
+snabbare än tiden går), negativt = du ligger under (marginal kvar).
+
 **Usage credits denna cykel** kommer från Usage-sidans "€X spent, resets
 [datum]" — *inte* från fakturorna på Billing-sidan (de är påfyllningar,
 inte förbrukning, se delfråga i).
 
-| Datum | Session % (just nu) | Vecka-produkt | Vecka % (mot aktiv gräns) | Aktiv boost % | Boost slutdatum | Vecka % (normalbaslinje) | Usage credits denna cykel (€) | Usage credits-gräns (€) | Anteckning |
-|---|---|---|---|---|---|---|---|---|---|
-| | | | | | | | | | |
+| Datum | Session % (just nu) | Vecka-produkt | Vecka % (mot aktiv gräns) | Aktiv boost % | Boost slutdatum | Vecka % (normalbaslinje) | Andel av veckan gången (%) | Takt-avvikelse (pp) | Usage credits denna cykel (€) | Usage credits-gräns (€) | Anteckning |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| | | | | | | | | | | | |
 
 ## Historisk kontext (frivilligt, ej del av mätningen)
 
