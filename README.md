@@ -1,6 +1,6 @@
 # Ovrigt – Kent Lundgrens övriga projekt
 
-_Version 1.3, 2026-08-01_
+_Version 1.4, 2026-08-04_
 
 ---
 
@@ -55,12 +55,19 @@ Se mer i [`Fritid/ol_Tyskland/README.md`](Fritid/ol_Tyskland/README.md).
 Litet, fristående verktyg som svarar på: ligger jag i fas med mitt Claude
 Pro-abonnemang — just nu (session), senaste veckan, och denna månad (usage
 credits)? Räknar dessutom om veckoprocenten mot den normala 100%-baslinjen
-när en tillfällig gränshöjning ("boost") är aktiv. Data matas in manuellt;
-historik sparas i [`Claude_kostnad/data.md`](Claude_kostnad/data.md), inte
-i webbläsaren.
+när en tillfällig gränshöjning ("boost") är aktiv, med separat hantering
+per produkt (Claude Code/Cowork). Usage credits-kortet har hover/klick-
+förklaringar (med källor) för begrepp som saldo, månadsgräns och
+promotional credit. Data matas in manuellt; historik sparas i
+[`Claude_kostnad/data.md`](Claude_kostnad/data.md), inte i webbläsaren.
 
 Se mer i [`Claude_kostnad/README.md`](Claude_kostnad/README.md) och
 [`Claude_kostnad/PRD/PRD_tokenanvandning.md`](Claude_kostnad/PRD/PRD_tokenanvandning.md).
+
+**Claude Code-skill:** arbetssättet, mekaniken och den återkommande
+veckorutinen för det här projektet är dokumenterade som en egen,
+projektlokal skill —
+[`Claude_kostnad/.claude/skills/claude-kostnad/SKILL.md`](Claude_kostnad/.claude/skills/claude-kostnad/SKILL.md).
 
 ---
 
@@ -141,4 +148,4 @@ Commit och push är alltid användarens (Kents) ansvar.
 
 ---
 
-_README v1.3, 2026-08-01_
+_README v1.4, 2026-08-04_
