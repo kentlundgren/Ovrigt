@@ -3,10 +3,12 @@
 **Namn:** PRD_tokenanvandning
 **Plats:** `Claude_kostnad/PRD/PRD_tokenanvandning.md`
 **Skapad:** 2026-08-03
-**Version:** 7 (genomfört)
-**Status:** **Genomfört, 2026-08-03.** Verktyg, `data.md`, README/nav och
-en veckovis kalenderpåminnelse är levererade och verifierade. Väntar bara
-på att Kent committar och pushar (se Ändringslogg).
+**Version:** 8 (vidareutvecklat efter frysning)
+**Status:** **Genomfört och vidareutvecklat.** Verktyg, `data.md`,
+README/nav, veckovis kalenderpåminnelse, månadstakt, hover-tooltips och
+en rättad Kärnfrågan-banner är levererade och verifierade. Skillen
+`claude-kostnad` är projektlokal och kanonisk. Väntar på att Kent
+committar och pushar (se Ändringslogg).
 **Typ:** Grund-PRD — helt nytt, fristående projekt i `Ovrigt`-repot. Följer
 strukturen i [PRD_generell.md](https://github.com/kentlundgren/AI-teknik/blob/main/AI_modeller/Claude/olika_Claude_modeller/PRD/PRD_generell.md)
 (AI-teknik-repot, Claude-kompassens PRD-mall) men bygger inte vidare på
@@ -343,3 +345,24 @@ README/site-nav/GitHub-hörna på plats i både `Claude_kostnad/` och
   som en återkommande kalenderhändelse (måndagar 09:00, Europe/Stockholm)
   i stället för ett schemalagt Claude-jobb — motivering i
   Produktionsordning, punkt 6. Leveranser och Status uppdaterade.
+- 2026-08-04 (v8): Efter frysning, ytterligare iteration på begäran av Kent:
+  (1) samma takt-jämförelse (andel av cykeln gången vs. förbrukad andel)
+  tillagd för månaden/usage credits, inte bara veckan — bygger på ett nytt,
+  flaggat antagande om att usage credits-cykeln följer kalendermånader.
+  (2) Bugg rättad: produktväljaren ("Annat/alla modeller") nollställde
+  boost-fälten i stället för att lämna dem orörda — kunde ge falskt lågt
+  resultat. (3) Hover/klick-tooltips (badge-mönster från Ölkalkylen) för
+  "Monthly spend limit", "Current balance" och "Promotional credit", med
+  källor — plus rena referensfält för dessa i usage credits-kortet.
+  (4) H1 omformulerad till att explicit nämna tokens/vecka/månad, på Kents
+  begäran. (5) **Bugg rättad: "Kärnfrågan"-bannern (Status: I fas/Inte i
+  fas) räknade bara på hårda gränser (>100%), aldrig på takt-avvikelsen —
+  kunde visa grönt "I fas" trots att både vecka och månad låg >20
+  procentenheter över linjär takt.** Kent upptäckte detta genom att
+  jämföra bannerns slutsats med de redan beräknade takt-talen. Samma
+  tröskel (>10 procentenheter över takt = "inte i fas") som redan färgar
+  de enskilda korten kopplades nu in i den övergripande bannerns logik.
+  (6) Skillen `claude-kostnad` flyttad från global till projektlokal
+  kanonisk plats (`Claude_kostnad/.claude/skills/claude-kostnad/SKILL.md`),
+  med bara en kort pekare kvar globalt — Kent ville kunna se/pusha/länka
+  skillen tillsammans med `Ovrigt`-repot.

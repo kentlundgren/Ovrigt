@@ -85,6 +85,18 @@ räcker — session, vecka och usage credits visas där tillsammans):
   utgång om oanvänd. Verktyget har rena referensfält för dessa tre
   begrepp (påverkar ingen beräkning) med hover/klick-tooltips + källor,
   samma badge/tooltip-mönster som Ölkalkylen (`Fritid/ol_Tyskland/index.html`).
+- **Månadstakt (samma mönster som veckan):** andel av usage credits-cykeln
+  som gått jämförs med andel av gränsen förbrukad. Cykelstart härleds som
+  "en kalendermånad före reset-datumet" — ett antagande, flaggat i verktyget.
+- **"Kärnfrågan"-bannern (toppen av sidan) måste räkna på takt, inte bara
+  hårda gränser.** Ett verkligt fel 2026-08-04: bannern visade grönt "I fas"
+  fast både vecka och månad låg >20 procentenheter över linjär takt, för att
+  dess ok/danger-logik bara kollade `normalPct > 100` och liknande hårda
+  villkor — aldrig `paceBuffer`. Rättat genom att koppla in samma tröskel
+  (>10 procentenheter över takt) som redan färgar de enskilda korten. Om du
+  lägger till fler mätvärden eller fler jämförelser i framtiden: kontrollera
+  alltid att den övergripande bannerns logik faktiskt speglar allt som visas
+  längre ner på sidan, inte bara de ursprungliga hårda gränserna.
 
 ## Arbetssätt att respektera (gäller alla projekt i Ovrigt, inte bara detta)
 
@@ -112,3 +124,8 @@ räcker — session, vecka och usage credits visas där tillsammans):
   nu bara en kort pekare hit. Tillägg: hover/klick-tooltips (badge-mönster
   från Ölkalkylen) för "Monthly spend limit", "Current balance" och
   "Promotional credit" i usage credits-kortet, med källor.
+- 2026-08-04 (v3): Månadstakt tillagd (samma mönster som veckan). H1
+  omformulerad på Kents begäran. Bugg rättad: produktväljaren "Annat"
+  nollställde boost-fälten. **Viktigare bugg rättad: Kärnfrågan-bannern
+  räknade bara på hårda gränser, aldrig på takt-avvikelsen** — se egen
+  punkt under "Viktiga mekaniker" ovan.

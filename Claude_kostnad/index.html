@@ -477,7 +477,7 @@ function calc(){
       let paceLevel = 'ok';
       const overUnder = paceBuffer >= 0 ? 'under' : 'över';
       let paceText = 'Vid linjär takt borde du ha förbrukat ' + fmtPct(pctTimeElapsed) + ' av veckoransonen, eftersom det har gått ' + fmtPct(pctTimeElapsed) + ' av tiden till återställning. Men du har förbrukat ' + fmtPct(normalPct) + ' av en normal veckoranson. Därmed ligger du ' + fmtPct(Math.abs(paceBuffer)).replace('%','procentenheter') + ' ' + overUnder + ' linjär takt (' + fmtPct(normalPct) + ' − ' + fmtPct(pctTimeElapsed) + ').';
-      if (paceBuffer < -10){ paceLevel = 'danger'; }
+      if (paceBuffer < -10){ paceLevel = 'danger'; weekOk = false; }
       else if (paceBuffer < 0){ paceLevel = 'warn'; }
       setStatus(weekPaceStatusEl, paceLevel, paceText);
     } else {
@@ -573,7 +573,7 @@ function calc(){
       latestMonthPaceBufferPP = monthPaceBuffer;
       const overUnderM = monthPaceBuffer >= 0 ? 'under' : 'över';
       let paceLevelM = 'ok';
-      if (monthPaceBuffer < -10){ paceLevelM = 'danger'; }
+      if (monthPaceBuffer < -10){ paceLevelM = 'danger'; creditOk = false; }
       else if (monthPaceBuffer < 0){ paceLevelM = 'warn'; }
       const paceTextM = 'Vid linjär takt borde du ha förbrukat ' + fmtPct(pctMonthElapsed) + ' av månadsgränsen, eftersom det har gått ' + fmtPct(pctMonthElapsed) + ' av månaden. Men du har förbrukat ' + fmtPct(pct) + '. Därmed ligger du ' + fmtPct(Math.abs(monthPaceBuffer)).replace('%','procentenheter') + ' ' + overUnderM + ' linjär takt (' + fmtPct(pct) + ' − ' + fmtPct(pctMonthElapsed) + ').';
       setStatus(creditPaceStatusEl, paceLevelM, paceTextM);
