@@ -84,6 +84,22 @@
   .status.warn{background:var(--warn-bg); color:var(--warn);}
   .status.danger{background:var(--danger-bg); color:var(--danger);}
 
+  .badge{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:16px; height:16px; border-radius:50%; font-size:10px; font-weight:600;
+    border:none; cursor:help; vertical-align:middle; margin-left:4px; padding:0;
+    background:var(--accent-bg); color:var(--accent);
+  }
+  #tooltip{
+    position:fixed; max-width:280px; background:var(--text); color:#fff;
+    font-size:12.5px; padding:8px 10px; border-radius:8px; z-index:200; display:none; line-height:1.4;
+  }
+  #tooltip a{color:#bcd7f5;}
+  .ref-row{display:flex; justify-content:space-between; align-items:baseline; font-size:13px; padding:4px 0;}
+  .ref-row .k{color:var(--text-secondary);}
+  .ref-row .v{font-weight:600;}
+  .ref-block{margin-top:10px; padding-top:10px; border-top:1px dashed var(--border);}
+
   .logbox{margin-top:8px;}
   .logbox textarea{
     width:100%; min-height:64px; font-family:"Courier New",monospace; font-size:12px;
@@ -155,7 +171,7 @@
   <!-- Vecka (senaste veckan) -->
   <div class="card">
     <h2>Senaste veckan</h2>
-    <p class="card-note">Weekly limits i Usage-vyn. Kan vara tillfälligt boostad — Anthropic visar då andelen av den boostade gränsen, inte mot ditt normala abonnemang. Byter du produkt fylls kända boost-värden i automatiskt (redigerbart). <strong>Osäkert:</strong> vi vet inte om "All models"-talet i Usage-vyn är en kombinerad siffra för Claude Code + Cowork, eller specifik för en av dem — kontrollera om Cowork har en egen separat vecko-mätare innan du återanvänder samma avlästa % för båda.</p>
+    <p class="card-note">Weekly limits i Usage-vyn. Kan vara tillfälligt boostad — Anthropic visar då andelen av den boostade gränsen, inte mot ditt normala abonnemang. Byter du produkt fylls kända boost-värden i automatiskt (redigerbart). <strong>Osäkert, men trolig tolkning:</strong> "All models" ligger i samma ruta som Claude Code-boosten och Cowork syns inte alls här — sannolikt betyder "All models" "alla Claude-modeller inom din Claude Code-vecko-pott", inte Claude Code + Cowork ihopslaget. Välj då "Claude Code" i listan, inte "Annat", om du inte vet säkert. "Annat" rör inte boost-fälten — den lämnar dem som de var, den antar aldrig 0%.</p>
     <div class="row three">
       <div class="field">
         <label for="weekProduct">Produkt</label>
@@ -215,14 +231,14 @@
   <!-- Månad (usage credits denna cykel) -->
   <div class="card">
     <h2>Denna månad — usage credits</h2>
-    <p class="card-note">Använd "€X spent, resets [datum]" från Usage-sidan — <strong>inte</strong> fakturorna på Billing-sidan. Fakturor visar när du fyllt på saldot, inte vad du förbrukat.</p>
+    <p class="card-note">Använd "€X spent, resets [datum]" från Usage-sidan — <strong>inte</strong> fakturorna på Billing-sidan. Fakturor visar när du fyllt på saldot, inte vad du förbrukat. <strong>Antagande, ej bekräftat av Anthropic:</strong> cykeln antas följa kalendermånader (från den 1:a till nästa 1:a) eftersom "Resets Sep 1" pekar på det — stämmer det inte för dig, blir takt-jämförelsen nedan missvisande.</p>
     <div class="row three">
       <div class="field">
         <label for="creditSpent">Spenderat denna cykel (€)</label>
         <input id="creditSpent" type="number" min="0" step="0.01" placeholder="t.ex. 6.13" value="6.13">
       </div>
       <div class="field">
-        <label for="creditLimit">Din månadsgräns (€)</label>
+        <label for="creditLimit">Din månadsgräns (€) <span class="badge" data-note="monthlySpendLimit">i</span></label>
         <input id="creditLimit" type="number" min="0" step="0.5" value="20">
       </div>
       <div class="field">
@@ -241,8 +257,28 @@
       <div class="outrow"><span class="k">Kvar i euro</span><span class="v" id="creditRemaining">–</span></div>
       <div class="outrow"><span class="k">Dagar kvar av cykeln</span><span class="v" id="creditDaysLeft">–</span></div>
       <div class="outrow"><span class="k">Budget kvar per dag (om du vill hålla dig inom gränsen)</span><span class="v" id="creditPerDay">–</span></div>
+      <div class="outrow"><span class="k">Andel av månaden som gått</span><span class="v" id="creditTimeElapsed">–</span></div>
     </div>
     <div class="status" id="creditStatus" style="display:none;"></div>
+    <div class="status" id="creditPaceStatus" style="display:none;"></div>
+
+    <div class="ref-block">
+      <p class="card-note" style="margin-bottom:8px;">Rena referensfält nedan — påverkar ingen beräkning ovan, bara till för att hålla koll på ditt förbetalda saldo. Hovra (eller tryck på mobil) på <span class="badge" data-note="currentBalance" style="margin-left:0;">i</span>-ikonerna för förklaring och källa.</p>
+      <div class="row three">
+        <div class="field">
+          <label for="refBalance">Nuvarande saldo (€) <span class="badge" data-note="currentBalance">i</span></label>
+          <input id="refBalance" type="number" min="0" step="0.01" value="104.75">
+        </div>
+        <div class="field">
+          <label for="refPromo">Varav promotional credit (€) <span class="badge" data-note="promotionalCredit">i</span></label>
+          <input id="refPromo" type="number" min="0" step="0.01" value="64.54">
+        </div>
+        <div class="field">
+          <label for="refPromoExpiry">Promotional credit utgår</label>
+          <input id="refPromoExpiry" type="date" value="2026-09-19">
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="card">
@@ -260,19 +296,71 @@
   <p class="foot">Byggd med enbart HTML/CSS/JS, inga bibliotek, inget sparas mellan besök. Se <a href="PRD/PRD_tokenanvandning.md">PRD_tokenanvandning.md</a> för bakgrund och beslut.</p>
 </div>
 
+<div id="tooltip"></div>
 <a class="github-corner" href="https://github.com/kentlundgren/Ovrigt" target="_blank" rel="noopener">{ } GitHub</a>
 
 <script>
 // Kända tillfälliga boostar per produkt (från Kents skärmdump 2026-08-03) — används för att
 // autofylla boost-fälten när "Produkt" byts, så väljaren faktiskt påverkar uträkningen.
+// "annat" ingår MEDVETET inte här: "All models" i Usage-vyn ligger inne i samma boost-ruta
+// som Claude Code, så att anta 0% boost för "Annat" vore ett osant antagande — bättre att
+// lämna fälten orörda (vad de än stod på innan) än att tyst nollställa dem.
 const KNOWN_BOOSTS = {
   'claude-code': {pct: 50, end: '2026-08-19'},
-  'cowork': {pct: 100, end: '2026-08-05'},
-  'annat': {pct: 0, end: ''}
+  'cowork': {pct: 100, end: '2026-08-05'}
 };
+
+// Förklaringar till badge-ikonerna (hovra/klicka) i usage credits-kortet.
+const NOTES = {
+  monthlySpendLimit: {
+    text: 'Ditt eget satta tak för hur mycket av usage credits-saldot du får förbruka per månad — en separat kontroll, inte samma pott som "Nuvarande saldo".',
+    source: 'Claude Help Center, "Manage usage credits for paid Claude plans"',
+    url: 'https://support.claude.com/en/articles/12429409-manage-usage-credits-for-paid-claude-plans'
+  },
+  currentBalance: {
+    text: 'Ditt förbetalda usage credits-saldo (pengar du köpt i förväg), som dras ner när du överskrider plangränserna. En separat pott från månadsgränsen.',
+    source: 'Claude Help Center, "Manage usage credits for paid Claude plans"',
+    url: 'https://support.claude.com/en/articles/12429409-manage-usage-credits-for-paid-claude-plans'
+  },
+  promotionalCredit: {
+    text: 'En bonuskredit Anthropic gett dig, ingår i saldot ovan men har ett eget utgångsdatum. Anthropic dokumenterar inte officiellt vad som händer om den inte hinner användas — ett community-rapporterat buggärende tyder på att oanvänd promotional credit kan försvinna vid utgång.',
+    source: 'GitHub-ärende #76087, anthropics/claude-code (ej officiell bekräftelse)',
+    url: 'https://github.com/anthropics/claude-code/issues/76087'
+  }
+};
+
+function showTooltip(el){
+  const note = NOTES[el.dataset.note];
+  if (!note) return;
+  const tip = document.getElementById('tooltip');
+  let html = note.text;
+  if (note.url){
+    html += ' <a href="' + note.url + '" target="_blank" rel="noopener">' + (note.source || 'Källa') + ' ↗</a>';
+  }
+  tip.innerHTML = html;
+  const rect = el.getBoundingClientRect();
+  tip.style.display = 'block';
+  let left = rect.left;
+  if (left + 290 > window.innerWidth) left = window.innerWidth - 300;
+  tip.style.top = (rect.bottom + 6) + 'px';
+  tip.style.left = Math.max(8, left) + 'px';
+}
+function hideTooltip(){
+  document.getElementById('tooltip').style.display = 'none';
+}
+function attachBadgeHandlers(){
+  document.querySelectorAll('.badge[data-note]').forEach(function(b){
+    b.addEventListener('mouseenter', function(){ showTooltip(b); });
+    b.addEventListener('mouseleave', hideTooltip);
+    b.addEventListener('click', function(e){ e.stopPropagation(); showTooltip(b); });
+  });
+}
+document.addEventListener('click', hideTooltip);
 
 let latestWeekTimeElapsed = NaN;
 let latestPaceBufferPP = NaN;
+let latestMonthTimeElapsed = NaN;
+let latestMonthPaceBufferPP = NaN;
 
 function fmtPct(n){
   if (isNaN(n)) return '–';
@@ -441,6 +529,8 @@ function calc(){
   const creditDaysLeftEl = document.getElementById('creditDaysLeft');
   const creditPerDayEl = document.getElementById('creditPerDay');
   const creditStatusEl = document.getElementById('creditStatus');
+  const creditPaceStatusEl = document.getElementById('creditPaceStatus');
+  const creditTimeElapsedEl = document.getElementById('creditTimeElapsed');
   const creditHeroNumEl = document.getElementById('creditHeroNum');
   const creditHeroFormulaEl = document.getElementById('creditHeroFormula');
   const creditBarEl = document.getElementById('creditBar');
@@ -467,15 +557,42 @@ function calc(){
       creditPerDayEl.textContent = '–';
     }
 
+    // Takt: andel av månaden som gått (antagande: kalendermånad, se card-note), jämfört med förbrukad andel
+    if (resetDate){
+      const cycleStart = new Date(resetDate + 'T00:00:00');
+      cycleStart.setMonth(cycleStart.getMonth() - 1);
+      const resetDT = new Date(resetDate + 'T00:00:00');
+      const now = new Date();
+      const totalMs = resetDT - cycleStart;
+      const elapsedMs = now - cycleStart;
+      const pctMonthElapsed = Math.max(0, Math.min(100, (elapsedMs / totalMs) * 100));
+      latestMonthTimeElapsed = pctMonthElapsed;
+      creditTimeElapsedEl.textContent = fmtPct(pctMonthElapsed);
+
+      const monthPaceBuffer = pctMonthElapsed - pct;
+      latestMonthPaceBufferPP = monthPaceBuffer;
+      const overUnderM = monthPaceBuffer >= 0 ? 'under' : 'över';
+      let paceLevelM = 'ok';
+      if (monthPaceBuffer < -10){ paceLevelM = 'danger'; }
+      else if (monthPaceBuffer < 0){ paceLevelM = 'warn'; }
+      const paceTextM = 'Vid linjär takt borde du ha förbrukat ' + fmtPct(pctMonthElapsed) + ' av månadsgränsen, eftersom det har gått ' + fmtPct(pctMonthElapsed) + ' av månaden. Men du har förbrukat ' + fmtPct(pct) + '. Därmed ligger du ' + fmtPct(Math.abs(monthPaceBuffer)).replace('%','procentenheter') + ' ' + overUnderM + ' linjär takt (' + fmtPct(pct) + ' − ' + fmtPct(pctMonthElapsed) + ').';
+      setStatus(creditPaceStatusEl, paceLevelM, paceTextM);
+    } else {
+      creditTimeElapsedEl.textContent = '–';
+      latestMonthTimeElapsed = NaN;
+      latestMonthPaceBufferPP = NaN;
+      setStatus(creditPaceStatusEl, 'ok', '');
+    }
+
     let creditLevel = 'ok';
     if (spent > limit){
       creditOk = false; creditLevel = 'danger';
       setStatus(creditStatusEl, 'danger', 'Du har spenderat mer än din satta månadsgräns denna cykel.');
     } else if (pct >= 85){
       creditLevel = 'warn';
-      setStatus(creditStatusEl, 'warn', 'Nära månadsgränsen — ' + fmtEur(remaining) + ' kvar.');
+      setStatus(creditStatusEl, 'warn', ''); // hero + takt-raden täcker redan detta
     } else {
-      setStatus(creditStatusEl, 'ok', 'I fas med din månadsgräns.');
+      setStatus(creditStatusEl, 'ok', '');
     }
     setHero(creditHeroNumEl, creditBarEl, creditLevel, fmtPct(pct), pct);
     creditHeroFormulaEl.textContent = fmtEur(spent) + ' / ' + fmtEur(limit) + ' = ' + fmtPct(pct);
@@ -484,6 +601,10 @@ function calc(){
     creditRemainingEl.textContent = '–';
     creditDaysLeftEl.textContent = '–';
     creditPerDayEl.textContent = '–';
+    creditTimeElapsedEl.textContent = '–';
+    latestMonthTimeElapsed = NaN;
+    latestMonthPaceBufferPP = NaN;
+    setStatus(creditPaceStatusEl, 'ok', '');
     setStatus(creditStatusEl, 'ok', '');
     setHero(creditHeroNumEl, creditBarEl, 'ok', '–', 0);
     creditHeroFormulaEl.textContent = '';
@@ -526,8 +647,10 @@ function updateLogRow(){
   // Loggad med omvänt tecken mot den interna paceBuffer-variabeln: positivt tal här = över takt
   // (normalbaslinje % − andel av veckan gången), för att matcha beskrivningen i data.md.
   const paceBuffer = isNaN(latestPaceBufferPP) ? '' : (Math.round(-latestPaceBufferPP * 10) / 10);
+  const monthTimeElapsed = isNaN(latestMonthTimeElapsed) ? '' : (Math.round(latestMonthTimeElapsed * 10) / 10);
+  const monthPaceBuffer = isNaN(latestMonthPaceBufferPP) ? '' : (Math.round(-latestMonthPaceBufferPP * 10) / 10);
 
-  const row = '| ' + todayISO() + ' | ' + sessPct + ' | ' + weekProduct + ' | ' + weekPct + ' | ' + boostPct + ' | ' + boostEnd + ' | ' + weekNormal + ' | ' + timeElapsed + ' | ' + paceBuffer + ' | ' + creditSpent + ' | ' + creditLimit + ' | |';
+  const row = '| ' + todayISO() + ' | ' + sessPct + ' | ' + weekProduct + ' | ' + weekPct + ' | ' + boostPct + ' | ' + boostEnd + ' | ' + weekNormal + ' | ' + timeElapsed + ' | ' + paceBuffer + ' | ' + creditSpent + ' | ' + creditLimit + ' | ' + monthTimeElapsed + ' | ' + monthPaceBuffer + ' | |';
   document.getElementById('logRow').value = row;
 }
 
@@ -566,6 +689,7 @@ document.getElementById('copyBtn').addEventListener('click', function(){
   }
 });
 
+attachBadgeHandlers();
 calc();
 </script>
 </body>

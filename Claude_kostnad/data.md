@@ -22,9 +22,16 @@ snabbare än tiden går), negativt = du ligger under (marginal kvar).
 [datum]" — *inte* från fakturorna på Billing-sidan (de är påfyllningar,
 inte förbrukning, se delfråga i).
 
-| Datum | Session % (just nu) | Vecka-produkt | Vecka % (mot aktiv gräns) | Aktiv boost % | Boost slutdatum | Vecka % (normalbaslinje) | Andel av veckan gången (%) | Takt-avvikelse (pp) | Usage credits denna cykel (€) | Usage credits-gräns (€) | Anteckning |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| | | | | | | | | | | | |
+Samma takt-jämförelse görs för månaden: **Andel av månaden gången** och
+**Takt-avvikelse (månad)**, samma tecken-konvention (positivt = över
+takt). Bygger på ett **antagande** att usage credits-cykeln följer
+kalendermånader (1:a till 1:a) — inte bekräftat av Anthropic, se
+`index.html`.
+
+| Datum | Session % (just nu) | Vecka-produkt | Vecka % (mot aktiv gräns) | Aktiv boost % | Boost slutdatum | Vecka % (normalbaslinje) | Andel av veckan gången (%) | Takt-avvikelse vecka (pp) | Usage credits denna cykel (€) | Usage credits-gräns (€) | Andel av månaden gången (%) | Takt-avvikelse månad (pp) | Anteckning |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 2026-08-04 | 68 | Claude Code | 59 | 50 | 2026-08-19 | 88,5 | 67 | 21,5 | 6,13 | 20 | 9,7 | 20,9 | Första loggade avläsningen. Session/månad delas mellan produkter — bara vecko-fälten skiljer mellan denna rad och Cowork-raden nedan. |
+| 2026-08-04 | 68 | Cowork | 59 | 100 | 2026-08-05 | 118 | 67 | 51 | 6,13 | 20 | 9,7 | 20,9 | Samma avläsningstillfälle som raden ovan, men räknat mot Coworks +100%-boost — se osäkerheten i index.html om "All models" verkligen gäller Cowork också. |
 
 ## Historisk kontext (frivilligt, ej del av mätningen)
 
