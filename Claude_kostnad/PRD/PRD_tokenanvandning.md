@@ -3,9 +3,9 @@
 **Namn:** PRD_tokenanvandning
 **Plats:** `Claude_kostnad/PRD/PRD_tokenanvandning.md`
 **Skapad:** 2026-08-03
-**Version:** 2 (delfrågor c–f beslutade — redo för fräscha-ögon-genomläsning)
-**Status:** Alla delfrågor beslutade. En fräscha-ögon-genomläsning (Regel 7)
-återstår innan PRD:n kan frysas.
+**Version:** 3 (ny delfråga h tillagd: tillfälliga gränshöjningar/boostar)
+**Status:** Alla delfrågor beslutade, inklusive den nytillkomna om boostar.
+En fräscha-ögon-genomläsning (Regel 7) återstår innan PRD:n kan frysas.
 **Typ:** Grund-PRD — helt nytt, fristående projekt i `Ovrigt`-repot. Följer
 strukturen i [PRD_generell.md](https://github.com/kentlundgren/AI-teknik/blob/main/AI_modeller/Claude/olika_Claude_modeller/PRD/PRD_generell.md)
 (AI-teknik-repot, Claude-kompassens PRD-mall) men bygger inte vidare på
@@ -25,6 +25,15 @@ skärmdumpar i `Claude_kostnad/Bilder/`:
   egen återställningscykel och egen procentsats.
 - `Claude_Code_billing_260803.jpg` — Inställningar → Billing: Pro-plan,
   förnyelsedatum, saldo för usage credits, fakturahistorik.
+
+**Tillägg 2026-08-03:** en fjärde bild, `Claude_Code_usage_boosted_260803.jpg`,
+visar att veckogränsen inte alltid är den normala 100%-gränsen. En notis i
+Usage-vyn ("Your limits are temporarily boosted") anger att Claude Code:s
+veckogräns tillfälligt är 50% högre till och med 19 augusti, och Coworks
+veckogräns 100% högre till och med 5 augusti — och att gränsen återgår till
+det normala när respektive kampanj upphör. Det procenttal Anthropic visar
+("55% used") är alltså räknat mot den **tillfälligt boostade** gränsen, inte
+mot Kents normala abonnemang. Se delfråga h.
 
 ### Terminologi — Kents tidsspråk vs. Anthropics faktiska cykler
 
@@ -46,6 +55,16 @@ dygnsbegrepp. Det visar de tre faktiska cyklerna som de är — session, vecka,
 usage credits — och Kent förhåller sig till dem direkt i stället för att
 räkna om till "dygn".
 
+**Tillägg — tillfälliga gränshöjningar ("boostar"):** veckogränsen kan
+tillfälligt vara högre än normalt (t.ex. +50% eller +100%, med eget
+slutdatum per produkt — Claude Code och Cowork kan boostas olika mycket och
+under olika perioder). Anthropics UI visar alltid andelen av den *just nu
+gällande* gränsen (normal eller boostad), aldrig andelen av den normala
+100%-baslinjen. Kents poäng: dessa två tal kan peka åt helt olika håll —
+93,3% av en boostad 150%-gräns motsvarar faktiskt **140% av den normala
+100%-gränsen** (0,933 × 1,5 = 1,40). Se delfråga h för hur verktyget
+hanterar detta.
+
 ## 2. Syfte
 
 - Ge Kent ett sätt att på några sekunder se **förbrukat vs. kvar** i var och
@@ -64,12 +83,15 @@ räkna om till "dygn".
 - Ett enkelt, fristående HTML-verktyg i `Claude_kostnad/`, i samma stil som
   Ovrigt:s övriga kalkyler (Ölkalkylen, Släp-kalkylen): Kent matar manuellt
   in avlästa värden (session % + tid till reset, vecka % + tid till reset,
-  usage credits € spenderat + gräns), verktyget visar förbrukat/kvar per
-  cykel. Stateless — ingen historik i webbläsaren (se `data.md` nedan för
-  historik).
+  ev. aktiv boost-% + slutdatum, usage credits € spenderat + gräns),
+  verktyget visar förbrukat/kvar per cykel — **både** mot den just nu
+  gällande (ev. boostade) gränsen och omräknat mot den normala
+  100%-baslinjen (delfråga h). Stateless — ingen historik i webbläsaren
+  (se `data.md` nedan för historik).
 - En enkel `Claude_kostnad/data.md` — en manuellt förd logg (en rad per
-  avläsning: datum, session %, vecka %, usage credits €) som ger historik
-  utan inbyggd lagring i verktyget (delfråga d).
+  avläsning: datum, session %, vecka % mot aktiv gräns, aktiv boost-% (0 om
+  ingen), boost-slutdatum, vecka % omräknat mot normal baslinje, usage
+  credits €) som ger historik utan inbyggd lagring i verktyget (delfråga d).
 - En veckovis påminnelse (schemalagt jobb) i takt med veckomätarens
   återställning, som ett separat, senare implementationssteg (delfråga e).
 - Ställningstagande till SPEC.md-checkpoint enligt Claude-kompassens
@@ -127,6 +149,20 @@ agent-driven. Inget SPEC.md-steg behövs.
 `Claude_kostnad`-mappen i `Ovrigt`-repot — skapad av Kent specifikt för det
 här syftet (känt-nytt enligt mappkontrollen, inget att flagga).
 
+**h) Ska verktyget ta hänsyn till tillfälliga gränshöjningar (boostar)? —
+BESLUTAT ✓ (tillagd 2026-08-03, efter `Claude_Code_usage_boosted_260803.jpg`).**
+Ja. Anthropics eget UI visar bara andelen av den *just nu gällande* gränsen,
+vilket kan dölja att Kent redan ligger över sin normala 100%-baslinje så
+fort en tillfällig boost tar slut. Verktyget och `data.md` ska därför
+fånga, för veckogränsen: (1) det avlästa procenttalet mot den aktiva
+gränsen, (2) ev. aktiv boost i procent (0 om ingen), (3) boostens
+slutdatum, och beräkna (4) motsvarande andel av den normala 100%-baslinjen
+= avläst% × (1 + boost%/100). Formeln verifierad mot Kents eget exempel:
+93,3% av en +50%-boostad gräns = 140% av normalbaslinjen. Boost gäller per
+produkt (Claude Code och Cowork boostas olika mycket, med olika slutdatum,
+enligt bilden) — verktyget/loggen ska kunna hålla isär dem, inte anta att
+en enda boost-procent gäller överallt.
+
 ## 5. Leveranser
 
 - [x] De tre skärmdumparna granskade och förstådda
@@ -137,10 +173,13 @@ här syftet (känt-nytt enligt mappkontrollen, inget att flagga).
 - [x] Delfråga d (historik) beslutad — manuell `data.md`, inte localStorage
 - [x] Delfråga e (inmatningsrutin/påminnelse) beslutad — veckovis
 - [x] Delfråga f (SPEC.md-checkpoint) beslutad — nej
+- [x] Delfråga h (boost-hantering) beslutad — dubbla procenttal, per produkt
 - [ ] Fräscha-ögon-genomläsning genomförd (Regel 7)
 - [ ] PRD fryst av Kent
-- [ ] `Claude_kostnad/data.md` skapad (tom logg-mall med rätt kolumner)
-- [ ] HTML-verktyg byggt (separat steg, efter frysning)
+- [ ] `Claude_kostnad/data.md` skapad (tom logg-mall med rätt kolumner,
+      inkl. boost-% och boost-slutdatum per produkt)
+- [ ] HTML-verktyg byggt (separat steg, efter frysning), med
+      boost-omräkningsformeln enligt delfråga h
 - [ ] Veckovis påminnelse (schemalagt jobb) skapad
 - [ ] README.md + site-nav + GitHub-hörna enligt `Ovrigt/CLAUDE.md` (när
       HTML-sidan skapas)
@@ -151,10 +190,13 @@ här syftet (känt-nytt enligt mappkontrollen, inget att flagga).
 2. Fräscha-ögon-genomläsning av hela PRD:n (Regel 7), innan frysning.
 3. Frys PRD:n.
 4. Skapa `Claude_kostnad/data.md` — tom logg-mall med kolumnerna datum,
-   session %, vecka %, usage credits €, anteckning.
+   session %, vecka % (mot aktiv gräns), aktiv boost-% per produkt,
+   boost-slutdatum, vecka % (omräknat mot normal baslinje), usage credits €,
+   anteckning.
 5. Bygg HTML-verktyget (`kent-bygg-sidor`-mönstret, samma stil som Ovrigt:s
    övriga kalkyler) — stateless kalkylator som läser Kents manuella
-   inmatning för stunden.
+   inmatning för stunden och räknar om mot normal baslinje enligt
+   formeln i delfråga h.
 6. Sätt upp den veckovisa påminnelsen (schemalagt jobb).
 7. Lägg till README.md, site-nav och GitHub-hörna enligt checklistan i
    `Ovrigt/CLAUDE.md`.
@@ -168,9 +210,8 @@ https://support.claude.com/en/articles/12429409-manage-usage-credits-for-paid-cl
 *(Officiell dokumentation om usage credits — bekräftar att de är en
 overflow-mekanism efter att plangränsen nåtts, med ett användarinställt
 månatligt spend-tak. Anger inte exakt vilken dag den månatliga perioden
-återställs, vilket är skälet till att delfråga c/g i avsnitt 4 inte kan
-besvaras enbart utifrån källan — Kents skärmdump anger "Resets Sep 1" som
-det konkreta datumet för hans eget konto.)*
+återställs — terminologitabellen i avsnitt 1 bygger därför på Kents egen
+skärmdump ("Resets Sep 1") för det konkreta datumet, inte på källan.)*
 
 Claude Help Center (2026b) 'What is the Pro plan?', *support.claude.com*.
 Tillgänglig: https://support.claude.com/en/articles/8325606-what-is-the-pro-plan
@@ -180,12 +221,14 @@ terminologi-tabellen i avsnitt 1 och delfråga c.)*
 
 ## 8. Status
 
-Alla sju delfrågor (a–g) beslutade. Verktyget blir en stateless HTML-
+Alla åtta delfrågor (a–h) beslutade. Verktyget blir en stateless HTML-
 kalkylator (session/vecka/usage credits, inget konstruerat dygnsbegrepp),
-kompletterad med en manuellt förd `data.md`-logg för historik och en
-veckovis påminnelse. Inget SPEC.md-steg behövs. Kvarstår innan frysning:
-en fräscha-ögon-genomläsning av hela dokumentet (Regel 7). Ingen kod
-skriven ännu, i linje med Kents uttryckliga instruktion om att detta är
+som dessutom räknar om veckoprocenten mot Kents normala 100%-baslinje när
+en tillfällig boost är aktiv — inte bara mot den boostade gränsen Anthropic
+själv visar. Kompletterad med en manuellt förd `data.md`-logg för historik
+och en veckovis påminnelse. Inget SPEC.md-steg behövs. Kvarstår innan
+frysning: en fräscha-ögon-genomläsning av hela dokumentet (Regel 7). Ingen
+kod skriven ännu, i linje med Kents uttryckliga instruktion om att detta är
 planeringsfasen.
 
 ## Ändringslogg
@@ -201,3 +244,11 @@ planeringsfasen.
   ögonblicksbild — vilken antogs. e: veckovis påminnelse. f: nej till
   SPEC.md, en direkt följd av d:s enkla lösning. Omfattning, Leveranser och
   Produktionsordning uppdaterade i linje med besluten.
+- 2026-08-03 (v3): Ny delfråga h tillagd och beslutad efter att Kent visade
+  `Claude_Code_usage_boosted_260803.jpg`: Anthropics UI visar procent mot
+  den *just nu gällande* (ev. tillfälligt boostade) gränsen, inte mot den
+  normala 100%-baslinjen. Verktyget och `data.md` ska räkna ut båda talen,
+  per produkt (Claude Code/Cowork kan ha olika boost-% och slutdatum).
+  Formel verifierad mot Kents eget exempel (93,3% av +50%-boost = 140% av
+  normalbaslinjen). Bakgrund, Omfattning, Leveranser, Produktionsordning
+  och Status uppdaterade.
