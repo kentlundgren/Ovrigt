@@ -3,9 +3,11 @@
 **Namn:** PRD_tokenanvandning
 **Plats:** `Claude_kostnad/PRD/PRD_tokenanvandning.md`
 **Skapad:** 2026-08-03
-**Version:** 3 (ny delfråga h tillagd: tillfälliga gränshöjningar/boostar)
-**Status:** Alla delfrågor beslutade, inklusive den nytillkomna om boostar.
-En fräscha-ögon-genomläsning (Regel 7) återstår innan PRD:n kan frysas.
+**Version:** 4 (ny delfråga i tillagd: faktura/påfyllning vs. faktisk
+förbrukning av usage credits)
+**Status:** Alla delfrågor beslutade, inklusive de två nytillkomna (h om
+boostar, i om faktura vs. förbrukning). En fräscha-ögon-genomläsning
+(Regel 7) återstår innan PRD:n kan frysas.
 **Typ:** Grund-PRD — helt nytt, fristående projekt i `Ovrigt`-repot. Följer
 strukturen i [PRD_generell.md](https://github.com/kentlundgren/AI-teknik/blob/main/AI_modeller/Claude/olika_Claude_modeller/PRD/PRD_generell.md)
 (AI-teknik-repot, Claude-kompassens PRD-mall) men bygger inte vidare på
@@ -35,6 +37,19 @@ det normala när respektive kampanj upphör. Det procenttal Anthropic visar
 ("55% used") är alltså räknat mot den **tillfälligt boostade** gränsen, inte
 mot Kents normala abonnemang. Se delfråga h.
 
+**Tillägg 2026-08-03, Billing-fakturor:** en genomgång av fakturalistan i
+`Claude_Code_billing_260803.jpg` visar två olika sorters belopp. Ett
+återkommande belopp på 22,50 € (jul, jun, maj, 27 mars, 27 feb) sammanfaller
+med abonnemangets angivna förnyelsedatum-mönster och är sannolikt den fasta
+Pro-avgiften. Ett antal oregelbundna belopp — koncentrerade till april 2026
+(10 apr ×2 á 12,50 €, 13 apr 6,25 €, 27 apr 47,81 €, 28 apr 12,50 €, totalt
+≈91,56 € utöver abonnemangsavgiften den månaden) — är sannolikt köp/
+påfyllningar av usage credits-saldot. Det går inte att slå fast med säkerhet
+utan att öppna respektive fakturas "View"-länk (bilden visar bara datum och
+belopp). Viktigt: en fakturarad visar *när Kent fyllde på saldot*, inte
+*när han förbrukade det* — det faktiska förbrukningsläget för innevarande
+cykel finns bara på Usage-sidan ("€X spent, resets [datum]"). Se delfråga i.
+
 ### Terminologi — Kents tidsspråk vs. Anthropics faktiska cykler
 
 Det här är den centrala missmatchningen PRD:n behöver lösa innan ett
@@ -46,7 +61,7 @@ exponerar inte de cyklerna rakt av — enligt officiell dokumentation
 |---|---|---|
 | "Senaste dygnet / kvar idag" | **Current session** | Återställs var 5:e timme (inte en gång per dygn) |
 | "Senaste veckan / kvar denna vecka" | **Weekly limits (all models)** | Återställs en fast dag/tid per vecka, samma varje cykel |
-| "Innevarande månad / kvar denna månad" | **Usage credits** (€, aktiveras först när plangränsen nåtts) | Månatligt spend-tak; exakt återställningsdag inte specificerad i Anthropics egen dokumentation (se avsnitt 7, källa 1) |
+| "Innevarande månad / kvar denna månad" | **Usage credits, förbrukning denna cykel** ("€X spent, resets [datum]" på Usage-sidan) — *inte* fakturabeloppen på Billing-sidan | Månatligt spend-tak; exakt återställningsdag inte specificerad i Anthropics egen dokumentation (se avsnitt 7, källa 1). Fakturor på Billing-sidan visar köp-/påfyllningstillfällen, inte förbrukning — se delfråga i |
 
 Det finns alltså **ingen** mätare som motsvarar "dygn" rakt av — närmaste
 proxy är sessionsmätaren (5 timmar), som återställs flera gånger per dygn.
@@ -163,6 +178,19 @@ produkt (Claude Code och Cowork boostas olika mycket, med olika slutdatum,
 enligt bilden) — verktyget/loggen ska kunna hålla isär dem, inte anta att
 en enda boost-procent gäller överallt.
 
+**i) Ska verktyget/`data.md` utgå från fakturabeloppen på Billing-sidan
+eller förbrukningssiffran på Usage-sidan för "månad"? — BESLUTAT ✓
+(tillagd 2026-08-03, efter Kents fråga om `Claude_Code_billing_260803.jpg`).**
+Usage-sidans "€X spent, resets [datum]" är sanningskällan för om Kent just
+nu ligger i överanvändning — det är förbrukning under innevarande cykel.
+Fakturorna på Billing-sidan är köp-/påfyllningshändelser (när saldot fylldes
+på), inte förbrukningshändelser, och loggas *inte* som en del av
+månadsmätningen i `data.md`. De kan dock noteras separat som historisk
+kontext (t.ex. "april 2026: ovanligt hög påfyllning, ≈91,56 € utöver
+abonnemangsavgiften — tecken på att plangränserna nåddes ofta den
+månaden") eftersom de visar mönster över tid som kompletterar
+ögonblicksbilden.
+
 ## 5. Leveranser
 
 - [x] De tre skärmdumparna granskade och förstådda
@@ -174,6 +202,8 @@ en enda boost-procent gäller överallt.
 - [x] Delfråga e (inmatningsrutin/påminnelse) beslutad — veckovis
 - [x] Delfråga f (SPEC.md-checkpoint) beslutad — nej
 - [x] Delfråga h (boost-hantering) beslutad — dubbla procenttal, per produkt
+- [x] Delfråga i (faktura vs. förbrukning) beslutad — Usage-sidans
+      förbrukningssiffra är sanningskällan, fakturor är valfri historisk kontext
 - [ ] Fräscha-ögon-genomläsning genomförd (Regel 7)
 - [ ] PRD fryst av Kent
 - [ ] `Claude_kostnad/data.md` skapad (tom logg-mall med rätt kolumner,
@@ -191,8 +221,9 @@ en enda boost-procent gäller överallt.
 3. Frys PRD:n.
 4. Skapa `Claude_kostnad/data.md` — tom logg-mall med kolumnerna datum,
    session %, vecka % (mot aktiv gräns), aktiv boost-% per produkt,
-   boost-slutdatum, vecka % (omräknat mot normal baslinje), usage credits €,
-   anteckning.
+   boost-slutdatum, vecka % (omräknat mot normal baslinje), usage credits €
+   spenderat denna cykel (från Usage-sidan, inte fakturor), anteckning
+   (valfri plats för att notera ovanliga fakturor/påfyllningar).
 5. Bygg HTML-verktyget (`kent-bygg-sidor`-mönstret, samma stil som Ovrigt:s
    övriga kalkyler) — stateless kalkylator som läser Kents manuella
    inmatning för stunden och räknar om mot normal baslinje enligt
@@ -221,15 +252,17 @@ terminologi-tabellen i avsnitt 1 och delfråga c.)*
 
 ## 8. Status
 
-Alla åtta delfrågor (a–h) beslutade. Verktyget blir en stateless HTML-
+Alla nio delfrågor (a–i) beslutade. Verktyget blir en stateless HTML-
 kalkylator (session/vecka/usage credits, inget konstruerat dygnsbegrepp),
 som dessutom räknar om veckoprocenten mot Kents normala 100%-baslinje när
 en tillfällig boost är aktiv — inte bara mot den boostade gränsen Anthropic
-själv visar. Kompletterad med en manuellt förd `data.md`-logg för historik
-och en veckovis påminnelse. Inget SPEC.md-steg behövs. Kvarstår innan
-frysning: en fräscha-ögon-genomläsning av hela dokumentet (Regel 7). Ingen
-kod skriven ännu, i linje med Kents uttryckliga instruktion om att detta är
-planeringsfasen.
+själv visar — och som håller isär förbrukning (Usage-sidan, sanningskällan
+för månadsmätningen) från påfyllningshändelser (Billing-sidans fakturor,
+valfri historisk kontext). Kompletterad med en manuellt förd `data.md`-logg
+för historik och en veckovis påminnelse. Inget SPEC.md-steg behövs.
+Kvarstår innan frysning: en fräscha-ögon-genomläsning av hela dokumentet
+(Regel 7). Ingen kod skriven ännu, i linje med Kents uttryckliga instruktion
+om att detta är planeringsfasen.
 
 ## Ändringslogg
 
@@ -252,3 +285,11 @@ planeringsfasen.
   Formel verifierad mot Kents eget exempel (93,3% av +50%-boost = 140% av
   normalbaslinjen). Bakgrund, Omfattning, Leveranser, Produktionsordning
   och Status uppdaterade.
+- 2026-08-03 (v4): Ny delfråga i tillagd och beslutad efter Kents fråga om
+  `Claude_Code_billing_260803.jpg`: fakturalistan blandar en återkommande
+  abonnemangsavgift (22,50 €) med oregelbundna usage credits-påfyllningar
+  (koncentrerade till april 2026, ≈91,56 € utöver abonnemanget den
+  månaden). Beslut: Usage-sidans "€X spent, resets [datum]" är
+  sanningskällan för månadsmätningen i `data.md`, inte fakturabeloppen —
+  fakturor är valfri historisk kontext. Terminologitabellen, Bakgrund,
+  Leveranser, Produktionsordning och Status uppdaterade.
