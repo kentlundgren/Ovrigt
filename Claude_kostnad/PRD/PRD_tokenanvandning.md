@@ -3,11 +3,8 @@
 **Namn:** PRD_tokenanvandning
 **Plats:** `Claude_kostnad/PRD/PRD_tokenanvandning.md`
 **Skapad:** 2026-08-03
-**Version:** 5 (ny "Kärnfrågan"-sektion tillagd överst, så huvudfrågan inte
-tappas bort bland delfrågorna)
-**Status:** Alla delfrågor beslutade. Kärnfrågan är nu explicit och
-kopplad till respektive delfråga. En fräscha-ögon-genomläsning (Regel 7)
-återstår innan PRD:n kan frysas.
+**Version:** 6 (fryst)
+**Status:** **Fryst av Kent, 2026-08-03.** Kodningsfasen har börjat.
 **Typ:** Grund-PRD — helt nytt, fristående projekt i `Ovrigt`-repot. Följer
 strukturen i [PRD_generell.md](https://github.com/kentlundgren/AI-teknik/blob/main/AI_modeller/Claude/olika_Claude_modeller/PRD/PRD_generell.md)
 (AI-teknik-repot, Claude-kompassens PRD-mall) men bygger inte vidare på
@@ -224,7 +221,7 @@ månaden") eftersom de visar mönster över tid som kompletterar
 - [x] Delfråga i (faktura vs. förbrukning) beslutad — Usage-sidans
       förbrukningssiffra är sanningskällan, fakturor är valfri historisk kontext
 - [ ] Fräscha-ögon-genomläsning genomförd (Regel 7)
-- [ ] PRD fryst av Kent
+- [x] PRD fryst av Kent (2026-08-03)
 - [ ] `Claude_kostnad/data.md` skapad (tom logg-mall med rätt kolumner,
       inkl. boost-% och boost-slutdatum per produkt)
 - [ ] HTML-verktyg byggt (separat steg, efter frysning), med
