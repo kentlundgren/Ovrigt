@@ -62,7 +62,10 @@ promotional credit. Data matas in manuellt; historik sparas i
 [`Claude_kostnad/data.md`](Claude_kostnad/data.md), inte i webbläsaren.
 
 Se mer i [`Claude_kostnad/README.md`](Claude_kostnad/README.md) och
-[`Claude_kostnad/PRD/PRD_tokenanvandning.md`](Claude_kostnad/PRD/PRD_tokenanvandning.md).
+[`Claude_kostnad/PRD/PRD_tokenanvandning.md`](Claude_kostnad/PRD/PRD_tokenanvandning.md),
+eller läs bakgrunden som blogginlägg:
+[Ligger jag i fas med Claude?](https://klel.wordpress.com/2026/08/04/ligger-jag-i-fas-med-claude/)
+(klel.wordpress.com, 4/8 2026).
 
 **Claude Code-skill:** arbetssättet, mekaniken och den återkommande
 veckorutinen för det här projektet är dokumenterade som en egen,

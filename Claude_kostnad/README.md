@@ -27,7 +27,10 @@ Verktyget har en "Kopiera rad"-knapp som formaterar en färdig markdown-rad
 att klistra in där.
 
 Se [`PRD/PRD_tokenanvandning.md`](PRD/PRD_tokenanvandning.md) för fullständig
-bakgrund, alla beslut och källor.
+bakgrund, alla beslut och källor, eller blogginlägget
+[Ligger jag i fas med Claude?](https://klel.wordpress.com/2026/08/04/ligger-jag-i-fas-med-claude/)
+(klel.wordpress.com, 4/8 2026) för en mer berättande version av samma
+resonemang.
 
 ## Filer
 

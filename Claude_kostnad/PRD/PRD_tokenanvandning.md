@@ -3,11 +3,12 @@
 **Namn:** PRD_tokenanvandning
 **Plats:** `Claude_kostnad/PRD/PRD_tokenanvandning.md`
 **Skapad:** 2026-08-03
-**Version:** 8 (vidareutvecklat efter frysning)
+**Version:** 9 (blogginlägg publicerat och länkat)
 **Status:** **Genomfört och vidareutvecklat.** Verktyg, `data.md`,
-README/nav, veckovis kalenderpåminnelse, månadstakt, hover-tooltips och
-en rättad Kärnfrågan-banner är levererade och verifierade. Skillen
-`claude-kostnad` är projektlokal och kanonisk. Väntar på att Kent
+README/nav, veckovis kalenderpåminnelse, månadstakt, hover-tooltips, en
+rättad Kärnfrågan-banner och ett publicerat blogginlägg är levererade och
+verifierade. Skillen `claude-kostnad` är projektlokal och kanonisk. Väntar
+på att Kent
 committar och pushar (se Ändringslogg).
 **Typ:** Grund-PRD — helt nytt, fristående projekt i `Ovrigt`-repot. Följer
 strukturen i [PRD_generell.md](https://github.com/kentlundgren/AI-teknik/blob/main/AI_modeller/Claude/olika_Claude_modeller/PRD/PRD_generell.md)
@@ -236,6 +237,11 @@ månaden") eftersom de visar mönster över tid som kompletterar
       09:00, Europe/Stockholm), inte ett schemalagt Claude-jobb (se
       resonemang i produktionsordningen nedan)
 - [x] README.md + site-nav + GitHub-hörna enligt `Ovrigt/CLAUDE.md`
+- [x] Blogginlägg publicerat — [Ligger jag i fas med Claude?](https://klel.wordpress.com/2026/08/04/ligger-jag-i-fas-med-claude/)
+      (klel.wordpress.com, 4/8 2026) — länkad från `index.html`,
+      `Claude_kostnad/README.md`, `Ovrigt/README.md` och Källor ovan
+- [x] Kärnfrågan-bannerns ok/danger-logik rättad så den även räknar på
+      takt-avvikelse, inte bara hårda gränser (se v8 i Ändringslogg)
 
 ## 6. Produktionsordning
 
@@ -279,6 +285,12 @@ Tillgänglig: https://support.claude.com/en/articles/8325606-what-is-the-pro-pla
 *(Officiell primärkälla för att sessionsgränsen återställs var 5:e timme
 och att veckogränsen återställs på en fast dag/tid per konto — grunden för
 terminologi-tabellen i avsnitt 1 och delfråga c.)*
+
+Lundgren, K. (2026) 'Ligger jag i fas med Claude?', *klel.wordpress.com*,
+4 augusti. Tillgänglig: https://klel.wordpress.com/2026/08/04/ligger-jag-i-fas-med-claude/
+*(Kents eget blogginlägg om det här projektet — en mer berättande version
+av PRD:ns resonemang, skrivet enligt Claude-kompassens Fas 0-mönster:
+blogginlägg innan/parallellt med kodningen bär det fulla resonemanget.)*
 
 ## 8. Status
 
@@ -366,3 +378,8 @@ README/site-nav/GitHub-hörna på plats i både `Claude_kostnad/` och
   kanonisk plats (`Claude_kostnad/.claude/skills/claude-kostnad/SKILL.md`),
   med bara en kort pekare kvar globalt — Kent ville kunna se/pusha/länka
   skillen tillsammans med `Ovrigt`-repot.
+- 2026-08-04 (v9): Blogginlägget [Ligger jag i fas med Claude?](https://klel.wordpress.com/2026/08/04/ligger-jag-i-fas-med-claude/)
+  publicerat (klel.wordpress.com, kategori AI) och länkat på fyra ställen:
+  `index.html`-sidfoten, `Claude_kostnad/README.md`, `Ovrigt/README.md` och
+  som ny källa (Lundgren, 2026) i avsnitt 7 ovan, alfabetiskt placerad efter
+  Claude Help Center-källorna. Leveranser uppdaterad.
