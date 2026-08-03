@@ -61,6 +61,20 @@
   select:focus, input:focus{outline:2px solid var(--accent); outline-offset:1px;}
   .field{margin-bottom:2px;}
 
+  .hero{margin-top:6px; text-align:center;}
+  .hero-num{font-size:40px; font-weight:700; line-height:1.1; transition:color 0.15s;}
+  .hero-num.ok{color:var(--ok);}
+  .hero-num.warn{color:var(--warn);}
+  .hero-num.danger{color:var(--danger);}
+  .hero-label{font-size:13px; color:var(--text-secondary); margin-top:2px;}
+  .hero-formula{font-size:12px; color:var(--text-muted); font-family:"Courier New",monospace; margin-top:4px;}
+  .bar{height:10px; border-radius:6px; background:var(--bg); border:1px solid var(--border); margin-top:10px; overflow:hidden; position:relative;}
+  .bar-fill{height:100%; border-radius:6px 0 0 6px; transition:width 0.2s, background 0.15s;}
+  .bar-fill.ok{background:var(--ok);}
+  .bar-fill.warn{background:var(--warn);}
+  .bar-fill.danger{background:var(--danger);}
+  .bar-marker{position:absolute; top:-3px; bottom:-3px; width:2px; background:var(--text);}
+
   .outputs{margin-top:12px; padding-top:12px; border-top:1px dashed var(--border);}
   .outrow{display:flex; justify-content:space-between; align-items:baseline; font-size:13.5px; padding:3px 0;}
   .outrow .k{color:var(--text-secondary);}
@@ -127,6 +141,11 @@
         <input id="sessReset" type="text" placeholder="2h 49min" value="2h 49min">
       </div>
     </div>
+    <div class="hero">
+      <div class="hero-num ok" id="sessHeroNum">–</div>
+      <div class="hero-label" id="sessHeroLabel">använt av sessionsgränsen</div>
+      <div class="bar"><div class="bar-fill ok" id="sessBar" style="width:0%;"></div></div>
+    </div>
     <div class="outputs">
       <div class="outrow"><span class="k">Kvar just nu</span><span class="v" id="sessRemaining">–</span></div>
     </div>
@@ -165,6 +184,12 @@
         <input id="boostEnd" type="date" value="2026-08-19">
       </div>
     </div>
+    <div class="hero">
+      <div class="hero-num ok" id="weekHeroNum">–</div>
+      <div class="hero-label" id="weekHeroLabel">av din normala veckogräns</div>
+      <div class="hero-formula" id="weekHeroFormula"></div>
+      <div class="bar"><div class="bar-fill ok" id="weekBar" style="width:0%;"></div></div>
+    </div>
     <div class="outputs">
       <div class="outrow"><span class="k">Kvar mot aktiv (ev. boostad) gräns</span><span class="v" id="weekRemainingActive">–</span></div>
       <div class="outrow"><span class="k">Motsvarar av din <strong>normala</strong> 100%-baslinje</span><span class="v" id="weekNormalPct">–</span></div>
@@ -190,6 +215,12 @@
         <label for="creditReset">Cykeln återställs</label>
         <input id="creditReset" type="date" value="2026-09-01">
       </div>
+    </div>
+    <div class="hero">
+      <div class="hero-num ok" id="creditHeroNum">–</div>
+      <div class="hero-label">av månadsgränsen</div>
+      <div class="hero-formula" id="creditHeroFormula"></div>
+      <div class="bar"><div class="bar-fill ok" id="creditBar" style="width:0%;"></div></div>
     </div>
     <div class="outputs">
       <div class="outrow"><span class="k">Andel av månadsgränsen</span><span class="v" id="creditPct">–</span></div>
@@ -243,26 +274,42 @@ function setStatus(el, level, text){
   el.textContent = text;
 }
 
+function setHero(numEl, barEl, level, text, pct){
+  numEl.className = 'hero-num ' + level;
+  numEl.textContent = text;
+  barEl.className = 'bar-fill ' + level;
+  barEl.style.width = Math.max(0, Math.min(100, pct)) + '%';
+}
+
 function calc(){
   // --- Session ---
   const sessPct = parseFloat(document.getElementById('sessPct').value);
   const sessRemainingEl = document.getElementById('sessRemaining');
   const sessStatusEl = document.getElementById('sessStatus');
+  const sessHeroNumEl = document.getElementById('sessHeroNum');
+  const sessHeroLabelEl = document.getElementById('sessHeroLabel');
+  const sessBarEl = document.getElementById('sessBar');
   let sessOk = true;
   if (!isNaN(sessPct)){
     const rem = 100 - sessPct;
     sessRemainingEl.textContent = fmtPct(rem);
+    let sessLevel = 'ok';
     if (sessPct >= 100){
-      sessOk = false;
+      sessOk = false; sessLevel = 'danger';
       setStatus(sessStatusEl, 'danger', 'Sessionsgränsen är nådd. Väntar på nästa 5-timmarsreset.');
     } else if (sessPct >= 85){
+      sessLevel = 'warn';
       setStatus(sessStatusEl, 'warn', 'Nära sessionsgränsen — ' + fmtPct(rem) + ' kvar.');
     } else {
       setStatus(sessStatusEl, 'ok', 'Gott om utrymme kvar just nu.');
     }
+    setHero(sessHeroNumEl, sessBarEl, sessLevel, fmtPct(sessPct), sessPct);
+    sessHeroLabelEl.textContent = 'använt av sessionsgränsen · ' + fmtPct(rem) + ' kvar';
   } else {
     sessRemainingEl.textContent = '–';
     setStatus(sessStatusEl, 'ok', '');
+    setHero(sessHeroNumEl, sessBarEl, 'ok', '–', 0);
+    sessHeroLabelEl.textContent = 'använt av sessionsgränsen';
   }
 
   // --- Vecka ---
@@ -272,6 +319,9 @@ function calc(){
   const weekNormalPctEl = document.getElementById('weekNormalPct');
   const weekRemNormalEl = document.getElementById('weekRemainingNormal');
   const weekStatusEl = document.getElementById('weekStatus');
+  const weekHeroNumEl = document.getElementById('weekHeroNum');
+  const weekHeroFormulaEl = document.getElementById('weekHeroFormula');
+  const weekBarEl = document.getElementById('weekBar');
   let weekOk = true;
   let weekHasData = !isNaN(weekPct);
   if (weekHasData){
@@ -282,25 +332,35 @@ function calc(){
     weekNormalPctEl.textContent = fmtPct(normalPct);
     weekRemNormalEl.textContent = fmtPct(remNormal);
 
+    let weekLevel = 'ok';
     if (normalPct > 100 && boostPct > 0){
-      weekOk = false;
+      weekOk = false; weekLevel = 'warn';
       const boostEnd = document.getElementById('boostEnd').value;
       setStatus(weekStatusEl, 'warn',
         'Inom din boostade gräns, men redan ' + fmtPct(normalPct - 100).replace('%','').trim() + ' procentenheter över din normala 100%-baslinje.' +
         (boostEnd ? ' När boosten upphör (' + boostEnd + ') återgår gränsen till normalläget.' : ' Boosten har ett slutdatum då gränsen återgår till normalläget.'));
     } else if (weekPct >= 100){
-      weekOk = false;
+      weekOk = false; weekLevel = 'danger';
       setStatus(weekStatusEl, 'danger', 'Veckogränsen är nådd.');
     } else if (normalPct >= 85){
+      weekLevel = 'warn';
       setStatus(weekStatusEl, 'warn', 'Nära gränsen — ' + fmtPct(remNormal) + ' kvar mot din normala baslinje.');
     } else {
       setStatus(weekStatusEl, 'ok', 'I fas med din normala veckogräns.');
+    }
+    setHero(weekHeroNumEl, weekBarEl, weekLevel, fmtPct(normalPct), normalPct);
+    if (boostPct > 0){
+      weekHeroFormulaEl.textContent = weekPct + '% (mot boostad gräns) × (1 + ' + boostPct + '/100) = ' + fmtPct(normalPct);
+    } else {
+      weekHeroFormulaEl.textContent = '';
     }
   } else {
     weekRemActiveEl.textContent = '–';
     weekNormalPctEl.textContent = '–';
     weekRemNormalEl.textContent = '–';
     setStatus(weekStatusEl, 'ok', '');
+    setHero(weekHeroNumEl, weekBarEl, 'ok', '–', 0);
+    weekHeroFormulaEl.textContent = '';
   }
 
   // --- Månad / usage credits ---
@@ -312,6 +372,9 @@ function calc(){
   const creditDaysLeftEl = document.getElementById('creditDaysLeft');
   const creditPerDayEl = document.getElementById('creditPerDay');
   const creditStatusEl = document.getElementById('creditStatus');
+  const creditHeroNumEl = document.getElementById('creditHeroNum');
+  const creditHeroFormulaEl = document.getElementById('creditHeroFormula');
+  const creditBarEl = document.getElementById('creditBar');
   let creditOk = true;
   let creditHasData = !isNaN(spent) && !isNaN(limit) && limit > 0;
   if (creditHasData){
@@ -335,20 +398,26 @@ function calc(){
       creditPerDayEl.textContent = '–';
     }
 
+    let creditLevel = 'ok';
     if (spent > limit){
-      creditOk = false;
+      creditOk = false; creditLevel = 'danger';
       setStatus(creditStatusEl, 'danger', 'Du har spenderat mer än din satta månadsgräns denna cykel.');
     } else if (pct >= 85){
+      creditLevel = 'warn';
       setStatus(creditStatusEl, 'warn', 'Nära månadsgränsen — ' + fmtEur(remaining) + ' kvar.');
     } else {
       setStatus(creditStatusEl, 'ok', 'I fas med din månadsgräns.');
     }
+    setHero(creditHeroNumEl, creditBarEl, creditLevel, fmtPct(pct), pct);
+    creditHeroFormulaEl.textContent = fmtEur(spent) + ' / ' + fmtEur(limit) + ' = ' + fmtPct(pct);
   } else {
     creditPctEl.textContent = '–';
     creditRemainingEl.textContent = '–';
     creditDaysLeftEl.textContent = '–';
     creditPerDayEl.textContent = '–';
     setStatus(creditStatusEl, 'ok', '');
+    setHero(creditHeroNumEl, creditBarEl, 'ok', '–', 0);
+    creditHeroFormulaEl.textContent = '';
   }
 
   // --- Kärnfrågan (övergripande status) ---
