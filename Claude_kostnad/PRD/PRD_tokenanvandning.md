@@ -3,9 +3,9 @@
 **Namn:** PRD_tokenanvandning
 **Plats:** `Claude_kostnad/PRD/PRD_tokenanvandning.md`
 **Skapad:** 2026-08-03
-**Version:** 1 (första utkastet — planeringsfas, ingen kod ännu)
-**Status:** Under arbete. Bakgrund, syfte och omfattning utkastade. Fyra
-delfrågor (c–f) återstår innan PRD:n kan frysas.
+**Version:** 2 (delfrågor c–f beslutade — redo för fräscha-ögon-genomläsning)
+**Status:** Alla delfrågor beslutade. En fräscha-ögon-genomläsning (Regel 7)
+återstår innan PRD:n kan frysas.
 **Typ:** Grund-PRD — helt nytt, fristående projekt i `Ovrigt`-repot. Följer
 strukturen i [PRD_generell.md](https://github.com/kentlundgren/AI-teknik/blob/main/AI_modeller/Claude/olika_Claude_modeller/PRD/PRD_generell.md)
 (AI-teknik-repot, Claude-kompassens PRD-mall) men bygger inte vidare på
@@ -41,7 +41,10 @@ exponerar inte de cyklerna rakt av — enligt officiell dokumentation
 
 Det finns alltså **ingen** mätare som motsvarar "dygn" rakt av — närmaste
 proxy är sessionsmätaren (5 timmar), som återställs flera gånger per dygn.
-Se delfråga c för hur detta ska hanteras i verktyget.
+**Beslut (delfråga c):** verktyget konstruerar inget artificiellt
+dygnsbegrepp. Det visar de tre faktiska cyklerna som de är — session, vecka,
+usage credits — och Kent förhåller sig till dem direkt i stället för att
+räkna om till "dygn".
 
 ## 2. Syfte
 
@@ -56,16 +59,21 @@ Se delfråga c för hur detta ska hanteras i verktyget.
 
 **Ingår:**
 - Terminologi-mappning enligt avsnitt 1 (dygn/vecka/månad → session/vecka/
-  usage credits).
+  usage credits), inklusive beslutet att inte konstruera ett eget
+  dygnsbegrepp (delfråga c).
 - Ett enkelt, fristående HTML-verktyg i `Claude_kostnad/`, i samma stil som
   Ovrigt:s övriga kalkyler (Ölkalkylen, Släp-kalkylen): Kent matar manuellt
-  in avlästa värden (t.ex. session % + tid till reset, vecka % + tid till
-  reset, usage credits € spenderat + gräns), verktyget visar förbrukat/kvar
-  per cykel.
-- Beslut om verktyget ska spara historik över flera avläsningar (för trend)
-  eller bara visa ett ögonblick (delfråga d).
-- Beslut om SPEC.md-checkpoint enligt Claude-kompassens stående delfråga
-  (delfråga f).
+  in avlästa värden (session % + tid till reset, vecka % + tid till reset,
+  usage credits € spenderat + gräns), verktyget visar förbrukat/kvar per
+  cykel. Stateless — ingen historik i webbläsaren (se `data.md` nedan för
+  historik).
+- En enkel `Claude_kostnad/data.md` — en manuellt förd logg (en rad per
+  avläsning: datum, session %, vecka %, usage credits €) som ger historik
+  utan inbyggd lagring i verktyget (delfråga d).
+- En veckovis påminnelse (schemalagt jobb) i takt med veckomätarens
+  återställning, som ett separat, senare implementationssteg (delfråga e).
+- Ställningstagande till SPEC.md-checkpoint enligt Claude-kompassens
+  stående delfråga (delfråga f) — beslutat: nej.
 
 **Ingår inte:**
 - Automatisk datahämtning via inloggning/API-skrapning mot claude.ai. Ingen
@@ -90,29 +98,30 @@ Kent läser Settings → Usage/Billing då och då och matar in siffrorna själv
 samma mönster som hans befintliga kalkyler i Ovrigt.
 
 **c) Vad ska "dygn" motsvara i verktyget, när Anthropic inte exponerar en
-daglig mätare? — ÖPPEN.** Tre alternativ att välja mellan:
-  1. Använd sessionsmätaren (5h) rakt av som "just nu"-bild, utan att
-     försöka konstruera ett dygnsbegrepp — visa bara session/vecka/
-     usage credits som de tre faktiska cyklerna.
-  2. Härled ett dygnssnitt genom att dela veckoförbrukningen (%) med antal
-     dagar sedan senaste veckoreset — en beräknad approximation, inte en
-     Anthropic-mätare.
-  3. Låt Kent mata in sessionsmätaren flera gånger under samma dygn och
-     summera manuellt till en dygnssiffra (kräver flera avläsningar/dag).
+daglig mätare? — BESLUTAT ✓.** Inget artificiellt dygnsbegrepp konstrueras.
+Verktyget visar bara de tre faktiska cyklerna (session/vecka/usage credits)
+som de faktiskt är, se avsnitt 1.
 
 **d) Ska verktyget spara historik över flera avläsningar (trend över tid),
-eller bara visa ett ögonblick? — ÖPPEN.** Påverkar tekniskt scope
-(localStorage/enkel lagring) och om ett SPEC.md-steg motiveras (se f).
+eller bara visa ett ögonblick? — BESLUTAT ✓, med en tredje lösning Kent
+själv föreslog.** Inte inbyggd webbläsarlagring (localStorage) och inte
+enbart en ren ögonblicksbild utan spår — i stället en fristående,
+manuellt förd `Claude_kostnad/data.md`: en enkel tabell/logg med en rad per
+avläsning (datum, session %, vecka %, usage credits €, ev. anteckning).
+Håller historiken läsbar, versionshanterad i git och oberoende av
+webbläsarens lagring. Det interaktiva HTML-verktyget förblir stateless —
+det beräknar bara utifrån de siffror Kent matar in för stunden.
 
-**e) Hur ofta vill Kent mata in data, och vill han ha en påminnelse (t.ex.
-ett schemalagt jobb)? — ÖPPEN.**
+**e) Hur ofta vill Kent mata in data, och vill han ha en påminnelse? —
+BESLUTAT ✓.** Veckovis påminnelse, i takt med att veckomätaren återställs.
+Implementeras som ett schemalagt jobb i ett senare, separat steg (efter
+PRD-frysning) — se Produktionsordning.
 
-**f) Behövs ett SPEC.md-steg härifrån? — ÖPPEN, preliminär lutning: nej.**
-Om svaret på d blir "bara ögonblicksbild" liknar verktyget strukturellt
-Ovrigt:s befintliga fristående kalkyler (samma mönster som Ölkalkylen) —
-inte tekniskt komplext eller starkt agent-drivet. Om svaret på d blir
-"spara historik" kan bedömningen behöva omprövas. Ställningstagandet görs
-i nästa version, efter d.
+**f) Behövs ett SPEC.md-steg härifrån? — BESLUTAT ✓, nej.** Med d beslutat
+till en enkel manuell markdown-logg (inte localStorage/appstate) liknar
+leveransen strukturellt Ovrigt:s befintliga fristående kalkyler (samma
+mönster som Ölkalkylen) — varken tekniskt komplex eller starkt
+agent-driven. Inget SPEC.md-steg behövs.
 
 **g) Var ska verktyget/dokumentationen ligga? — BESLUTAT ✓.** I
 `Claude_kostnad`-mappen i `Ovrigt`-repot — skapad av Kent specifikt för det
@@ -124,26 +133,32 @@ här syftet (känt-nytt enligt mappkontrollen, inget att flagga).
 - [x] Åtkomst till AI-teknik-repot (Claude-kompassens PRD-mall) säkrad
 - [x] Två officiella Anthropic-källor verifierade om session-/vecko-/
       usage credits-cyklerna
-- [ ] Delfråga c (dygns-tolkning) beslutad
-- [ ] Delfråga d (historik vs. ögonblicksbild) beslutad
-- [ ] Delfråga e (inmatningsrutin/påminnelse) beslutad
-- [ ] Delfråga f (SPEC.md-checkpoint) slutgiltigt beslutad
+- [x] Delfråga c (dygns-tolkning) beslutad — inget artificiellt dygnsbegrepp
+- [x] Delfråga d (historik) beslutad — manuell `data.md`, inte localStorage
+- [x] Delfråga e (inmatningsrutin/påminnelse) beslutad — veckovis
+- [x] Delfråga f (SPEC.md-checkpoint) beslutad — nej
 - [ ] Fräscha-ögon-genomläsning genomförd (Regel 7)
 - [ ] PRD fryst av Kent
+- [ ] `Claude_kostnad/data.md` skapad (tom logg-mall med rätt kolumner)
 - [ ] HTML-verktyg byggt (separat steg, efter frysning)
+- [ ] Veckovis påminnelse (schemalagt jobb) skapad
 - [ ] README.md + site-nav + GitHub-hörna enligt `Ovrigt/CLAUDE.md` (när
       HTML-sidan skapas)
 
 ## 6. Produktionsordning
 
-1. Diskutera och besluta delfrågor c–f med Kent.
+1. ~~Diskutera och besluta delfrågor c–f med Kent.~~ Klart (v2).
 2. Fräscha-ögon-genomläsning av hela PRD:n (Regel 7), innan frysning.
 3. Frys PRD:n.
-4. Bygg HTML-verktyget (`kent-bygg-sidor`-mönstret, samma stil som Ovrigt:s
-   övriga kalkyler).
-5. Lägg till README.md, site-nav och GitHub-hörna enligt checklistan i
+4. Skapa `Claude_kostnad/data.md` — tom logg-mall med kolumnerna datum,
+   session %, vecka %, usage credits €, anteckning.
+5. Bygg HTML-verktyget (`kent-bygg-sidor`-mönstret, samma stil som Ovrigt:s
+   övriga kalkyler) — stateless kalkylator som läser Kents manuella
+   inmatning för stunden.
+6. Sätt upp den veckovisa påminnelsen (schemalagt jobb).
+7. Lägg till README.md, site-nav och GitHub-hörna enligt checklistan i
    `Ovrigt/CLAUDE.md`.
-6. Påminn Kent om commit (Kent commitar och pushar själv).
+8. Påminn Kent om commit (Kent commitar och pushar själv).
 
 ## 7. Källor
 
@@ -165,13 +180,13 @@ terminologi-tabellen i avsnitt 1 och delfråga c.)*
 
 ## 8. Status
 
-Tidigt planeringsskede. Bakgrund, terminologi-mappning, syfte och omfattning
-är utkastade utifrån de tre bilder Kent delat och två verifierade
-Anthropic-källor. Fyra delfrågor (c–f) återstår — främst hur "dygn" ska
-tolkas när Anthropic inte exponerar en daglig mätare (c), och om verktyget
-ska spara historik (d), vilket i sin tur påverkar SPEC.md-bedömningen (f).
-Ingen kod skriven, i linje med Kents uttryckliga instruktion om att detta
-är planeringsfasen.
+Alla sju delfrågor (a–g) beslutade. Verktyget blir en stateless HTML-
+kalkylator (session/vecka/usage credits, inget konstruerat dygnsbegrepp),
+kompletterad med en manuellt förd `data.md`-logg för historik och en
+veckovis påminnelse. Inget SPEC.md-steg behövs. Kvarstår innan frysning:
+en fräscha-ögon-genomläsning av hela dokumentet (Regel 7). Ingen kod
+skriven ännu, i linje med Kents uttryckliga instruktion om att detta är
+planeringsfasen.
 
 ## Ändringslogg
 
@@ -180,3 +195,9 @@ Ingen kod skriven, i linje med Kents uttryckliga instruktion om att detta
   plangränser, inte rå tokenstatistik; datainmatning: manuell avläsning).
   Struktur följer `PRD_generell.md` i AI-teknik-repot. Två officiella
   Anthropic-källor research:ade och verifierade för terminologi-avsnittet.
+- 2026-08-03 (v2): Delfrågor c–f beslutade efter Kents svar. c: inget
+  konstruerat dygnsbegrepp. d: Kent föreslog själv en tredje lösning —
+  en manuellt förd `data.md`-logg i stället för localStorage eller ren
+  ögonblicksbild — vilken antogs. e: veckovis påminnelse. f: nej till
+  SPEC.md, en direkt följd av d:s enkla lösning. Omfattning, Leveranser och
+  Produktionsordning uppdaterade i linje med besluten.
