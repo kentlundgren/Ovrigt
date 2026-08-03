@@ -120,7 +120,7 @@
 
 <div class="wrap">
   <h1>Ligger jag i fas med mitt Pro-abonnemang?</h1>
-  <p class="sub">Läs av Inställningar → Usage i claude.ai (en enda skärmdump räcker – session, vecka och usage credits visas där tillsammans) och mata in siffrorna nedan. Allt beräknas direkt i webbläsaren, inget sparas här — kopiera raden längst ner till <a href="data.md">data.md</a> om du vill spara historik. <strong>Fälten är förifyllda med den senast kända avläsningen (3 augusti 2026, kväll)</strong> — ersätt med nya siffror nästa gång du kollar.</p>
+  <p class="sub">Läs av Inställningar → Usage i claude.ai (en enda skärmdump räcker – session, vecka och usage credits visas där tillsammans) och mata in siffrorna nedan. Allt beräknas direkt i webbläsaren, inget sparas här — kopiera raden längst ner till <a href="data.md">data.md</a> om du vill spara historik. <strong>Fälten är förifyllda med den senast kända avläsningen (3 augusti 2026, kl 23)</strong> — ersätt med nya siffror nästa gång du kollar.</p>
 
   <div class="core ok" id="coreBanner">
     <p class="q">Kärnfrågan</p>
@@ -134,11 +134,11 @@
     <div class="row">
       <div class="field">
         <label for="sessPct">Använt av sessionsgränsen (%)</label>
-        <input id="sessPct" type="number" min="0" max="100" step="1" placeholder="t.ex. 27" value="27">
+        <input id="sessPct" type="number" min="0" max="100" step="1" placeholder="t.ex. 27" value="68">
       </div>
       <div class="field">
         <label for="sessReset">Återstår till reset (valfritt, t.ex. "2h 49min")</label>
-        <input id="sessReset" type="text" placeholder="2h 49min" value="2h 49min">
+        <input id="sessReset" type="text" placeholder="2h 49min" value="59 min">
       </div>
     </div>
     <div class="hero">
@@ -167,14 +167,26 @@
       </div>
       <div class="field">
         <label for="weekPct">Använt av (ev. boostad) gräns (%)</label>
-        <input id="weekPct" type="number" min="0" max="100" step="0.1" placeholder="t.ex. 55" value="55">
+        <input id="weekPct" type="number" min="0" max="100" step="0.1" placeholder="t.ex. 55" value="59">
       </div>
       <div class="field">
-        <label for="weekReset">Återställs (valfritt, t.ex. "Thu 7:59 AM")</label>
-        <input id="weekReset" type="text" placeholder="Thu 7:59 AM" value="Thu 7:59 AM">
+        <label for="weekResetDay">Återställningsdag</label>
+        <select id="weekResetDay">
+          <option value="1">Måndag</option>
+          <option value="2">Tisdag</option>
+          <option value="3">Onsdag</option>
+          <option value="4" selected>Torsdag</option>
+          <option value="5">Fredag</option>
+          <option value="6">Lördag</option>
+          <option value="0">Söndag</option>
+        </select>
       </div>
     </div>
-    <div class="row" style="margin-top:10px;">
+    <div class="row three" style="margin-top:10px;">
+      <div class="field">
+        <label for="weekResetTime">Återställningstid</label>
+        <input id="weekResetTime" type="time" value="07:59">
+      </div>
       <div class="field">
         <label for="boostPct">Aktiv boost just nu (%) — 0 om ingen</label>
         <input id="boostPct" type="number" min="0" step="1" value="50">
@@ -194,8 +206,10 @@
       <div class="outrow"><span class="k">Kvar mot aktiv (ev. boostad) gräns</span><span class="v" id="weekRemainingActive">–</span></div>
       <div class="outrow"><span class="k">Motsvarar av din <strong>normala</strong> 100%-baslinje</span><span class="v" id="weekNormalPct">–</span></div>
       <div class="outrow"><span class="k">Kvar mot normal baslinje</span><span class="v" id="weekRemainingNormal">–</span></div>
+      <div class="outrow"><span class="k">Andel av veckan som gått</span><span class="v" id="weekTimeElapsed">–</span></div>
     </div>
     <div class="status" id="weekStatus" style="display:none;"></div>
+    <div class="status" id="weekPaceStatus" style="display:none;"></div>
   </div>
 
   <!-- Månad (usage credits denna cykel) -->
@@ -268,6 +282,17 @@ function daysBetween(fromISO, toISO){
   return Math.round((to - from) / 86400000);
 }
 
+// Nästa tillfälle för en given veckodag (0=sön..6=lör) + klockslag, från "now".
+// Om det redan passerat idag/denna vecka, rullas det fram till nästa vecka.
+function nextWeeklyReset(now, targetDow, hh, mm){
+  const d = new Date(now.getTime());
+  d.setHours(hh, mm, 0, 0);
+  const diffDays = (targetDow - now.getDay() + 7) % 7;
+  d.setDate(d.getDate() + diffDays);
+  if (d <= now) d.setDate(d.getDate() + 7);
+  return d;
+}
+
 function setStatus(el, level, text){
   el.className = 'status ' + level;
   el.style.display = text ? 'block' : 'none';
@@ -318,10 +343,15 @@ function calc(){
   const weekRemActiveEl = document.getElementById('weekRemainingActive');
   const weekNormalPctEl = document.getElementById('weekNormalPct');
   const weekRemNormalEl = document.getElementById('weekRemainingNormal');
+  const weekTimeElapsedEl = document.getElementById('weekTimeElapsed');
   const weekStatusEl = document.getElementById('weekStatus');
+  const weekPaceStatusEl = document.getElementById('weekPaceStatus');
   const weekHeroNumEl = document.getElementById('weekHeroNum');
   const weekHeroFormulaEl = document.getElementById('weekHeroFormula');
   const weekBarEl = document.getElementById('weekBar');
+  const resetDay = parseInt(document.getElementById('weekResetDay').value, 10);
+  const resetTimeParts = document.getElementById('weekResetTime').value.split(':');
+  const WEEK_HOURS = 168; // en vecka = 7 dygn, källa: Claude Help Center, "What is the Pro plan?"
   let weekOk = true;
   let weekHasData = !isNaN(weekPct);
   if (weekHasData){
@@ -331,6 +361,27 @@ function calc(){
     weekRemActiveEl.textContent = fmtPct(remActive);
     weekNormalPctEl.textContent = fmtPct(normalPct);
     weekRemNormalEl.textContent = fmtPct(remNormal);
+
+    // Takt: andel av veckan som gått, jämfört med andel av normalranson förbrukad
+    const now = new Date();
+    let pctTimeElapsed = null;
+    if (resetTimeParts.length === 2 && !isNaN(resetDay)){
+      const resetDateTime = nextWeeklyReset(now, resetDay, parseInt(resetTimeParts[0],10), parseInt(resetTimeParts[1],10));
+      const hoursUntilReset = (resetDateTime - now) / 3600000;
+      const pctTimeRemaining = Math.max(0, Math.min(100, hoursUntilReset / WEEK_HOURS * 100));
+      pctTimeElapsed = 100 - pctTimeRemaining;
+      weekTimeElapsedEl.textContent = fmtPct(pctTimeElapsed);
+
+      const paceBuffer = pctTimeElapsed - normalPct;
+      let paceLevel = 'ok';
+      let paceText = 'Vid linjär takt borde du ha förbrukat ' + fmtPct(pctTimeElapsed) + ' just nu (' + fmtPct(pctTimeElapsed) + ' av veckan har gått). Du ligger ' + fmtPct(Math.abs(paceBuffer)) + ' ' + (paceBuffer >= 0 ? 'under' : 'över') + ' linjär takt.';
+      if (paceBuffer < -10){ paceLevel = 'danger'; }
+      else if (paceBuffer < 0){ paceLevel = 'warn'; }
+      setStatus(weekPaceStatusEl, paceLevel, paceText);
+    } else {
+      weekTimeElapsedEl.textContent = '–';
+      setStatus(weekPaceStatusEl, 'ok', '');
+    }
 
     let weekLevel = 'ok';
     if (normalPct > 100 && boostPct > 0){
@@ -358,7 +409,9 @@ function calc(){
     weekRemActiveEl.textContent = '–';
     weekNormalPctEl.textContent = '–';
     weekRemNormalEl.textContent = '–';
+    weekTimeElapsedEl.textContent = '–';
     setStatus(weekStatusEl, 'ok', '');
+    setStatus(weekPaceStatusEl, 'ok', '');
     setHero(weekHeroNumEl, weekBarEl, 'ok', '–', 0);
     weekHeroFormulaEl.textContent = '';
   }
