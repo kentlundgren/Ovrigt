@@ -383,6 +383,10 @@
           <input id="refPromoExpiry" type="date" value="2026-09-19">
         </div>
       </div>
+      <div class="outputs">
+        <div class="outrow"><span class="k">Dina egna köpta credits (saldo − promotional) <span class="badge" data-note="ownCredits">i</span></span><span class="v" id="refOwnCredits">–</span></div>
+      </div>
+      <p class="card-note" style="margin-top:8px; margin-bottom:0;">Det här talet har hittills legat still från avläsning till avläsning trots att saldot minskat (se <a href="data.md">data.md</a>) — ett observerat mönster, inte en garanterad regel från Anthropic, som tyder på att overflow-uttag dras från promotional-delen först. Om promotional credit tar slut innan den går ut (19 september 2026) börjar uttag sannolikt dras härifrån i stället.</p>
     </div>
   </div>
 
@@ -469,6 +473,9 @@ const NOTES = {
     text: 'En bonuskredit Anthropic gett dig, ingår i saldot ovan men har ett eget utgångsdatum. Anthropic dokumenterar inte officiellt vad som händer om den inte hinner användas — ett community-rapporterat buggärende tyder på att oanvänd promotional credit kan försvinna vid utgång.',
     source: 'GitHub-ärende #76087, anthropics/claude-code (ej officiell bekräftelse)',
     url: 'https://github.com/anthropics/claude-code/issues/76087'
+  },
+  ownCredits: {
+    text: 'Nuvarande saldo minus promotional credit — den del av saldot du faktiskt betalat för själv, till skillnad från Anthropics gratis bonuskredit. Över tre avläsningar 2026-08-04 låg det här talet dödstilla (40,21 €) trots att saldot minskade 9,04 € — ett observerat mönster som tyder på att overflow-uttag dras från promotional-delen först, men inte en regel Anthropic bekräftat officiellt.'
   }
 };
 
@@ -714,6 +721,16 @@ function calc(){
     setStatus(creditStatusEl, 'ok', '');
     setHero(creditHeroNumEl, creditBarEl, 'ok', '–', 0);
     creditHeroFormulaEl.textContent = '';
+  }
+
+  // --- Rena referensfält: egna köpta credits (saldo − promotional) ---
+  const refBalanceVal = parseFloat(document.getElementById('refBalance').value);
+  const refPromoVal = parseFloat(document.getElementById('refPromo').value);
+  const refOwnCreditsEl = document.getElementById('refOwnCredits');
+  if (!isNaN(refBalanceVal) && !isNaN(refPromoVal)){
+    refOwnCreditsEl.textContent = fmtEur(refBalanceVal - refPromoVal);
+  } else {
+    refOwnCreditsEl.textContent = '–';
   }
 
   // --- Kärnfrågan (övergripande status) ---
