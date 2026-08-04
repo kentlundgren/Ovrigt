@@ -117,6 +117,37 @@ avläsning fanns, så första radens delta (9,04 €) räknades i stället
 mellan dagens egen första och senaste avläsning. Från och med
 2026-08-05 gäller alltid kväll-till-kväll.
 
+## Overview-statistik (Sessions/Messages/Tokens/streaks) — separat logg
+
+Startad 2026-08-05, efter att Kent delade en skärmdump av Inställningar →
+Usage → fliken **Overview** (bredvid "Models", med period-väljare
+All/30d/7d) vid sidan av den vanliga "Plan usage limits"-skärmdumpen. Det
+är en **annan sorts data** än session/vecka/usage credits — kumulativ
+användningsstatistik (Sessions, Messages, Total tokens, Active days,
+Current streak, Longest streak, Peak hour, Favorite model), inte
+cykel-bunden mot en återställningsklocka.
+
+- **Loggas i en egen fil:** [`data_oversikt.md`](../../../data_oversikt.md)
+  (projektroten i `Claude_kostnad/`), **inte** i `data.md` — olika
+  tidsperspektiv (kumulativt/period-filtrerat mot cykel-bundet), olika
+  källflik i Usage-vyn, och olika förväntad uppdateringstakt (streaks och
+  active days ändras inte meningsfullt timme för timme). Kent föreslog
+  själv namnet "data2.md"; `data_oversikt.md` valdes istället som mer
+  beskrivande, men byt gärna om Kent föredrar hans eget förslag.
+- **Analysvärde:** en enskild avläsning säger inte mycket om takt (det gör
+  redan `data.md`). Värdet uppstår när flera avläsningar jämförs över
+  tid — deltan i Sessions/Messages/Total tokens mellan två avläsningar
+  visar hur intensivt Claude användes under mellanperioden, vilket kan
+  förklara **varför** usage credits-takten i `data.md` samtidigt
+  förändrades. Peak hour/streaks ger beteendekontext (t.ex. om sena
+  arbetspass sammanfaller med overflow-perioder). Inte ännu kopplat till
+  någon beräkning eller ett kort i `index.html` — bara en loggad
+  historik tills vidare, om inte Kent ber om mer.
+- **Notera vald period** (All/30d/7d) för varje avläsning — jämförelser
+  mellan rader är bara meningsfulla om samma period valdes båda gångerna.
+- **Osäkerhet:** vad "All" räknar sitt startdatum från (kontoskapande
+  eller något annat) är inte bekräftat.
+
 ## Viktiga mekaniker att komma ihåg
 
 - **Boost-omräkning (delfråga h):** Anthropics UI visar % mot den *just nu
@@ -255,6 +286,15 @@ mellan dagens egen första och senaste avläsning. Från och med
 
 ## Uppdateringslogg
 
+- 2026-08-05 (v12): Ny sektion "Overview-statistik" tillagd efter att Kent
+  delade en andra sorts skärmdump (Inställningar → Usage → Overview-fliken:
+  Sessions/Messages/Total tokens/Active days/streaks/Peak hour/Favorite
+  model) och bad om att få in den datan, i en egen fil eftersom den skiljer
+  sig till sin natur från `data.md`s cykel-bundna mätvärden. Ny fil
+  `data_oversikt.md` skapad, README.md:s filtabell uppdaterad, första
+  avläsningen loggad (2026-08-04, period "All": 32 sessioner, 13 558
+  meddelanden, 9,3M tokens, 13 aktiva dagar, streak 0d/9d, peak hour 21,
+  Sonnet 5).
 - 2026-08-04 (v1): Skapad efter en hel session av PRD-arbete
   (`PRD_tokenanvandning.md` v1→v7, fryst) och byggarbete (`index.html`,
   `data.md`, README/nav). Fångar boost-omräkning, takt-jämförelse

@@ -61,7 +61,8 @@ resonemang, delfrågor och tekniska beslut.
 | Fil | Innehåll |
 | --- | -------- |
 | `index.html` | Kents eget interaktiva verktyg |
-| `data.md` | Manuellt förd historik-logg (bara för Kents eget verktyg) |
+| `data.md` | Manuellt förd historik-logg — session/vecka/usage credits (bara för Kents eget verktyg) |
+| `data_oversikt.md` | Separat logg — kumulativ användningsstatistik (Sessions/Messages/Tokens/streaks) från Usage-vyns Overview-flik |
 | `js/berakning.js` | Delade beräkningsformler — används av båda sidorna |
 | `dela/index.html` | Den publika sidan — bilduppladdning + manuell inmatning |
 | `dela/ocr.js` | OCR-anrop (Tesseract.js) och fältmappning för den publika sidan |
