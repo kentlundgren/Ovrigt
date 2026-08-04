@@ -131,6 +131,17 @@ räcker — session, vecka och usage credits visas där tillsammans):
   lägger till fler mätvärden eller fler jämförelser i framtiden: kontrollera
   alltid att den övergripande bannerns logik faktiskt speglar allt som visas
   längre ner på sidan, inte bara de ursprungliga hårda gränserna.
+- **En isolerad procentsats säger nästan ingenting — den måste alltid kopplas
+  till hur långt in i cykeln man är.** Kent lyfte detta explicit 2026-08-04
+  efter en avläsning som visade "56 % av usage credits förbrukat" när bara
+  ~4 av ~31 dagar (≈11–13 %) av cykeln hade gått — en takt-avvikelse på
+  över +44 procentenheter, inte ett harmlöst "drygt hälften kvar". **Gäller
+  inte bara verktygets egna beräkningar, utan även löpande konversation:**
+  när Kent (eller en framtida session) nämner en usage credits- eller
+  veckoprocent i chatten, utan att gå via verktyget, räkna alltid ut och
+  säg också hur långt in i cykeln man är (dagar eller andel), inte bara
+  den råa procenten. Samma 56 % betyder helt olika saker på dag 4 kontra
+  dag 25 av en ~31-dagarscykel.
 
 ## Arbetssätt att respektera (gäller alla projekt i Ovrigt, inte bara detta)
 
@@ -178,3 +189,12 @@ räcker — session, vecka och usage credits visas där tillsammans):
   landade i att i stället använda tidpunkten för själva
   programuppdateringen (som Claude faktiskt känner till) — se skärpt
   instruktion i den återkommande veckorutinens steg 2 ovan.
+- 2026-08-04 (v6): Ny punkt under "Viktiga mekaniker" — en isolerad
+  procentsats utan cykel-kontext är missvisande, gäller lika mycket i
+  löpande konversation som i verktyget. Tillagd efter att Kent visade en
+  tredje avläsning samma dag (56 % av usage credits, dag ~4 av 31 —
+  takt-avvikelse +44 pp) och uttryckligen bad om att frågeställningen
+  skrevs in i en skill så den inte glöms bort. `index.html` och `data.md`
+  uppdaterade med avläsningen (se raderna för 2026-08-04, tredje/fjärde
+  posten). `index.html` fick även en frivillig OCR-uppladdningsruta
+  (delfråga j i `PRD_tokenanvandning.md`).
