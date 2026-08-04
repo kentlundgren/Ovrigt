@@ -2,11 +2,13 @@
 
 **Namn:** SPEC_publik_variant
 **Plats:** `Claude_kostnad/PRD/SPEC_publik_variant.md`
-**Baseras på:** `PRD_publik_variant.md` (fryst, v4, 2026-08-04)
+**Baseras på:** `PRD_publik_variant.md` (fryst, v5, 2026-08-04)
 **Skapad:** 2026-08-04
 **Författad av:** Claude (per PRD:ns delfråga g — Kent granskar, skriver
 inte innehållet själv)
-**Status:** Utkast — väntar på Kents granskning innan kodning börjar.
+**Status:** Granskad och godkänd av Kent (2026-08-04). Avsnitt 1 och 5
+uppdaterade efter en fördjupad diskussion om delfråga d.1 (alternativ C —
+endast formlerna delas, se PRD). Kodning kan påbörjas.
 
 Det här dokumentet beskriver **exakt hur** leveransen ska byggas — indata,
 utdata, gränsfall och tekniska val. **Varför** den byggs står redan i
@@ -20,8 +22,8 @@ dokumenten gäller PRD:n för syfte/scope, den här specen för implementation.
 | Fil | Typ | Beskrivning |
 |---|---|---|
 | `Claude_kostnad/dela/index.html` | Ny | Den publika sidan. Egen HTML-struktur, egen disclaimer, egen rubrik. |
-| `Claude_kostnad/js/berakning.js` | Ny (utbruten) | Kärnberäkningen (session/vecka/usage credits, boost-omräkning, takt-jämförelse) flyttas hit från dagens `index.html` och importeras av **båda** sidorna. Ingen ny beräkningslogik — ren refaktorering, se avsnitt 5. |
-| `Claude_kostnad/index.html` | Ändrad (minimalt) | Endast så mycket att den kan importera samma `berakning.js` i stället för att ha logiken inline. Inget i Kents eget UI/flöde ändras. |
+| `Claude_kostnad/js/berakning.js` | Ny (utbruten) | **Endast de rena formlerna** (se avsnitt 5, alternativ C, beslutad i PRD delfråga d.1) — inte hela `calc()`. DOM-inläsning/utskrift rörs inte. |
+| `Claude_kostnad/index.html` | Ändrad (minimalt, riktat) | Endast de rader i `calc()` som idag innehåller inline-formler byts mot anrop till motsvarande funktion i `berakning.js`. All `getElementById`-inläsning, DOM-utskrift, tooltip- och kopiera-logik lämnas orörd. |
 | `Claude_kostnad/dela/ocr.js` | Ny | OCR-anrop och fältmappning (avsnitt 3–4). Egen fil, inte inline i HTML, så den kan testas och läsas fristående. |
 | `Claude_kostnad/README.md`, `Ovrigt/README.md`, `Ovrigt/index.html` | Ändrad | Länk till den nya sidan, enligt checklistan i `Ovrigt/CLAUDE.md`. Görs i produktionsordningens steg 7, inte del av denna spec. |
 
@@ -93,26 +95,48 @@ uttömmande, testad specifikation.** De ska förfinas och verifieras mot
 verkliga OCR-utdata under byggfasen (produktionsordningens steg 5–6), inte
 antas fungera perfekt vid första försöket.
 
-## 5. Beräkningslogik (`berakning.js`)
+## 5. Beräkningslogik (`berakning.js`) — alternativ C
 
-Ren utbrytning av det som redan finns i `Claude_kostnad/index.html`, inga
-nya regler:
+Beslutad efter en separat avstämning med Kent under implementationen
+(`PRD_publik_variant.md`, delfråga d.1): **endast de rena formlerna**
+delas, inte hela `calc()`. Varje funktion tar emot rena tal/strängar
+(inga DOM-referenser) och returnerar ett värde eller ett litet
+resultatobjekt — inget läser eller skriver till DOM:et. Motsvarande rader
+i dagens `Claude_kostnad/index.html` anges inom parentes, för spårbarhet
+vid utbrytningen.
 
-- Boost-omräkning mot normal 100%-baslinje (`PRD_tokenanvandning.md`,
-  delfråga h): `avläst% × (1 + boost%/100)`.
-- Takt-jämförelse (`PRD_tokenanvandning.md` v8, `PRD_publik_variant.md`
-  delfråga e): förbrukad andel jämfört med förfluten andel av cykeln,
-  samma tröskel (>10 procentenheter över takt = "inte i fas") som redan
-  styr Kärnfrågan-bannerns logik idag.
-- Samma flaggade antagande om att usage credits-cykeln följer
-  kalendermånader måste synas i den publika sidans UI, inte bara i koden —
-  en förstagångsbesökare känner inte till bakgrunden (se PRD delfråga e).
+| Funktion | Signatur (ungefärlig) | Källa i dagens `index.html` |
+|---|---|---|
+| `normalizePct` | `(aktivPct, boostPct) => number` | rad 458: `weekPct * (1 + boostPct/100)` |
+| `weekElapsedPct` | `(nu, resetDag, resetHH, resetMM) => number` | rad 386–393, 467–471 (`nextWeeklyReset` + omvandling till andel) |
+| `monthElapsedPct` | `(resetDatumISO, nu) => number` | rad 562–568 (kalendermånads-antagandet, flaggat) |
+| `paceBuffer` | `(andelTidGången, andelFörbrukad) => number` | rad 474, 572 (`pctTimeElapsed − normalPct` respektive `pctMonthElapsed − pct`) |
+| `paceLevel` | `(buffer) => 'ok'\|'warn'\|'danger'` | rad 480–481, 576–577 — tröskeln **−10 procentenheter**, den exakta regel som orsakade v8-bugfixen i `PRD_tokenanvandning.md` |
+| `sessionLevel` | `(sessPct) => 'ok'\|'warn'\|'danger'` | rad 421–428 (≥100 danger, ≥85 warn) |
+| `weekLevel` | `(weekPct, normalPct, boostPct) => 'ok'\|'warn'\|'danger'` | rad 490–505 |
+| `creditLevel` | `(spent, limit, pct) => 'ok'\|'warn'\|'danger'` | rad 587–596 |
+| `coreVerdict` | `(sessOk, weekOk, creditOk, harData) => 'ok'\|'danger'\|'no-data'` | rad 613–630 — Kärnfrågan-bannerns sammanvägning, den andra delen av v8-bugfixen |
+| `fmtPct`, `fmtEur` | `(n) => string` | rad 365–372 — redan rena idag |
+| `todayISO`, `daysBetween` | — | rad 373–382 — redan rena idag |
 
-Funktionen/funktionerna i `berakning.js` ska ta emot rena tal (inga
-DOM-referenser) och returnera ett resultatobjekt — så att både
-`index.html` och `dela/index.html` kan anropa samma funktion och bara
-skilja sig åt i hur de hämtar indata (manuell inmatning vs.
-OCR-förifyllda fält) och hur de visar utdata.
+**Förblir kvar, separat, i respektive sidas egen kod (inte i
+`berakning.js`):** all `getElementById`-inläsning av fält, skrivning till
+utdata-element (`setHero`, `setStatus`, textinnehåll), CSS-klasser på
+hero/bar, `KNOWN_BOOSTS`-autofyllnaden vid produktbyte, tooltip-hantering
+(`showTooltip`/`NOTES`), och "kopiera rad till data.md" (`updateLogRow`,
+`copyBtn`) — den sistnämnda är dessutom inte relevant för `dela/index.html`
+över huvud taget, eftersom publika besökare inte har en `data.md`.
+
+Samma flaggade antagande om att usage credits-cykeln följer
+kalendermånader (i `monthElapsedPct`) måste synas i den publika sidans UI,
+inte bara i koden — en förstagångsbesökare känner inte till bakgrunden
+(se PRD delfråga e).
+
+**Verifieringskrav vid utbrytningen:** varje extraherad funktion ska ge
+exakt samma resultat som motsvarande inline-uttryck gjorde innan, testat
+mot samma kända kontrollvärden som redan verifierats i
+`PRD_tokenanvandning.md` (55%×1,5-boost → 82,5%; gränsfallet 95%×1,5 →
+142,5%). Detta är en ren utbrytning, ingen ny logik ska smygas in samtidigt.
 
 ## 6. UI-krav
 
@@ -176,3 +200,15 @@ OCR-förifyllda fält) och hur de visar utdata.
 - 2026-08-04 (v1): Skapad av Claude efter att Kent frusit
   `PRD_publik_variant.md` och uttryckligen bett Claude författa SPEC.md
   själv (delfråga g). Väntar på Kents granskning innan kodning.
+- 2026-08-04 (v2): Godkänd av Kent utan ändringar ("blir bra, det du
+  föreslog") — inklusive filnamnsvalet `SPEC_publik_variant.md`. Kodning
+  påbörjas enligt produktionsordningens steg 5.
+- 2026-08-04 (v3): Innan kodningen faktiskt startade upptäcktes att
+  "delad JS-fil" i avsnitt 1 var otillräckligt precist — en fullständig
+  refaktor av `index.html`s `calc()` visade sig vara en betydligt större
+  ändring i ett redan testat, veckovis använt verktyg än formuleringen
+  antydde. Diskuterat med Kent, som valde alternativ C (se
+  `PRD_publik_variant.md` delfråga d.1): bara de rena formlerna delas.
+  Avsnitt 1 (filtabellen) och avsnitt 5 (beräkningslogik) omskrivna med en
+  exakt funktionslista, källrader i dagens `index.html` för spårbarhet,
+  och ett uttryckligt verifieringskrav mot redan kända kontrollvärden.

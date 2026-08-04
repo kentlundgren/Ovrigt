@@ -3,10 +3,12 @@
 **Namn:** PRD_publik_variant
 **Plats:** `Claude_kostnad/PRD/PRD_publik_variant.md`
 **Skapad:** 2026-08-04
-**Version:** 4 (fryst)
+**Version:** 5 (fryst, med ett implementationsförtydligande)
 **Status:** **Fryst av Kent (2026-08-04).** Alla delfrågor (a–g) beslutade,
-fräscha-ögon-genomläsning genomförd. Nästa steg: SPEC.md, författad av
-Claude — se `SPEC_publik_variant.md` i samma mapp.
+fräscha-ögon-genomläsning genomförd. SPEC.md skriven, granskad och
+godkänd — se `SPEC_publik_variant.md`. Delfråga d förtydligad under
+implementationen (d.1: alternativ C, endast formlerna delas). Kodning
+pågår.
 **Typ:** Vidarebyggnad — ny, fristående leverans i samma mapp
 (`Claude_kostnad/`) som den redan frysta `PRD_tokenanvandning.md`, men ett
 eget scope, egen målgrupp och egen riskbild. Ersätter eller ändrar inte
@@ -168,9 +170,35 @@ Kents motivering: en helt egen sida gör syftet tydligt redan från första
 anblick — en besökare ska direkt förstå att det här är "ladda upp din egen
 skärmdump", inte behöva tolka ett läge/flik-val på Kents personliga
 verktyg. Kents eget verktyg på `index.html` förblir helt orört.
-Beräkningslogiken (Kärnfrågan, boost-omräkning) bryts ut till en delad
-JS-fil som båda sidorna importerar, så att en framtida ändring bara behöver
-göras på ett ställe.
+
+**d.1) Hur mycket av beräkningslogiken ska faktiskt delas? — BESLUTAT ✓,
+efter en separat avstämning under implementationen.** Tre alternativ
+vägdes mot varandra:
+
+| | Risk för `index.html` | Framtida ändringar |
+|---|---|---|
+| A. Total duplicering (ingen delad fil) | Ingen — orört | Måste ändras på två ställen — bevisat lätt att missa, se v8-exemplet nedan |
+| B. Full refaktor (hela `calc()`, inkl. DOM-koden, till en delad fil) | Störst — hela funktionen skrivs om i det befintliga, veckovis använda verktyget | En källa för allt, men rör kod som inte behöver röras |
+| **C. Endast de rena formlerna delas, DOM-inläsning/utskrift förblir separat per sida — vald** | Liten — bara enstaka inline-uttryck i `calc()` byts mot anrop till delade funktioner | Formlerna (den del som faktiskt buggfixats, se nedan) ändras på ett ställe; DOM-koden, som ändå alltid skiljer sig åt mellan sidorna, dupliceras men har aldrig varit buggkällan |
+
+Konkret bevis för att formlerna är värda att dela: takt-buffert- och
+Kärnfrågan-bannerns logik buggfixades redan en gång på två dagar (v8 i
+`PRD_tokenanvandning.md` — bannern räknade bara på hårda gränser, inte
+takt-avvikelsen). Det är precis den sortens fix som är lätt att glömma på
+ett andra, duplicerat ställe.
+
+**Vad som delas i `berakning.js` (alternativ C):**
+`normalizePct` (boost-omräkning), `weekElapsedPct`, `monthElapsedPct`
+(kalendermånads-antagandet), `paceBuffer`, `paceLevel` (tröskeln −10
+procentenheter, samma som orsakade v8-bugfixen), `sessionLevel`,
+`weekLevel`, `creditLevel`, `coreVerdict` (Kärnfrågan-bannerns
+sammanvägning), samt de redan rena hjälpfunktionerna `fmtPct`, `fmtEur`,
+`todayISO`, `daysBetween`.
+
+**Vad som förblir separat per sida:** all `getElementById`-inläsning av
+fält, skrivning till utdata-element, CSS-klasser på hero/bar/status,
+tooltip-hantering och "kopiera rad till data.md" (bara relevant för Kents
+egen sida — publika besökare har ingen `data.md`).
 
 **e) Ska takt-jämförelsen ingå för publika besökare? — BESLUTAT ✓.**
 Förtydligande av frågan (den handlade inte om uppföljning över tid, utan om
@@ -304,3 +332,15 @@ nästa steg, se `SPEC_publik_variant.md`. Ingen kod skrivs förrän SPEC.md
   inte tror sig kunna bidra med innehåll till SPEC.md-processen och bad
   Claude författa den själv — i linje med det redan beslutade delfråga g.
   Leveranser och Status uppdaterade. Nästa steg: `SPEC_publik_variant.md`.
+- 2026-08-04 (v5): Under implementationen visade det sig att delfråga d:s
+  "delad JS-fil" var mer tvetydig än den såg ut vid frysningen — full
+  refaktor av `index.html`s `calc()`-funktion är en betydligt större,
+  riskablare ändring i ett redan testat, veckovis använt verktyg än
+  formuleringen antydde. Ny delfråga d.1 tillagd och beslutad efter
+  diskussion med Kent: alternativ C — bara de rena formlerna (boost-
+  omräkning, takt-buffert, statusnivåer, Kärnfrågan-sammanvägning) delas i
+  `berakning.js`; DOM-inläsning/utskrift förblir separat kod per sida.
+  Konkret motivering: v8-bugfixen i `PRD_tokenanvandning.md` visar att just
+  formeldelen redan en gång behövde rättas, vilket gör den värd att bara
+  underhålla på ett ställe. Exakt funktionslista specificerad. SPEC.md
+  uppdateras i linje med detta.
