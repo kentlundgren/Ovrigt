@@ -68,6 +68,21 @@
 
   .upload-card{background:var(--card); border:2px dashed var(--border-strong); border-radius:12px; padding:1.25rem 1.1rem; margin-bottom:16px; text-align:center;}
   .upload-card p{margin:0 0 10px; font-size:13.5px; color:var(--text-secondary);}
+  .example-shot{margin:0 0 14px;}
+  .example-img-wrap{position:relative; display:inline-block; max-width:240px; width:100%; cursor:zoom-in; border-radius:8px; overflow:hidden;}
+  .example-img-wrap img{display:block; width:100%; border-radius:8px; border:1px solid var(--border); box-shadow:0 1px 4px rgba(38,36,31,0.12);}
+  .example-legend{
+    display:none; position:absolute; inset:0; background:rgba(24,95,165,0.94); color:#fff;
+    border-radius:8px; padding:12px 14px; text-align:left; font-size:11.5px; line-height:1.5; overflow-y:auto;
+  }
+  .example-img-wrap:hover .example-legend{display:block;}
+  .example-legend strong.legend-title{display:block; margin-bottom:6px; font-size:12.5px;}
+  .example-legend ul{margin:0 0 8px; padding-left:15px;}
+  .example-legend li{margin-bottom:3px;}
+  .example-zoom-hint{display:block; font-size:11px; opacity:0.85; font-style:italic;}
+  .example-caption{margin:6px 0 0; font-size:12px; color:var(--text-muted);}
+  .modal.modal-image{max-width:720px; padding:0.6rem;}
+  .modal.modal-image img{width:100%; border-radius:8px; display:block;}
   .upload-btn{
     appearance:none; border:1px solid var(--accent); background:var(--accent-bg); color:var(--accent);
     font:inherit; font-size:14px; font-weight:600; padding:9px 16px; border-radius:8px; cursor:pointer;
@@ -187,6 +202,23 @@
 
   <div class="upload-card">
     <p>Ladda upp en skärmdump av Inställningar → Usage (en enda bild räcker — session, vecka och usage credits visas där tillsammans).</p>
+    <div class="example-shot">
+      <div class="example-img-wrap" id="exampleImgWrap">
+        <img src="../Bilder/Claude_usage_290804_kl10.jpg" alt="Exempel: skärmdumpen av Inställningar → Usage i claude.ai, med session, vecka och usage credits synliga i samma bild">
+        <div class="example-legend">
+          <strong class="legend-title">Det här är värdena verktyget läser av:</strong>
+          <ul>
+            <li><strong>Current session</strong> — din session-andel (%)</li>
+            <li><strong>All models</strong> (under Weekly limits) — din vecko-andel (%)</li>
+            <li><strong>Boost-notisen</strong> (om den visas) — tillfällig gränshöjning och slutdatum</li>
+            <li><strong>€ spent / €-gräns</strong> — usage credits denna cykel</li>
+            <li><strong>Resets [datum]</strong> — när vecko- eller usage credits-cykeln återställs</li>
+          </ul>
+          <span class="example-zoom-hint">Klicka för att se bilden i fullstorlek</span>
+        </div>
+      </div>
+      <p class="example-caption">Exempel på vad du ska ladda upp — Inställningar → Usage i claude.ai. Hovra över bilden för att se vilka värden som är viktiga, klicka för att förstora.</p>
+    </div>
     <button type="button" class="upload-btn" id="uploadBtn">Välj bild</button>
     <input type="file" id="fileInput" accept="image/*">
     <div class="preview" id="previewWrap" style="display:none;">
@@ -316,6 +348,13 @@
 
 <a class="github-corner" href="https://github.com/kentlundgren/Ovrigt" target="_blank" rel="noopener">{ } GitHub</a>
 <button type="button" class="tech-corner" id="techBtn" aria-label="Tekniköversikt">&lt;/&gt; teknik</button>
+
+<div class="modal-overlay" id="imageModal">
+  <div class="modal modal-image">
+    <button type="button" class="modal-close" id="imageModalClose" aria-label="Stäng">×</button>
+    <img src="../Bilder/Claude_usage_290804_kl10.jpg" alt="Exempel i fullstorlek: Inställningar → Usage i claude.ai">
+  </div>
+</div>
 
 <div class="modal-overlay" id="techModal">
   <div class="modal">
@@ -653,6 +692,16 @@ document.getElementById('techModalClose').addEventListener('click', function(){
   document.getElementById('techModal').classList.remove('show');
 });
 document.getElementById('techModal').addEventListener('click', function(e){
+  if (e.target === this) this.classList.remove('show');
+});
+
+document.getElementById('exampleImgWrap').addEventListener('click', function(){
+  document.getElementById('imageModal').classList.add('show');
+});
+document.getElementById('imageModalClose').addEventListener('click', function(){
+  document.getElementById('imageModal').classList.remove('show');
+});
+document.getElementById('imageModal').addEventListener('click', function(e){
   if (e.target === this) this.classList.remove('show');
 });
 </script>
