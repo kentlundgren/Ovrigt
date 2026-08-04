@@ -84,6 +84,18 @@
     transition:opacity 0.2s, color 0.2s; z-index:999;
   }
   .github-corner:hover{opacity:1; color:#1a3a5c;}
+
+  .badge{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:16px; height:16px; border-radius:50%; font-size:10px; font-weight:600;
+    border:none; cursor:help; vertical-align:middle; margin-left:4px; padding:0;
+    background:var(--accent-bg); color:var(--accent);
+  }
+  #tooltip{
+    position:fixed; max-width:300px; background:var(--text); color:#fff;
+    font-size:12.5px; padding:8px 10px; border-radius:8px; z-index:1100; display:none; line-height:1.4;
+  }
+  #tooltip a{color:#bcd7f5;}
 </style>
 </head>
 <body>
@@ -121,10 +133,10 @@
   <table>
     <tr><th></th><th class="num">dela/index.html</th><th class="num">index.html</th></tr>
     <tr><td>Kärnfrågan</td><td class="num">Inte i fas: vecka, månad</td><td class="num">Inte i fas: vecka, månad</td></tr>
-    <tr><td>Vecka, normalbaslinje</td><td class="num">99 %</td><td class="num">99 %</td></tr>
-    <tr class="highlight"><td>Takt-avvikelse vecka</td><td class="num">25,4 pp</td><td class="num">25,3 pp</td></tr>
+    <tr><td>Vecka, normalbaslinje <span class="badge" data-note="veckaNormal">i</span></td><td class="num">99 %</td><td class="num">99 %</td></tr>
+    <tr class="highlight"><td>Takt-avvikelse vecka <span class="badge" data-note="taktAvvikelse">i</span></td><td class="num">25,4 pp</td><td class="num">25,3 pp</td></tr>
     <tr><td>Månad</td><td class="num">30,7 %</td><td class="num">30,7 %</td></tr>
-    <tr class="highlight"><td>Takt-avvikelse månad</td><td class="num">19,4 pp</td><td class="num">19,4 pp</td></tr>
+    <tr class="highlight"><td>Takt-avvikelse månad <span class="badge" data-note="taktAvvikelse">i</span></td><td class="num">19,4 pp</td><td class="num">19,4 pp</td></tr>
   </table>
   <p style="color:var(--text-secondary);">De 0,1 procentenheternas skillnad i takt-avvikelsen för veckan är inte
   ett fel — båda sidorna räknar mot <code>new Date()</code>, dvs. exakt nu, och några minuter hann gå mellan de
@@ -177,9 +189,9 @@
   <h2>Trend: hur ser läget ut jämfört med gårdagens avläsning?</h2>
   <table>
     <tr><th></th><th class="num">Igår (68/59)</th><th class="num">Nu (7/66)</th><th class="num">Skillnad</th></tr>
-    <tr><td>Vecka, normalbaslinje</td><td class="num">88,5 %</td><td class="num">99 %</td><td class="num">+10,5 pp</td></tr>
-    <tr><td>Takt-avvikelse vecka</td><td class="num">21,5 pp</td><td class="num">25,3 pp</td><td class="num">Försämrad</td></tr>
-    <tr><td>Usage credits</td><td class="num">6,13 €</td><td class="num">6,13 €</td><td class="num">Oförändrat</td></tr>
+    <tr><td>Vecka, normalbaslinje <span class="badge" data-note="veckaNormal">i</span></td><td class="num">88,5 %</td><td class="num">99 %</td><td class="num">+10,5 pp</td></tr>
+    <tr><td>Takt-avvikelse vecka <span class="badge" data-note="taktAvvikelse">i</span></td><td class="num">21,5 pp</td><td class="num">25,3 pp</td><td class="num">Försämrad</td></tr>
+    <tr><td>Usage credits <span class="badge" data-note="usageCredits">i</span></td><td class="num">6,13 €</td><td class="num">6,13 €</td><td class="num">Oförändrat</td></tr>
   </table>
   <p style="color:var(--text-secondary);">Session (68 % → 7 %) är medvetet utelämnad ur jämförelsen — sessionen
   återställs var 5:e timme, så flera resetcykler hann ske mellan avläsningarna. En lägre siffra betyder inte
@@ -192,5 +204,55 @@
 </div>
 
 <a class="github-corner" href="https://github.com/kentlundgren/Ovrigt" target="_blank" rel="noopener">{ } GitHub</a>
+<div id="tooltip"></div>
+
+<script>
+// Samma badge/tooltip-mönster som usage credits-kortet i index.html — förklaringar för
+// de begrepp som återkommer i tabellerna ovan, så de är väldefinierade även i framtida
+// vecka-mot-vecka-jämförelser (inte bara "läsbara just nu").
+const NOTES = {
+  veckaNormal: {
+    text: 'Andelen av din NORMALA (icke-boostade) 100%-veckogräns som är förbrukad. Anthropic visar bara andelen mot den just nu gällande (ev. tillfälligt höjda) gränsen — det talet omräknas hit med formeln avläst% × (1 + boost%/100), så att veckor med olika boost-nivå blir jämförbara med varandra.',
+    source: 'PRD_tokenanvandning.md, delfråga h',
+    url: 'PRD/PRD_tokenanvandning.md'
+  },
+  taktAvvikelse: {
+    text: 'Hur många procentenheter du ligger före eller efter en jämn (linjär) förbrukningstakt: (förbrukad andel av gränsen) − (andel av cykeln som redan gått). Positivt tal = du förbrukar snabbare än en jämn takt (ligger "före"). Negativt tal = du har marginal kvar. Samma tröskel (över 10 procentenheter) styr när Kärnfrågan-bannern visar "Inte i fas".',
+    source: 'PRD_tokenanvandning.md, v8 (takt-jämförelsen)',
+    url: 'PRD/PRD_tokenanvandning.md'
+  },
+  usageCredits: {
+    text: 'Anthropics overflow-mekanism: ett belopp i euro som dras när du överskrider dina vanliga plangränser (session/vecka). Beloppet här är vad som förbrukats av DIN egen satta månadsgräns denna cykel — inte ditt totala förbetalda saldo, som är en separat pott (se referensfälten i index.html).',
+    source: 'Claude Help Center, "Manage usage credits for paid Claude plans"',
+    url: 'https://support.claude.com/en/articles/12429409-manage-usage-credits-for-paid-claude-plans'
+  }
+};
+
+function showTooltip(el){
+  const note = NOTES[el.dataset.note];
+  if (!note) return;
+  const tip = document.getElementById('tooltip');
+  let html = note.text;
+  if (note.url){
+    html += ' <a href="' + note.url + '" target="_blank" rel="noopener">' + (note.source || 'Källa') + ' ↗</a>';
+  }
+  tip.innerHTML = html;
+  const rect = el.getBoundingClientRect();
+  tip.style.display = 'block';
+  let left = rect.left;
+  if (left + 310 > window.innerWidth) left = window.innerWidth - 320;
+  tip.style.top = (rect.bottom + 6) + 'px';
+  tip.style.left = Math.max(8, left) + 'px';
+}
+function hideTooltip(){
+  document.getElementById('tooltip').style.display = 'none';
+}
+document.querySelectorAll('.badge[data-note]').forEach(function(b){
+  b.addEventListener('mouseenter', function(){ showTooltip(b); });
+  b.addEventListener('mouseleave', hideTooltip);
+  b.addEventListener('click', function(e){ e.stopPropagation(); showTooltip(b); });
+});
+document.addEventListener('click', hideTooltip);
+</script>
 </body>
 </html>
