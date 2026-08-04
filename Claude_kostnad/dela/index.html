@@ -195,11 +195,6 @@
     kontrollera alltid fälten innan du analyserar.
   </div>
 
-  <div class="core ok" id="coreBanner">
-    <p class="q">Kärnfrågan</p>
-    <p class="a" id="coreText">Ladda upp en bild eller fyll i siffrorna nedan</p>
-  </div>
-
   <div class="upload-card">
     <p>Ladda upp en skärmdump av Inställningar → Usage (en enda bild räcker — session, vecka och usage credits visas där tillsammans).</p>
     <div class="example-shot">
@@ -341,6 +336,11 @@
 
   <div class="analyze-row">
     <button type="button" class="analyze-btn" id="analyzeBtn">Analysera</button>
+  </div>
+
+  <div class="core ok" id="coreBanner">
+    <p class="q">Kärnfrågan</p>
+    <p class="a" id="coreText">Resultatet visas här när du tryckt Analysera</p>
   </div>
 
   <p class="foot">Byggd med enbart HTML/CSS/JS. Bilden analyseras lokalt med <a href="https://tesseract.projectnaptha.com/" target="_blank" rel="noopener">Tesseract.js</a> — ingen server, inget sparas. Se <a href="../PRD/PRD_publik_variant.md">PRD_publik_variant.md</a> för bakgrund och beslut. Vill du ha ett verktyg som sparar historik åt dig själv över tid? Se <a href="../index.html">Kents egen variant</a>. Se även <a href="../testad_260804.html">testrapporten</a> som visar att de två sidorna räknar likadant.</p>
@@ -613,7 +613,7 @@ function calc(){
   const verdict = CKB.coreVerdict(hasAnyData, sessOk, weekOk, creditOk);
   if (verdict.status === 'no-data'){
     banner.className = 'core ok';
-    coreText.textContent = 'Ladda upp en bild eller fyll i siffrorna nedan';
+    coreText.textContent = 'Fyll i minst ett fält ovan och tryck Analysera igen';
   } else if (verdict.status === 'not-ok'){
     banner.className = 'core danger';
     coreText.textContent = 'Inte i fas: ' + verdict.failedAreas.join(', ');
