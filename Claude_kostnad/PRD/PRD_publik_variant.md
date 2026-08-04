@@ -3,10 +3,9 @@
 **Namn:** PRD_publik_variant
 **Plats:** `Claude_kostnad/PRD/PRD_publik_variant.md`
 **Skapad:** 2026-08-04
-**Version:** 1 (utkast)
-**Status:** **Utkast — inte fryst.** Väntar på Kents beslut om delfrågor c–e
-och ett explicit ställningstagande till SPEC.md (delfråga g) innan
-frysning.
+**Version:** 2 (utkast)
+**Status:** **Utkast — inte fryst.** Alla delfrågor (a–g) beslutade.
+Återstår: fräscha-ögon-genomläsning (Regel 7) och Kents formella frysning.
 **Typ:** Vidarebyggnad — ny, fristående leverans i samma mapp
 (`Claude_kostnad/`) som den redan frysta `PRD_tokenanvandning.md`, men ett
 eget scope, egen målgrupp och egen riskbild. Ersätter eller ändrar inte
@@ -62,6 +61,17 @@ processas i webbläsarens tillfälliga arbetsminne (en JS-variabel) och
 försvinner när sidan stängs eller laddas om — ingen serveruppladdning,
 ingen databas, ingen bildlagring.
 
+**Firebase som framtida möjlighet (inte del av denna leverans).** Kent har
+bekräftat att skälet till att avstå Firebase just nu inte är att han ogillar
+tekniken — han har jobbat med Firebase tidigare och vill generellt lära sig
+det bättre, men vill inte koppla in det i just det här projektet just nu.
+Detta dokumenteras här som en medveten, öppen dörr: om OCR-precisionen
+visar sig otillräcklig i praktiken, eller om Kent vid ett senare tillfälle
+vill öva på Firebase, är steget "riktig AI-bildanalys via en Firebase-backend
+(t.ex. Cloud Functions som håller API-nyckeln hemlig)" en naturlig
+vidareutveckling — men ett eget, senare PRD-beslut, inte något som styr
+denna leverans.
+
 ## 2. Syfte
 
 - Låta vem som helst som besöker `Claude_kostnad/index.html` få samma
@@ -77,9 +87,10 @@ ingen databas, ingen bildlagring.
 
 ## 3. Omfattning
 
-**Ingår (preliminärt — se öppna delfrågor nedan):**
-- Ett nytt, valbart läge på/vid `Claude_kostnad/index.html` där en
-  besökare kan ladda upp en bild av sin egen Usage-sida.
+**Ingår:**
+- En egen, ny sida (t.ex. `Claude_kostnad/dela/index.html`, se delfråga d)
+  där en besökare kan ladda upp en bild av sin egen Usage-sida. Kents eget
+  verktyg på `index.html` förblir orört.
 - Klient-side OCR (Tesseract.js eller motsvarande) som läser av bilden
   lokalt i besökarens webbläsare — ingen bild skickas någonstans.
 - OCR-resultatet **förifyller** samma inmatningsfält som redan finns i
@@ -110,56 +121,67 @@ ingen databas, ingen bildlagring.
 **a) AI-bildanalys (backend) eller klient-side OCR? — BESLUTAT ✓.**
 Klient-side OCR (Tesseract.js), se resonemang i Bakgrund. Ingen
 Firebase-koppling eller annan backend i detta skede — direkt i linje med
-Kents uttryckliga önskan om en enklare lösning.
+Kents uttryckliga önskan om en enklare lösning. Firebase (eller
+motsvarande) dokumenterat som en medveten framtida möjlighet, inte en del
+av denna leverans — se Bakgrund.
 
 **b) Var lagras den uppladdade bilden? — BESLUTAT ✓.** Ingenstans
 permanent. Bilden processas i webbläsarens minne och kastas när sidan
 stängs/laddas om. Ingen server-uppladdning, ingen loggning.
 
-**c) Hur hanteras OCR-osäkerhet? — ÖPPEN, förslag att stämma av med
-Kent.** Föreslaget beslut: OCR-resultatet förifyller fälten men besökaren
-måste kunna se och rätta varje tal innan analysen körs — verktyget litar
-aldrig blint på OCR-resultatet. Behöver Kents godkännande innan frysning.
+**c) Hur hanteras OCR-osäkerhet? — BESLUTAT ✓ (Kent litar på förslaget).**
+OCR-resultatet förifyller samma fält som redan finns i dagens verktyg, men
+besökaren ser alltid de avlästa talen skrivna ut i vanliga inmatningsfält
+och måste själv trycka på en "Analysera"-knapp — inget beräknas automatiskt
+i bakgrunden utan att besökaren sett och kunnat rätta talen först. I
+praktiken: precis samma upplevelse som när Kent själv skriver in sina tal
+idag, förutom att fälten råkar vara förifyllda i stället för tomma.
+Verktyget litar alltså aldrig blint på OCR:en — den är en genväg, inte ett
+facit.
 
 **d) Sidplacering: samma sida som Kents eget verktyg, eller en egen sida?
-— ÖPPEN, Kent uttryckligen osäker, ska utredas här.**
+— BESLUTAT ✓.** Egen, ny sida (t.ex. `Claude_kostnad/dela/index.html`).
+Kents motivering: en helt egen sida gör syftet tydligt redan från första
+anblick — en besökare ska direkt förstå att det här är "ladda upp din egen
+skärmdump", inte behöva tolka ett läge/flik-val på Kents personliga
+verktyg. Kents eget verktyg på `index.html` förblir helt orört.
+Beräkningslogiken (Kärnfrågan, boost-omräkning) bryts ut till en delad
+JS-fil som båda sidorna importerar, så att en framtida ändring bara behöver
+göras på ett ställe.
 
-| Alternativ | Fördel | Nackdel |
-|---|---|---|
-| Samma sida, nytt läge/flik på `index.html` | Ett underhållsställe, återanvänder befintlig kod/stil direkt | Blandar Kents privata flöde med ett publikt läge på samma URL — risk att det blir rörigt eller att Kents egna, ifyllda värden av misstag visas för besökare om state inte hålls strikt isär |
-| Egen ny sida (t.ex. `Claude_kostnad/dela/index.html`) | Tydlig separation, Kents eget verktyg orört och opåverkat, enklare att sätta en egen disclaimer/rubrik | Två ställen att underhålla om beräkningslogiken ändras — måste hållas i synk eller delas via en gemensam JS-fil |
+**e) Ska takt-jämförelsen ingå för publika besökare? — BESLUTAT ✓.**
+Förtydligande av frågan (den handlade inte om uppföljning över tid, utan om
+en specifik beräkning i dagens verktyg): "takt-jämförelsen" är den del av
+Kärnfrågan-logiken som inte bara visar "du har förbrukat 66%", utan också
+jämför det mot "hur långt in i veckan/månaden är du just nu" — t.ex. om
+40% av veckan gått men 66% av gränsen är förbrukad, ligger man **före**
+en jämn takt, inte bara under ett hårt tak. Det är själva kärnan i "ligger
+jag i fas"-frågan, inte ett tillval ovanpå den.
 
-**Preliminär lutning:** egen sida, med beräkningslogiken utbruten till en
-delad JS-fil som båda sidorna importerar, så att en framtida ändring i
-Kärnfrågan-logiken (t.ex. en ny delfråga i `PRD_tokenanvandning.md`) inte
-behöver göras på två ställen. Men detta är en lutning, inte ett beslut —
-Kent har uttryckligen bett att frågan utreds här snarare än avgörs direkt.
-
-**e) Ska takt-jämförelsen (mot linjär takt, se v8 i
-`PRD_tokenanvandning.md`) ingå för publika besökare? — ÖPPEN.** Kents
-egen takt-jämförelse för månaden bygger delvis på ett antagande om att
-usage credits-cykeln följer kalendermånader (flaggat antagande, inte en
-bekräftad Anthropic-regel). Fråga att besluta: ska publika besökare få
-samma takt-jämförelse (med samma flaggade antagande, tydligt markerat), or
-bara de hårda gränsvärdena (session/vecka/usage credits i %) utan
-takt-extrapolering? Behöver Kents beslut.
+Beslut: ja, samma takt-jämförelse ska ingå för publika besökare — annars
+svarar verktyget inte på den fråga det är byggt för att svara på. Samma
+flaggade antagande som i Kents eget verktyg (att usage credits-cykeln
+följer kalendermånader, inte en bekräftad Anthropic-regel) ska vara lika
+tydligt synligt för en anonym besökare som för Kent själv — särskilt
+viktigt här eftersom en förstagångsbesökare inte känner till den
+bakgrunden som Kent gör.
 
 **f) Disclaimer om att verktyget inte är officiellt — BESLUTAT ✓.** Ja,
 krävs. En publik sida som analyserar "Claude"-användning måste tydligt
 ange att den inte är ett Anthropic-verktyg, och att OCR-avläsningen kan
 vara fel — besökaren bekräftar alltid talen själv (kopplat till c).
 
-**g) Behövs ett SPEC.md-steg härifrån? (Regel 6) — PRELIMINÄRT: sannolikt
-ja, men bekräftas inte förrän Kent tagit ställning.** Till skillnad från
-`PRD_tokenanvandning.md` (som landade i nej, eftersom leveransen var en
-enkel stateless kalkylator i en redan etablerad mall) innehåller den här
-leveransen genuint ny teknisk komplexitet: integration av ett
-tredjepartsbibliotek (OCR), bildhantering i webbläsaren, mappning av
+**g) Behövs ett SPEC.md-steg härifrån? (Regel 6) — BESLUTAT ✓, ja.** Till
+skillnad från `PRD_tokenanvandning.md` (som landade i nej, eftersom
+leveransen var en enkel stateless kalkylator i en redan etablerad mall)
+innehåller den här leveransen genuint ny teknisk komplexitet: integration
+av ett tredjepartsbibliotek (OCR), bildhantering i webbläsaren, mappning av
 OCR-text till specifika fält med felmarginal, och en tydlig
-gränsfallshantering (vad händer om OCR inte hittar något alls, eller
-läser fel språk/format). Det är precis den typen av "exakt hur"-precision
-en SPEC.md är till för. Kent bör bekräfta detta innan kodningsfasen
-startar.
+gränsfallshantering (vad händer om OCR inte hittar något alls, eller läser
+fel språk/format). Det är precis den typen av "exakt hur"-precision en
+SPEC.md är till för. Kent har bekräftat beslutet men lämnar innehållet till
+Claude att författa — SPEC.md:n skrivs av Claude i produktionsordningens
+steg 4, Kent granskar och godkänner snarare än skriver den själv.
 
 ## 5. Leveranser
 
@@ -169,28 +191,31 @@ startar.
       API-nyckel för riktig AI-bildanalys
 - [x] Klient-side OCR vald som teknisk väg (Tesseract.js verifierad som
       källa, se avsnitt 7)
-- [ ] Delfråga c (OCR-osäkerhet/redigerbara fält) bekräftad av Kent
-- [ ] Delfråga d (sidplacering) beslutad av Kent
-- [ ] Delfråga e (takt-jämförelse för publika besökare) beslutad av Kent
-- [ ] Delfråga g (SPEC.md-ställningstagande) bekräftad av Kent
+- [x] Delfråga c (OCR-osäkerhet/redigerbara fält) beslutad — förifyllda,
+      redigerbara fält, aldrig blind automatik
+- [x] Delfråga d (sidplacering) beslutad — egen ny sida, delad JS-fil för
+      beräkningslogiken
+- [x] Delfråga e (takt-jämförelse för publika besökare) beslutad — ja,
+      ingår, med samma flaggade kalendermånads-antagande synligt
+- [x] Delfråga g (SPEC.md-ställningstagande) beslutad — ja, Claude
+      författar, Kent granskar
 - [ ] Fräscha-ögon-genomläsning genomförd (Regel 7)
 - [ ] PRD fryst av Kent
-- [ ] (om SPEC.md beslutas) SPEC.md skriven för OCR-fältmappning och
-      gränsfall
+- [ ] SPEC.md skriven för OCR-fältmappning och gränsfall
 - [ ] Funktion byggd och testad mot flera olika skärmdumpar (ljust/mörkt
       läge, beskurna bilder, andra produkter än Claude Code)
 - [ ] Disclaimer, README-uppdatering och site-nav enligt `Ovrigt/CLAUDE.md`
 
 ## 6. Produktionsordning
 
-1. Besluta delfrågor c, d, e och g med Kent.
+1. ~~Besluta delfrågor c, d, e och g med Kent.~~ Klart (v2).
 2. Fräscha-ögon-genomläsning av hela PRD:n (Regel 7), innan frysning.
 3. Frys PRD:n.
-4. (om SPEC.md beslutas) Skriv SPEC.md: exakt vilka fält OCR:en ska leta
-   efter, hur textmönster mappas till respektive mätare, vad som händer
-   vid 0 träffar eller flertydiga träffar.
+4. Skriv SPEC.md: exakt vilka fält OCR:en ska leta efter, hur textmönster
+   mappas till respektive mätare, vad som händer vid 0 träffar eller
+   flertydiga träffar.
 5. Bygg funktionen enligt `kent-bygg-sidor`-mönstret, återanvänd
-   beräkningslogiken från det befintliga verktyget.
+   beräkningslogiken från det befintliga verktyget via en delad JS-fil.
 6. Testa OCR-robusthet mot flera olika skärmdumpar (inte bara Kents egen).
 7. Lägg till disclaimer, README-uppdatering, site-nav och
    `{ } GitHub`-hörna enligt checklistan i `Ovrigt/CLAUDE.md`.
@@ -208,14 +233,17 @@ välja OCR i stället för en backend-kopplad AI-bildanalys.)*
 
 ## 8. Status
 
-Utkast. Kärnfrågan, bakgrund och den avgörande tekniska begränsningen
-(publik sida kan inte skydda en API-nyckel, vilket utesluter riktig
-AI-bildanalys utan backend) är dokumenterade. Klient-side OCR via
-Tesseract.js är vald och källbelagd som den väg som matchar Kents
-uttryckliga krav på en enklare lösning utan Firebase eller motsvarande.
-Fyra delfrågor (c, d, e, g) kvarstår innan PRD:n kan frysas — särskilt
-sidplacering (d), som Kent uttryckligen bett att få utredd här snarare
-än bestämd direkt.
+Utkast, alla sju delfrågor (a–g) nu beslutade. Kärnfrågan, bakgrund och den
+avgörande tekniska begränsningen (publik sida kan inte skydda en
+API-nyckel, vilket utesluter riktig AI-bildanalys utan backend) är
+dokumenterade. Klient-side OCR via Tesseract.js är vald och källbelagd som
+den väg som matchar Kents krav på en enklare lösning utan Firebase — som
+dokumenterats som en medveten framtida möjlighet i stället för att
+avfärdas helt. Egen ny sida vald för sidplacering, för att göra syftet
+tydligt från start. Takt-jämförelsen ingår för publika besökare, eftersom
+den är kärnan i vad verktyget faktiskt svarar på. Ett SPEC.md-steg är
+beslutat, författas av Claude i produktionsordningens steg 4. Återstår:
+fräscha-ögon-genomläsning (Regel 7) och Kents formella frysning.
 
 ## Ändringslogg
 
@@ -228,3 +256,15 @@ sidplacering (d), som Kent uttryckligen bett att få utredd här snarare
   stället för AI-bildanalys plus backend, eftersom Kent uttryckligen inte
   vill koppla in Firebase eller motsvarande just nu. Sidplacering
   (delfråga d) lämnad öppen på Kents uttryckliga begäran.
+- 2026-08-04 (v2): Alla återstående delfrågor beslutade efter Kents svar.
+  Firebase dokumenterat som en medveten framtida möjlighet (Kent har
+  jobbat med det förut och vill lära sig det bättre generellt, men inte
+  koppla in det i just detta projekt nu) i stället för att bara avfärdas.
+  c: förifyllda, redigerbara fält — aldrig blind automatik. d: egen ny
+  sida, för att göra syftet tydligt från start; beräkningslogik bryts ut
+  till en delad JS-fil. e: frågan omformulerad i klarspråk efter att Kent
+  inte förstod ursprungsformuleringen — takt-jämförelsen (förbrukat vs.
+  hur långt in i cykeln man är) är själva kärnan i "ligger jag i
+  fas"-frågan och ska ingå. g: SPEC.md beslutat, författas av Claude,
+  Kent granskar snarare än skriver den. Leveranser och Status
+  uppdaterade.
