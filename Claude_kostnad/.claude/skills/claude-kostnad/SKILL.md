@@ -72,7 +72,13 @@ räcker — session, vecka och usage credits visas där tillsammans):
 1. **Läs av bilden direkt** (Claude kan läsa skärmdumpar utan att Kent
    skriver av siffrorna).
 2. **Uppdatera `index.html`:s defaultvärden** (`value=`-attributen på
-   inputs) till de nya siffrorna, och sub-header-textens datum/tid.
+   inputs) till de nya siffrorna, sub-header-textens datum/tid, **och**
+   Kärnfrågan-bannerns `<p class="meta">`-rad (tillagd 2026-08-04) — håll
+   alla tre datum-nämningar i synk i samma redigering. Viktigt: datumet där
+   är **tidpunkten för själva programuppdateringen** (när Claude faktiskt
+   redigerar filen), inte en gissning på när Kent tog skärmdumpen — annars
+   riskerar texten bli fel så fort Kent skriver in nya siffror manuellt
+   utan att be om en full uppdatering.
 3. **Logga nya rader i `data.md`** — en rad per produkt om vecko-läget
    skiljer sig åt mellan Claude Code och Cowork (vilket det gjorde första
    gången: 21,5 pp vs 51 pp över takt, se raderna för 2026-08-04).
@@ -165,3 +171,10 @@ räcker — session, vecka och usage credits visas där tillsammans):
   `testad_260804.html`, medvetet, så de två inte kan glida isär över tid.
   Föddes ur den nya publika varianten (`dela/`) och dess testrapport —
   se `PRD/PRD_publik_variant.md` och `testad_260804.html`.
+- 2026-08-04 (v5): Kärnfrågan-bannern i `index.html` fick en ny
+  `<p class="meta">`-rad som stavar ut själva frågan ("Är du i fas med
+  ditt Claude-abonnemang?") och anger när verktyget senast uppdaterades.
+  Kent föreslog ursprungligen ett fast klockslag för avläsningen, men vi
+  landade i att i stället använda tidpunkten för själva
+  programuppdateringen (som Claude faktiskt känner till) — se skärpt
+  instruktion i den återkommande veckorutinens steg 2 ovan.

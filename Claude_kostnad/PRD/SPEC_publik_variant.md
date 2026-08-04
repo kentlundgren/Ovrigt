@@ -157,6 +157,15 @@ mot samma kända kontrollvärden som redan verifierats i
   Detta är inte ett felläge som ska blockera användaren, bara en
   degradering till samma upplevelse som Kents befintliga verktyg redan
   ger.
+- **Kärnfrågan-bannern placeras i anslutning till "Analysera"-knappen, inte
+  högst upp på sidan.** Tillagt 2026-08-04 efter Kents feedback: en banner
+  högst upp, i samma gröna/röda "core"-stil som det faktiska resultatet,
+  läste innan dess av som att svaret redan visades — trots att den bara
+  innehöll en placeholder-text ("Ladda upp en bild..."). Bannern flyttad
+  till direkt efter analysera-knappen, med en kontextanpassad
+  placeholder-text ("Resultatet visas här när du tryckt Analysera") tills
+  första analysen körts. Samma `id="coreBanner"`/`id="coreText"` och
+  samma `calc()`-logik — bara DOM-positionen ändrad, ingen ny logik.
 
 ## 7. Gränsfall
 
@@ -252,3 +261,10 @@ mot samma kända kontrollvärden som redan verifierats i
   Avsnitt 9 uppdaterat till fullt godkänt. Hela testkedjan dokumenterad i
   en ny sida, [`testad_260804.html`](../testad_260804.html), länkad från
   både `index.html` och `dela/index.html`.
+- 2026-08-04 (v6): Tre UI-tillägg efter Kents feedback: (1) exempelbild i
+  uppladdningskortet (`Bilder/Claude_usage_290804_kl10.jpg`), klickbar för
+  full storlek och med en hover-legend över vilka värden som ska läsas
+  av, (2) Kärnfrågan-bannern flyttad från sidans topp till direkt vid
+  Analysera-knappen (se avsnitt 6) eftersom den tidigare positionen såg
+  ut som ett resultat innan något var beräknat, (3) teknik-modal och
+  testrapport-korsreferenser (se `PRD_publik_variant.md` v6).
