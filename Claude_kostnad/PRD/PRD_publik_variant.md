@@ -3,9 +3,10 @@
 **Namn:** PRD_publik_variant
 **Plats:** `Claude_kostnad/PRD/PRD_publik_variant.md`
 **Skapad:** 2026-08-04
-**Version:** 3 (utkast)
-**Status:** **Utkast — inte fryst.** Alla delfrågor (a–g) beslutade.
-Återstår: fräscha-ögon-genomläsning (Regel 7) och Kents formella frysning.
+**Version:** 4 (fryst)
+**Status:** **Fryst av Kent (2026-08-04).** Alla delfrågor (a–g) beslutade,
+fräscha-ögon-genomläsning genomförd. Nästa steg: SPEC.md, författad av
+Claude — se `SPEC_publik_variant.md` i samma mapp.
 **Typ:** Vidarebyggnad — ny, fristående leverans i samma mapp
 (`Claude_kostnad/`) som den redan frysta `PRD_tokenanvandning.md`, men ett
 eget scope, egen målgrupp och egen riskbild. Ersätter eller ändrar inte
@@ -221,8 +222,10 @@ steg 4, Kent granskar och godkänner snarare än skriver den själv.
       ingår, med samma flaggade kalendermånads-antagande synligt
 - [x] Delfråga g (SPEC.md-ställningstagande) beslutad — ja, Claude
       författar, Kent granskar
-- [ ] Fräscha-ögon-genomläsning genomförd (Regel 7)
-- [ ] PRD fryst av Kent
+- [x] Fräscha-ögon-genomläsning genomförd (Regel 7) — tre glapp hittade
+      och rättade i v2 (stale "preliminärt"-formulering i Omfattning,
+      fel sidhänvisning, villkorade SPEC.md-skrivningar)
+- [x] PRD fryst av Kent (2026-08-04)
 - [ ] SPEC.md skriven för OCR-fältmappning och gränsfall
 - [ ] Funktion byggd och testad mot flera olika skärmdumpar (ljust/mörkt
       läge, beskurna bilder, andra produkter än Claude Code)
@@ -255,17 +258,13 @@ välja OCR i stället för en backend-kopplad AI-bildanalys.)*
 
 ## 8. Status
 
-Utkast, alla sju delfrågor (a–g) nu beslutade. Kärnfrågan, bakgrund och den
-avgörande tekniska begränsningen (publik sida kan inte skydda en
-API-nyckel, vilket utesluter riktig AI-bildanalys utan backend) är
-dokumenterade. Klient-side OCR via Tesseract.js är vald och källbelagd som
-den väg som matchar Kents krav på en enklare lösning utan Firebase — som
-dokumenterats som en medveten framtida möjlighet i stället för att
-avfärdas helt. Egen ny sida vald för sidplacering, för att göra syftet
-tydligt från start. Takt-jämförelsen ingår för publika besökare, eftersom
-den är kärnan i vad verktyget faktiskt svarar på. Ett SPEC.md-steg är
-beslutat, författas av Claude i produktionsordningens steg 4. Återstår:
-fräscha-ögon-genomläsning (Regel 7) och Kents formella frysning.
+**Fryst.** Alla sju delfrågor (a–g) beslutade, en fräscha-ögon-genomläsning
+genomförd (tre glapp rättade i v2), och takt-jämförelsen lyft fram som
+verktygets faktiska kärna (v3) efter att Kent uttryckligen bad om det.
+Kent bekräftade 2026-08-04 att PRD:n är redo att frysas och att han inte
+har mer att bidra med till SPEC.md-processen — Claude författar den som
+nästa steg, se `SPEC_publik_variant.md`. Ingen kod skrivs förrän SPEC.md
+är granskad av Kent.
 
 ## Ändringslogg
 
@@ -301,3 +300,7 @@ fräscha-ögon-genomläsning (Regel 7) och Kents formella frysning.
   tilläggsfunktion. Inga nya beslut — samma sakinnehåll som v2, bara
   omprioriterat för att göra verktygets faktiska värde omöjligt att missa
   för en läsare som inte redan vet det.
+- 2026-08-04 (v4): PRD fryst av Kent. Kent bekräftade uttryckligen att han
+  inte tror sig kunna bidra med innehåll till SPEC.md-processen och bad
+  Claude författa den själv — i linje med det redan beslutade delfråga g.
+  Leveranser och Status uppdaterade. Nästa steg: `SPEC_publik_variant.md`.
