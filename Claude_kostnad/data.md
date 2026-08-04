@@ -64,3 +64,26 @@ inte tabellen ovan.
   ny fakturering vid lågt saldo. Obekräftat mot Billing → Invoices för
   augusti specifikt (bara Usage-sidan avläst) — kolla där för att vara
   helt säker.
+
+## Daglig förbrukning (usage credits, €) — kvällsrutin
+
+Startad 2026-08-04, på Kents begäran, för att få bättre grepp om
+förbrukningstakten dag för dag. **Mäter usage credits-överförbrukning i
+euro, inte råa tokens** — det är den enda datan verktyget har tillgång
+till (se `PRD_tokenanvandning.md`, delfråga a). Rutin: Kent skickar en
+skärmdump av Usage-sidan innan han går och lägger sig, samma sätt som
+han redan gör. Claude läser av det kumulativa "€X spent"-talet och
+räknar ut dagens mellanskillnad mot föregående kvälls avläsning.
+`index.html` har en motsvarande tabell ("Förbrukning senaste veckan",
+Måndag–Söndag) som Claude uppdaterar manuellt varje kväll utifrån den
+här loggen — sidan är stateless och kan inte hålla egen historik.
+
+**Undantag för första dagen:** 2026-08-04 fanns ingen föregående kvälls
+avläsning att jämföra mot, så dagens "delta" (9,04 €) är i stället
+räknat mellan dagens första och senaste avläsning (6,13 € → 15,17 €),
+inte kväll-till-kväll. Från och med 2026-08-05 räknas deltat alltid
+kväll-till-kväll.
+
+| Datum | Veckodag | Kumulativt spenderat denna cykel (€) | Daglig förbrukning (€) | Anteckning |
+|---|---|---|---|---|
+| 2026-08-04 | Tisdag | 15,17 | 9,04 | Första kvällsavläsningen i den nya rutinen. Deltat är undantagsvis räknat mot dagens EGEN första avläsning (6,13 €), inte mot en föregående kväll — se undantaget ovan. |

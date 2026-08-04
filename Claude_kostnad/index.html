@@ -51,6 +51,12 @@
   .card{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1rem 1.1rem; margin-bottom:12px;}
   .card h2{font-size:15px; font-weight:600; margin:0 0 2px;}
   .card .card-note{font-size:12.5px; color:var(--text-secondary); margin:0 0 10px;}
+  .week-table{width:100%; border-collapse:collapse; font-size:13.5px;}
+  .week-table th, .week-table td{text-align:left; padding:6px 8px; border-bottom:1px solid var(--border);}
+  .week-table th{color:var(--text-secondary); font-weight:600; font-size:12px;}
+  .week-table td.num, .week-table th.num{text-align:right; font-variant-numeric:tabular-nums;}
+  .week-table tr.today td{font-weight:600; background:var(--accent-bg);}
+  .week-table tr.sum td{font-weight:700; border-top:2px solid var(--border-strong); border-bottom:none;}
   .row{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
   .row.three{grid-template-columns:1fr 1fr 1fr;}
   @media (max-width:520px){ .row, .row.three{grid-template-columns:1fr;} }
@@ -388,6 +394,22 @@
       </div>
       <p class="card-note" style="margin-top:8px; margin-bottom:0;">Det här talet har hittills legat still från avläsning till avläsning trots att saldot minskat (se <a href="data.md">data.md</a>) — ett observerat mönster, inte en garanterad regel från Anthropic, som tyder på att overflow-uttag dras från promotional-delen först. Om promotional credit tar slut innan den går ut (19 september 2026) börjar uttag sannolikt dras härifrån i stället.</p>
     </div>
+  </div>
+
+  <div class="card">
+    <h2>Förbrukning senaste veckan</h2>
+    <p class="card-note">Daglig usage credits-överförbrukning i euro — <strong>inte råa tokens</strong>, det är den enda datan verktyget har tillgång till. Kvällsrutin startad 2026-08-04: Kent skickar en skärmdump av Usage-sidan innan han går och lägger sig, Claude läser av och räknar ut dagens mellanskillnad mot föregående kväll. Tomma dagar betyder "ingen avläsning än", inte 0 €. Uppdateras manuellt varje kväll (sidan är stateless) — se <a href="data.md">data.md</a> för den fullständiga loggen och undantaget för första dagen.</p>
+    <table class="week-table">
+      <tr><th>Veckodag</th><th class="num">EUR</th><th>Kommentar</th></tr>
+      <tr><td>Måndag</td><td class="num">–</td><td>Igår — ingen avläsning (rutinen startade idag)</td></tr>
+      <tr class="today"><td>Tisdag</td><td class="num">9,04</td><td>Idag — se undantag i data.md (räknat mot dagens egen första avläsning)</td></tr>
+      <tr><td>Onsdag</td><td class="num">–</td><td>Ingen avläsning än</td></tr>
+      <tr><td>Torsdag</td><td class="num">–</td><td>Ingen avläsning än</td></tr>
+      <tr><td>Fredag</td><td class="num">–</td><td>Ingen avläsning än</td></tr>
+      <tr><td>Lördag</td><td class="num">–</td><td>Ingen avläsning än</td></tr>
+      <tr><td>Söndag</td><td class="num">–</td><td>Ingen avläsning än</td></tr>
+      <tr class="sum"><td>Summa senaste veckan</td><td class="num">9,04 €</td><td></td></tr>
+    </table>
   </div>
 
   <div class="card">

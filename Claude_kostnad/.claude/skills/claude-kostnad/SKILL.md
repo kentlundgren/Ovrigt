@@ -89,6 +89,34 @@ räcker — session, vecka och usage credits visas där tillsammans):
    linjär takt, negativt = marginal kvar). Har läget förbättrats eller
    försämrats sedan förra avläsningen?
 
+## Den nya kvällsrutinen (daglig förbrukning i €, startad 2026-08-04)
+
+En separat, tätare rutin vid sidan av veckorutinen ovan — Kent bad om ett
+sätt att se hur mycket som förbrukas **per dag**, inte bara per vecka.
+Mäter usage credits-överförbrukning i euro, **inte råa tokens** (den
+datan finns inte tillgänglig — se delfråga a i `PRD_tokenanvandning.md`).
+
+1. Varje kväll, innan Kent går och lägger sig, skickar han en skärmdump av
+   Usage-sidan — samma sätt som han redan gör för veckorutinen, inte ett
+   separat manuellt uträknat tal.
+2. Claude läser av det kumulativa "€X spent"-talet och räknar ut dagens
+   mellanskillnad **mot föregående kvälls avläsning** (kväll-till-kväll,
+   inte mot ett tidigare klockslag samma dag — se undantaget för
+   2026-08-04 nedan).
+3. Lägg till en rad i `data.md`s tabell "Daglig förbrukning (usage
+   credits, €) — kvällsrutin".
+4. Uppdatera tabellen "Förbrukning senaste veckan" i `index.html` för
+   hand — sidan är stateless och kan inte hålla egen historik, så Claude
+   är den som håller tabellen i synk med loggen. Måndag–söndag är fasta
+   radetiketter; en dag utan avläsning visar "–", aldrig 0 €. Uppdatera
+   även "Summa senaste veckan"-raden.
+5. Testa i webbläsaren innan leverans, samma som alltid.
+
+**Undantag för första dagen (2026-08-04):** ingen föregående kvälls
+avläsning fanns, så första radens delta (9,04 €) räknades i stället
+mellan dagens egen första och senaste avläsning. Från och med
+2026-08-05 gäller alltid kväll-till-kväll.
+
 ## Viktiga mekaniker att komma ihåg
 
 - **Boost-omräkning (delfråga h):** Anthropics UI visar % mot den *just nu
@@ -305,3 +333,13 @@ räcker — session, vecka och usage credits visas där tillsammans):
   faktiskt köpta credits, som visade sig ligga still (40,21 €) över tre
   avläsningar trots att balance minskat — hela overflow-avdraget hittills
   har kommit från den gratis promotional-delen.
+- 2026-08-04 (v11): Ny stående rutin tillagd — "Den nya kvällsrutinen
+  (daglig förbrukning)" — efter att Kent bad om ett sätt att se
+  förbrukning per dag, inte bara per vecka/månad. Stämde av tre saker
+  innan bygget: mäter €, inte tokens (bekräftat); Kent skickar en
+  skärmdump varje kväll, precis som idag (bekräftat); tabellogiken
+  (Måndag–Söndag, fasta radetiketter, tomma dagar visar "–" inte 0).
+  `data.md` fick en ny tabell ("Daglig förbrukning"), `index.html` fick
+  ett nytt kort ("Förbrukning senaste veckan") som Claude uppdaterar för
+  hand varje kväll, sidan förblir stateless. Undantag dokumenterat för
+  första dagens delta (räknat intradag, inte kväll-till-kväll).
