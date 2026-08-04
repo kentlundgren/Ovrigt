@@ -123,6 +123,28 @@ räcker — session, vecka och usage credits visas där tillsammans):
 - **Fakturor ≠ förbrukning (delfråga i):** Billing-sidans fakturor visar
   när Kent fyllde på sitt usage credits-saldo, inte vad han förbrukat.
   Verktyget använder bara Usage-sidans "€X spent, resets [datum]".
+- **"Usage credits spent" ≠ ett nytt köp/en ny faktura.** Ett verkligt
+  exempel 2026-08-04: Kent undrade om han köpt något extra i augusti.
+  "€X spent" på Usage-sidan är bara ett avdrag mot **befintligt**
+  förbetalt saldo — det blir en ny faktura först om Auto-reload är På
+  (automatiskt) eller Kent manuellt klickar "Buy usage credits". Kolla
+  alltid "Auto-reload"-status (På/Av) på Usage-sidan innan du drar
+  slutsatsen att ökad "spent" betyder en ny kostnad — och om Kent
+  verkligen vill veta säkert, be honom visa Billing → Invoices för den
+  aktuella månaden (samma sätt som för april, se nästa punkt), inte bara
+  Usage-sidan. En bra avstämningskontroll: om "Current balance" minskar
+  med exakt lika mycket som "spent" ökar, är det ett rent avdrag — inget
+  nytt köp har skett.
+- **Räkna alltid om Kents egna manuella summeringar mot den fullständiga
+  fakturalistan innan du bekräftar dem.** Ett verkligt exempel 2026-08-04:
+  Kent hade själv räknat ut 66,56 € "extra" för april 2026 utifrån tre
+  fakturarader, men fakturalistan (Billing → Invoices) visade fem
+  icke-ordinarie rader den månaden — två 12,50 €-fakturor från 10 april
+  saknades i hans tabell. Korrekt summa: 91,56 €, vilket dessutom redan
+  fanns loggat i `data.md` sedan tidigare (se Historisk kontext). Håll
+  inte med på siffermässiga påståenden bara för att bli tillmötesgående —
+  räkna om det själv mot den underliggande datan när den finns
+  tillgänglig, och visa uträkningen öppet om du landar i en annan siffra.
 - **Usage credits "Current balance" ≠ "Monthly spend limit":** två skilda
   pooler (Claude Help Center) — balance är förbetalt saldo, monthly spend
   limit är ett eget tak på hur mycket av det som får förbrukas per månad.
@@ -132,6 +154,17 @@ räcker — session, vecka och usage credits visas där tillsammans):
   utgång om oanvänd. Verktyget har rena referensfält för dessa tre
   begrepp (påverkar ingen beräkning) med hover/klick-tooltips + källor,
   samma badge/tooltip-mönster som Ölkalkylen (`Fritid/ol_Tyskland/index.html`).
+  **Ett verkligt förtydligande-behov 2026-08-04:** Kent visste inte om
+  "Current balance" var tillgodohavande eller en skuld. Svar: tillgodo,
+  inte en faktura — den minskar automatiskt vid overflow, ingen räkning
+  skapas förrän Kent själv köper mer eller Auto-reload är på. **Ny
+  uträkningsmetod värd att återanvända:** balance − promotional credit
+  = Kents faktiskt köpta credits. Över tre avläsningar samma dag låg det
+  talet dödstilla på 40,21 € trots att balance minskade 9,04 € — alltså
+  drogs *hela* minskningen från den gratis promotional-delen, ingen av
+  den från Kents egna köpta pengar. Räkna alltid ut och nämn den
+  uppdelningen (köpt vs. gratis) när balance/promotional diskuteras,
+  inte bara de råa totalbeloppen.
 - **"Monthly spend limit" ≠ Pro-abonnemangets fasta avgift — ett verkligt
   missförstånd 2026-08-04.** Kent förväxlade sitt eget satta usage
   credits-tak (ursprungligen 20 €, höjt till 25 € samma dag) med sin
@@ -252,3 +285,23 @@ räcker — session, vecka och usage credits visas där tillsammans):
   ett konkret exempel på det delfråga h redan förutsåg. Skärmdumpen
   bekräftade också veckoåterställningen (torsdag ~08:00) som verktyget
   redan antog.
+- 2026-08-04 (v9): Två nya punkter under "Viktiga mekaniker". (1) Kent
+  bad Claude bekräfta ett eget räknat belopp (66,56 € "extra" i april
+  2026) — en omräkning mot den fullständiga fakturalistan visade att två
+  fakturor saknades i hans tabell och att rätt summa var 91,56 €, redan
+  loggat i `data.md` sedan tidigare. Ny stående regel: räkna alltid om
+  Kents manuella summeringar mot underliggande data i stället för att
+  bara hålla med. (2) Kent undrade om han köpt något extra i augusti —
+  "usage credits spent" visade sig vara ett rent avdrag mot befintligt
+  saldo (saldo minskade med exakt samma belopp som spent ökade), inte en
+  ny faktura, eftersom Auto-reload stod på Av. `data.md` uppdaterad med
+  en itemiserad april-avstämning och en ny augusti-notering i Historisk
+  kontext, plus en sjätte loggrad (vecka 76→79 %).
+- 2026-08-04 (v10): "Current balance"/"Monthly spend limit"-punkten
+  utökad efter att Kent uttryckte att han tycker det här är svårt att
+  förstå — dels om balance är tillgodo eller en skuld (tillgodo), dels
+  vad promotional credit egentligen är (en delmängd av balance, inte
+  extra). Ny uträkningsmetod tillagd: balance − promotional credit =
+  faktiskt köpta credits, som visade sig ligga still (40,21 €) över tre
+  avläsningar trots att balance minskat — hela overflow-avdraget hittills
+  har kommit från den gratis promotional-delen.

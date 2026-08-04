@@ -38,6 +38,7 @@ kalendermånader (1:a till 1:a) — inte bekräftat av Anthropic, se
 | 2026-08-04 | 7 | Cowork | 76 | 100 | 2026-08-05 | 152 | 74,9 | 77,1 | 11,13 | 20 | 11,5 | 44,1 | Samma avläsningstillfälle som raden ovan, räknat mot Coworks +100%-boost (sista dagen den gäller, till och med 5 augusti) — samma boost-osäkerhet som ovan. |
 | 2026-08-04 | 100 | Claude Code | 76 | 50 | 2026-08-19 | 114 | 75 | 39 | 15,17 | 25 | 11,6 | 49,1 | **Fjärde loggade avläsningen, samma dag.** Boost nu **bekräftad** oförändrad (50 %/Claude Code till 19 aug, 100 %/Cowork till 5 aug — synlig i denna bild). **Session: 100 % — sessionsgränsen helt nådd**, "Resets in 4 min". Detta är den konkreta bekräftelsen på att överanvändning nu faktiskt sker: usage credits gick från 11,13 € → 15,17 € (+4,04 €) på kort tid, samtidigt som saldot (104,75 → 99,75 → 95,71 €) och promotional credit (64,54 → 59,54 → 55,50 €) minskade med exakt samma 4,04 € — bekräftar att det är den automatiska overflow-mekanismen som drar ner saldot, inte en redovisningsavvikelse. **Kent höjde samtidigt sin Monthly spend limit från 20 € till 25 €** (syns som ändrad gräns i denna avläsning) efter att ha förväxlat den med sin fasta Pro-abonnemangsavgift (~22,50 €, en helt separat post på Billing-sidan) — se förtydligandet i `claude-kostnad`-skillen. Andelen (61 %) ser lägre ut än föregående rad (55,7 %) enbart för att nämnaren ändrades, inte för att läget förbättrats — takt-avvikelsen försämrades i själva verket vidare, från 44,1 till 49,1 pp. |
 | 2026-08-04 | 100 | Cowork | 76 | 100 | 2026-08-05 | 152 | 75,1 | 76,9 | 15,17 | 25 | 11,6 | 49,1 | Samma avläsningstillfälle som raden ovan, räknat mot Coworks +100%-boost (sista dagen den gäller) — samma "All models"-osäkerhet som tidigare rader. |
+| 2026-08-04 | 100 | Claude Code | 79 | 50 | 2026-08-19 | 118,5 | 75,9 | 42,6 | 15,17 | 25 | 11,8 | 48,9 | **Femte loggade avläsningen, samma dag.** Vecka upp 76→79 % (118,5 % av normalbaslinjen). Usage credits **oförändrat** (15,17 €/95,71 €/55,50 €) — inget tecken på nytt köp, se Historisk kontext nedan för avstämningen mot Billing → Invoices (april) och saldo-matchningen (augusti). |
 
 ## Historisk kontext (frivilligt, ej del av mätningen)
 
@@ -45,6 +46,21 @@ Utrymme för att notera ovanliga fakturor/påfyllningar från Billing-sidan,
 t.ex. perioder med ovanligt hög förbrukning. Rent informativt — påverkar
 inte tabellen ovan.
 
-- 2026-04: Ovanligt hög påfyllning av usage credits, ≈91,56 € utöver den
-  ordinarie abonnemangsavgiften (22,50 €) — flera separata köp under
-  april. Tecken på att plangränserna nåddes ofta den månaden.
+- 2026-04: Ovanligt hög påfyllning av usage credits, **91,56 €** utöver den
+  ordinarie abonnemangsavgiften (22,50 €, betald separat 27 apr) — nu
+  itemiserat mot fakturalistan (2026-08-04, efter att Kent skickade en
+  skärmdump av Billing → Invoices): 10 apr ×2 á 12,50 € (25,00 €), 13 apr
+  6,25 €, 27 apr 47,81 €, 28 apr 12,50 €. Summa 25,00+6,25+47,81+12,50 =
+  91,56 €. Kent hade själv först räknat till 66,56 € (missade de två
+  12,50 €-fakturorna från 10 april) — rättat efter avstämning mot den
+  fullständiga fakturalistan. Tecken på att plangränserna nåddes ofta den
+  månaden.
+- 2026-08 (hittills): Inget tecken på nytt köp utöver ordinarie
+  abonnemangsavgift. "€15,17 spent" oförändrat mellan två avläsningar
+  samma dag, och saldot har minskat med exakt lika mycket som "spent"
+  ökat sedan cykelns första avläsning (104,75 € → 95,71 €, −9,04 €; spent
+  6,13 € → 15,17 €, +9,04 €) — ett rent avdrag från befintligt saldo, inte
+  ett nytt köp. Auto-reload avstängt (Off), vilket utesluter automatisk
+  ny fakturering vid lågt saldo. Obekräftat mot Billing → Invoices för
+  augusti specifikt (bara Usage-sidan avläst) — kolla där för att vara
+  helt säker.
