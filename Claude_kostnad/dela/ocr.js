@@ -11,28 +11,65 @@ const CKO = (function(){
     sep:9, sept:9, september:9, oct:10, october:10, nov:11, november:11, dec:12, december:12
   };
 
-  function windowAround(text, index, matchLen, windowChars){
-    const start = Math.max(0, index - windowChars);
-    const end = Math.min(text.length, index + matchLen + windowChars);
-    return text.slice(start, end);
+  // Alla förekomster av keywordRegex i text, i läsordning. Ett enda nyckelord kan
+  // förekomma flera gånger (t.ex. "resets" på både session-, vecko- och usage
+  // credits-raderna, eller "weekly" både i vecko-rubriken och i en boost-mening) —
+  // se längre kommentar vid mapFields. Vi kan därför inte lita på första träffen.
+  function allMatches(text, keywordRegex){
+    const re = new RegExp(keywordRegex.source, keywordRegex.flags.replace('g','') + 'g');
+    const out = [];
+    let m;
+    while ((m = re.exec(text)) !== null){
+      out.push(m);
+      if (m.index === re.lastIndex) re.lastIndex++;
+    }
+    return out;
+  }
+
+  // Bland alla värden av rätt sort inom fönstret runt en nyckelords-förekomst,
+  // ta det som ligger NÄRMAST nyckelordet (kortast teckenavstånd) — inte det första
+  // som råkar stå tidigast i den utklippta fönstersträngen. Utan detta valde en
+  // tidig implementation systematiskt fel värde så fort två tal låg olika långt
+  // före/efter nyckelordet (t.ex. "€6.13 ... Monthly spend limit ... €104.75" —
+  // "först i strängen" plockade €6.13 trots att €20.00 stod närmast).
+  function nearestValueMatch(text, keywordIndex, keywordLen, valueRegex, windowChars){
+    const start = Math.max(0, keywordIndex - windowChars);
+    const end = Math.min(text.length, keywordIndex + keywordLen + windowChars);
+    const win = text.slice(start, end);
+    const keywordCenter = (keywordIndex - start) + keywordLen / 2;
+    const re = new RegExp(valueRegex.source, valueRegex.flags.replace('g','') + 'g');
+    let best = null, bestDist = Infinity, m;
+    while ((m = re.exec(win)) !== null){
+      const matchCenter = m.index + m[0].length / 2;
+      const dist = Math.abs(matchCenter - keywordCenter);
+      if (dist < bestDist){ bestDist = dist; best = m; }
+      if (m.index === re.lastIndex) re.lastIndex++;
+    }
+    return best;
+  }
+
+  // Provar varje förekomst av nyckelordet i tur och ordning, tar den FÖRSTA
+  // förekomsten som faktiskt har ett värde av rätt sort i sin närhet (närmaste
+  // värdet inom fönstret, se nearestValueMatch) — hoppar över förekomster som
+  // inte ger någon träff alls, i stället för att ge upp vid första försöket.
+  function firstNearMatch(text, keywordRegex, valueRegex, windowChars){
+    const occurrences = allMatches(text, keywordRegex);
+    for (let i = 0; i < occurrences.length; i++){
+      const km = occurrences[i];
+      const vm = nearestValueMatch(text, km.index, km[0].length, valueRegex, windowChars);
+      if (vm) return vm;
+    }
+    return null;
   }
 
   function findPercentNear(text, keywordRegex, windowChars){
-    windowChars = windowChars || 60;
-    const km = keywordRegex.exec(text);
-    if (!km) return null;
-    const win = windowAround(text, km.index, km[0].length, windowChars);
-    const pm = /(\d{1,3}(?:[.,]\d+)?)\s*%/.exec(win);
-    return pm ? parseFloat(pm[1].replace(',', '.')) : null;
+    const vm = firstNearMatch(text, keywordRegex, /(\d{1,3}(?:[.,]\d+)?)\s*%/, windowChars || 60);
+    return vm ? parseFloat(vm[1].replace(',', '.')) : null;
   }
 
   function findCurrencyNear(text, keywordRegex, windowChars){
-    windowChars = windowChars || 60;
-    const km = keywordRegex.exec(text);
-    if (!km) return null;
-    const win = windowAround(text, km.index, km[0].length, windowChars);
-    const pm = /[€$]\s*(\d+(?:[.,]\d{2})?)/.exec(win);
-    return pm ? parseFloat(pm[1].replace(',', '.')) : null;
+    const vm = firstNearMatch(text, keywordRegex, /[€$]\s*(\d+(?:[.,]\d{2})?)/, windowChars || 60);
+    return vm ? parseFloat(vm[1].replace(',', '.')) : null;
   }
 
   // Hittar "Month Day" (ev. år) nära ett nyckelord, returnerar ISO-datum (YYYY-MM-DD).
@@ -40,12 +77,9 @@ const CKO = (function(){
   // skärmdump som per definition är tagen "nu", men inte hundraprocentigt säkert
   // kring årsskiften. Flaggas här, inte gissat bort.
   function findDateNear(text, keywordRegex, refNow, windowChars){
-    windowChars = windowChars || 40;
-    const km = keywordRegex.exec(text);
-    if (!km) return null;
-    const win = windowAround(text, km.index, km[0].length, windowChars);
     const monthNames = Object.keys(MONTHS).sort((a,b)=>b.length-a.length).join('|');
-    const dm = new RegExp('(' + monthNames + ')\\.?\\s+(\\d{1,2})(?:,?\\s*(\\d{4}))?', 'i').exec(win);
+    const dateRegex = new RegExp('(' + monthNames + ')\\.?\\s+(\\d{1,2})(?:,?\\s*(\\d{4}))?', 'i');
+    const dm = firstNearMatch(text, keywordRegex, dateRegex, windowChars || 40);
     if (!dm) return null;
     const month = MONTHS[dm[1].toLowerCase()];
     const day = parseInt(dm[2], 10);
@@ -56,15 +90,23 @@ const CKO = (function(){
 
   // Huvudfunktion: rå OCR-text in, förslag på fältvärden ut. Fält som inte hittas blir null —
   // aldrig gissade till 0, se SPEC avsnitt 6.
+  //
+  // Ordvalen nedan är medvetet specifika, inte de kortaste möjliga nyckelorden. Verifierat
+  // mot en realistisk skärmdumpstext (Kents egen, 2026-08-04) under byggfasen: ett kort
+  // nyckelord som "weekly" eller "limit" råkar också förekomma i boost-notisens löptext
+  // ("...your weekly Claude Code limit is 50% higher...") och i "Resets"-etiketter på andra
+  // rader — vilket gav fel eller tomma träffar tills nyckelorden gjordes mer specifika och
+  // sökningen provar alla förekomster i tur och ordning (se firstNearMatch ovan), inte bara
+  // den första.
   function mapFields(text, refNow){
     refNow = refNow || new Date();
     const result = {
       sessPct: findPercentNear(text, /current session/i),
-      weekPct: findPercentNear(text, /all models|weekly/i),
+      weekPct: findPercentNear(text, /all models/i) ?? findPercentNear(text, /weekly limits/i),
       boostPct: findPercentNear(text, /higher/i),
       boostEnd: findDateNear(text, /through/i, refNow),
       creditSpent: findCurrencyNear(text, /spent/i),
-      creditLimit: findCurrencyNear(text, /monthly spend limit|limit/i),
+      creditLimit: findCurrencyNear(text, /monthly spend limit/i),
       creditReset: findDateNear(text, /resets/i, refNow)
     };
     result.fieldsFound = Object.keys(result).filter(function(k){
