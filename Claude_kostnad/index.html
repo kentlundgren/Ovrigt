@@ -299,6 +299,7 @@
 <div id="tooltip"></div>
 <a class="github-corner" href="https://github.com/kentlundgren/Ovrigt" target="_blank" rel="noopener">{ } GitHub</a>
 
+<script src="js/berakning.js"></script>
 <script>
 // Kända tillfälliga boostar per produkt (från Kents skärmdump 2026-08-03) — används för att
 // autofylla boost-fälten när "Produkt" byts, så väljaren faktiskt påverkar uträkningen.
@@ -362,35 +363,12 @@ let latestPaceBufferPP = NaN;
 let latestMonthTimeElapsed = NaN;
 let latestMonthPaceBufferPP = NaN;
 
-function fmtPct(n){
-  if (isNaN(n)) return '–';
-  return (Math.round(n * 10) / 10).toLocaleString('sv-SE') + ' %';
-}
-function fmtEur(n){
-  if (isNaN(n)) return '–';
-  return (Math.round(n * 100) / 100).toLocaleString('sv-SE') + ' €';
-}
-function todayISO(){
-  const d = new Date();
-  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
-}
-function daysBetween(fromISO, toISO){
-  if (!toISO) return NaN;
-  const from = new Date(fromISO + 'T00:00:00');
-  const to = new Date(toISO + 'T00:00:00');
-  return Math.round((to - from) / 86400000);
-}
-
-// Nästa tillfälle för en given veckodag (0=sön..6=lör) + klockslag, från "now".
-// Om det redan passerat idag/denna vecka, rullas det fram till nästa vecka.
-function nextWeeklyReset(now, targetDow, hh, mm){
-  const d = new Date(now.getTime());
-  d.setHours(hh, mm, 0, 0);
-  const diffDays = (targetDow - now.getDay() + 7) % 7;
-  d.setDate(d.getDate() + diffDays);
-  if (d <= now) d.setDate(d.getDate() + 7);
-  return d;
-}
+// fmtPct, fmtEur, todayISO, daysBetween, nextWeeklyReset: se js/berakning.js (CKB.*) —
+// rena formler, delade med Claude_kostnad/dela/index.html. Se PRD_publik_variant.md delfråga d.1.
+const fmtPct = CKB.fmtPct;
+const fmtEur = CKB.fmtEur;
+const todayISO = CKB.todayISO;
+const daysBetween = CKB.daysBetween;
 
 function setStatus(el, level, text){
   el.className = 'status ' + level;
@@ -417,17 +395,16 @@ function calc(){
   if (!isNaN(sessPct)){
     const rem = 100 - sessPct;
     sessRemainingEl.textContent = fmtPct(rem);
-    let sessLevel = 'ok';
-    if (sessPct >= 100){
-      sessOk = false; sessLevel = 'danger';
+    const sessResult = CKB.sessionLevel(sessPct);
+    sessOk = sessResult.ok;
+    if (sessResult.level === 'danger'){
       setStatus(sessStatusEl, 'danger', 'Sessionsgränsen är nådd. Väntar på nästa 5-timmarsreset.');
-    } else if (sessPct >= 85){
-      sessLevel = 'warn';
+    } else if (sessResult.level === 'warn'){
       setStatus(sessStatusEl, 'warn', 'Nära sessionsgränsen — ' + fmtPct(rem) + ' kvar.');
     } else {
       setStatus(sessStatusEl, 'ok', 'Gott om utrymme kvar just nu.');
     }
-    setHero(sessHeroNumEl, sessBarEl, sessLevel, fmtPct(sessPct), sessPct);
+    setHero(sessHeroNumEl, sessBarEl, sessResult.level, fmtPct(sessPct), sessPct);
     sessHeroLabelEl.textContent = 'använt av sessionsgränsen · ' + fmtPct(rem) + ' kvar';
   } else {
     sessRemainingEl.textContent = '–';
@@ -450,12 +427,11 @@ function calc(){
   const weekBarEl = document.getElementById('weekBar');
   const resetDay = parseInt(document.getElementById('weekResetDay').value, 10);
   const resetTimeParts = document.getElementById('weekResetTime').value.split(':');
-  const WEEK_HOURS = 168; // en vecka = 7 dygn, källa: Claude Help Center, "What is the Pro plan?"
   let weekOk = true;
   let weekHasData = !isNaN(weekPct);
   if (weekHasData){
     const remActive = 100 - weekPct;
-    const normalPct = weekPct * (1 + boostPct / 100);
+    const normalPct = CKB.normalizePct(weekPct, boostPct);
     const remNormal = 100 - normalPct;
     weekRemActiveEl.textContent = fmtPct(remActive);
     weekNormalPctEl.textContent = fmtPct(normalPct);
@@ -464,22 +440,19 @@ function calc(){
     // Takt: andel av veckan som gått, jämfört med andel av normalranson förbrukad
     const now = new Date();
     let pctTimeElapsed = null;
+    let weekPaceOk = true;
     if (resetTimeParts.length === 2 && !isNaN(resetDay)){
-      const resetDateTime = nextWeeklyReset(now, resetDay, parseInt(resetTimeParts[0],10), parseInt(resetTimeParts[1],10));
-      const hoursUntilReset = (resetDateTime - now) / 3600000;
-      const pctTimeRemaining = Math.max(0, Math.min(100, hoursUntilReset / WEEK_HOURS * 100));
-      pctTimeElapsed = 100 - pctTimeRemaining;
+      pctTimeElapsed = CKB.weekElapsedPct(now, resetDay, parseInt(resetTimeParts[0],10), parseInt(resetTimeParts[1],10));
       weekTimeElapsedEl.textContent = fmtPct(pctTimeElapsed);
 
-      const paceBuffer = pctTimeElapsed - normalPct;
+      const paceBufferVal = CKB.paceBuffer(pctTimeElapsed, normalPct);
       latestWeekTimeElapsed = pctTimeElapsed;
-      latestPaceBufferPP = paceBuffer;
-      let paceLevel = 'ok';
-      const overUnder = paceBuffer >= 0 ? 'under' : 'över';
-      let paceText = 'Vid linjär takt borde du ha förbrukat ' + fmtPct(pctTimeElapsed) + ' av veckoransonen, eftersom det har gått ' + fmtPct(pctTimeElapsed) + ' av tiden till återställning. Men du har förbrukat ' + fmtPct(normalPct) + ' av en normal veckoranson. Därmed ligger du ' + fmtPct(Math.abs(paceBuffer)).replace('%','procentenheter') + ' ' + overUnder + ' linjär takt (' + fmtPct(normalPct) + ' − ' + fmtPct(pctTimeElapsed) + ').';
-      if (paceBuffer < -10){ paceLevel = 'danger'; weekOk = false; }
-      else if (paceBuffer < 0){ paceLevel = 'warn'; }
-      setStatus(weekPaceStatusEl, paceLevel, paceText);
+      latestPaceBufferPP = paceBufferVal;
+      const paceResult = CKB.paceLevel(paceBufferVal);
+      weekPaceOk = paceResult.ok;
+      const overUnder = paceBufferVal >= 0 ? 'under' : 'över';
+      let paceText = 'Vid linjär takt borde du ha förbrukat ' + fmtPct(pctTimeElapsed) + ' av veckoransonen, eftersom det har gått ' + fmtPct(pctTimeElapsed) + ' av tiden till återställning. Men du har förbrukat ' + fmtPct(normalPct) + ' av en normal veckoranson. Därmed ligger du ' + fmtPct(Math.abs(paceBufferVal)).replace('%','procentenheter') + ' ' + overUnder + ' linjär takt (' + fmtPct(normalPct) + ' − ' + fmtPct(pctTimeElapsed) + ').';
+      setStatus(weekPaceStatusEl, paceResult.level, paceText);
     } else {
       weekTimeElapsedEl.textContent = '–';
       latestWeekTimeElapsed = NaN;
@@ -487,23 +460,21 @@ function calc(){
       setStatus(weekPaceStatusEl, 'ok', '');
     }
 
-    let weekLevel = 'ok';
-    if (normalPct > 100 && boostPct > 0){
-      weekOk = false; weekLevel = 'warn';
+    const weekResult = CKB.weekLevel(weekPct, normalPct, boostPct);
+    weekOk = weekResult.ok && weekPaceOk;
+    if (weekResult.level === 'warn' && normalPct > 100 && boostPct > 0){
       const boostEnd = document.getElementById('boostEnd').value;
       setStatus(weekStatusEl, 'warn',
         'Inom din boostade gräns, men redan ' + fmtPct(normalPct - 100).replace('%','').trim() + ' procentenheter över din normala 100%-baslinje.' +
         (boostEnd ? ' När boosten upphör (' + boostEnd + ') återgår gränsen till normalläget.' : ' Boosten har ett slutdatum då gränsen återgår till normalläget.'));
-    } else if (weekPct >= 100){
-      weekOk = false; weekLevel = 'danger';
+    } else if (weekResult.level === 'danger'){
       setStatus(weekStatusEl, 'danger', 'Veckogränsen är nådd.');
-    } else if (normalPct >= 85){
-      weekLevel = 'warn';
+    } else if (weekResult.level === 'warn'){
       setStatus(weekStatusEl, 'warn', ''); // hero + takt-raden nedan täcker redan detta, ingen egen textruta
     } else {
       setStatus(weekStatusEl, 'ok', '');
     }
-    setHero(weekHeroNumEl, weekBarEl, weekLevel, fmtPct(normalPct), normalPct);
+    setHero(weekHeroNumEl, weekBarEl, weekResult.level, fmtPct(normalPct), normalPct);
     if (boostPct > 0){
       weekHeroFormulaEl.textContent = weekPct + '% (mot boostad gräns) × (1 + ' + boostPct + '/100) = ' + fmtPct(normalPct);
     } else {
@@ -558,25 +529,19 @@ function calc(){
     }
 
     // Takt: andel av månaden som gått (antagande: kalendermånad, se card-note), jämfört med förbrukad andel
+    let creditPaceOk = true;
     if (resetDate){
-      const cycleStart = new Date(resetDate + 'T00:00:00');
-      cycleStart.setMonth(cycleStart.getMonth() - 1);
-      const resetDT = new Date(resetDate + 'T00:00:00');
-      const now = new Date();
-      const totalMs = resetDT - cycleStart;
-      const elapsedMs = now - cycleStart;
-      const pctMonthElapsed = Math.max(0, Math.min(100, (elapsedMs / totalMs) * 100));
+      const pctMonthElapsed = CKB.monthElapsedPct(resetDate, new Date());
       latestMonthTimeElapsed = pctMonthElapsed;
       creditTimeElapsedEl.textContent = fmtPct(pctMonthElapsed);
 
-      const monthPaceBuffer = pctMonthElapsed - pct;
-      latestMonthPaceBufferPP = monthPaceBuffer;
-      const overUnderM = monthPaceBuffer >= 0 ? 'under' : 'över';
-      let paceLevelM = 'ok';
-      if (monthPaceBuffer < -10){ paceLevelM = 'danger'; creditOk = false; }
-      else if (monthPaceBuffer < 0){ paceLevelM = 'warn'; }
-      const paceTextM = 'Vid linjär takt borde du ha förbrukat ' + fmtPct(pctMonthElapsed) + ' av månadsgränsen, eftersom det har gått ' + fmtPct(pctMonthElapsed) + ' av månaden. Men du har förbrukat ' + fmtPct(pct) + '. Därmed ligger du ' + fmtPct(Math.abs(monthPaceBuffer)).replace('%','procentenheter') + ' ' + overUnderM + ' linjär takt (' + fmtPct(pct) + ' − ' + fmtPct(pctMonthElapsed) + ').';
-      setStatus(creditPaceStatusEl, paceLevelM, paceTextM);
+      const monthPaceBufferVal = CKB.paceBuffer(pctMonthElapsed, pct);
+      latestMonthPaceBufferPP = monthPaceBufferVal;
+      const paceResultM = CKB.paceLevel(monthPaceBufferVal);
+      creditPaceOk = paceResultM.ok;
+      const overUnderM = monthPaceBufferVal >= 0 ? 'under' : 'över';
+      const paceTextM = 'Vid linjär takt borde du ha förbrukat ' + fmtPct(pctMonthElapsed) + ' av månadsgränsen, eftersom det har gått ' + fmtPct(pctMonthElapsed) + ' av månaden. Men du har förbrukat ' + fmtPct(pct) + '. Därmed ligger du ' + fmtPct(Math.abs(monthPaceBufferVal)).replace('%','procentenheter') + ' ' + overUnderM + ' linjär takt (' + fmtPct(pct) + ' − ' + fmtPct(pctMonthElapsed) + ').';
+      setStatus(creditPaceStatusEl, paceResultM.level, paceTextM);
     } else {
       creditTimeElapsedEl.textContent = '–';
       latestMonthTimeElapsed = NaN;
@@ -584,17 +549,16 @@ function calc(){
       setStatus(creditPaceStatusEl, 'ok', '');
     }
 
-    let creditLevel = 'ok';
-    if (spent > limit){
-      creditOk = false; creditLevel = 'danger';
+    const creditResult = CKB.creditLevel(spent, limit, pct);
+    creditOk = creditResult.ok && creditPaceOk;
+    if (creditResult.level === 'danger'){
       setStatus(creditStatusEl, 'danger', 'Du har spenderat mer än din satta månadsgräns denna cykel.');
-    } else if (pct >= 85){
-      creditLevel = 'warn';
+    } else if (creditResult.level === 'warn'){
       setStatus(creditStatusEl, 'warn', ''); // hero + takt-raden täcker redan detta
     } else {
       setStatus(creditStatusEl, 'ok', '');
     }
-    setHero(creditHeroNumEl, creditBarEl, creditLevel, fmtPct(pct), pct);
+    setHero(creditHeroNumEl, creditBarEl, creditResult.level, fmtPct(pct), pct);
     creditHeroFormulaEl.textContent = fmtEur(spent) + ' / ' + fmtEur(limit) + ' = ' + fmtPct(pct);
   } else {
     creditPctEl.textContent = '–';
@@ -613,17 +577,14 @@ function calc(){
   // --- Kärnfrågan (övergripande status) ---
   const banner = document.getElementById('coreBanner');
   const coreText = document.getElementById('coreText');
-  const anyData = sessOk !== null && (!isNaN(sessPct) || weekHasData || creditHasData);
-  if (!anyData || (isNaN(sessPct) && !weekHasData && !creditHasData)){
+  const hasAnyData = !isNaN(sessPct) || weekHasData || creditHasData;
+  const verdict = CKB.coreVerdict(hasAnyData, sessOk, weekOk, creditOk);
+  if (verdict.status === 'no-data'){
     banner.className = 'core ok';
     coreText.textContent = 'Fyll i siffrorna nedan för att se läget';
-  } else if (!sessOk || !weekOk || !creditOk){
+  } else if (verdict.status === 'not-ok'){
     banner.className = 'core danger';
-    const parts = [];
-    if (!sessOk) parts.push('session');
-    if (!weekOk) parts.push('vecka');
-    if (!creditOk) parts.push('månad');
-    coreText.textContent = 'Inte i fas: ' + parts.join(', ');
+    coreText.textContent = 'Inte i fas: ' + verdict.failedAreas.join(', ');
   } else {
     banner.className = 'core ok';
     coreText.textContent = 'I fas — session, vecka och månad ser bra ut';
