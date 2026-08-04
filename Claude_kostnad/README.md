@@ -22,10 +22,15 @@ mappar Kents dygn/vecka/månads-språk mot dessa, och räknar dessutom om
 veckoprocenten mot den **normala** 100%-baslinjen när en tillfällig
 gränshöjning ("boost") är aktiv — något Anthropics eget UI inte visar.
 
-Data matas in manuellt (ingen inloggning/API-hämtning). Historik sparas
-inte i webbläsaren utan i en enkel, git-spårad logg: [`data.md`](data.md).
-Verktyget har en "Kopiera rad"-knapp som formaterar en färdig markdown-rad
-att klistra in där.
+Data matas in manuellt (ingen inloggning/API-hämtning), eller via en
+frivillig OCR-genväg (samma bibliotek som den publika varianten, se
+nedan) — men huvudvägen är fortfarande att skicka skärmdumpen direkt till
+Claude i en chatt, som då uppdaterar fälten, loggar en rad i `data.md`
+och ger en trendanalys i samma svep. Se delfråga j i
+`PRD/PRD_tokenanvandning.md` för resonemanget bakom den avvägningen.
+Historik sparas inte i webbläsaren utan i en enkel, git-spårad logg:
+[`data.md`](data.md). Verktyget har en "Kopiera rad"-knapp som formaterar
+en färdig markdown-rad att klistra in där.
 
 Se [`PRD/PRD_tokenanvandning.md`](PRD/PRD_tokenanvandning.md) för fullständig
 bakgrund, alla beslut och källor, eller blogginlägget

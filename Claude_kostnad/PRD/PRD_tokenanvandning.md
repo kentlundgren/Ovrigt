@@ -3,7 +3,7 @@
 **Namn:** PRD_tokenanvandning
 **Plats:** `Claude_kostnad/PRD/PRD_tokenanvandning.md`
 **Skapad:** 2026-08-03
-**Version:** 9 (blogginlägg publicerat och länkat)
+**Version:** 10 (OCR-genväg tillagd, delfråga j)
 **Status:** **Genomfört och vidareutvecklat.** Verktyg, `data.md`,
 README/nav, veckovis kalenderpåminnelse, månadstakt, hover-tooltips, en
 rättad Kärnfrågan-banner och ett publicerat blogginlägg är levererade och
@@ -212,6 +212,24 @@ abonnemangsavgiften — tecken på att plangränserna nåddes ofta den
 månaden") eftersom de visar mönster över tid som kompletterar
 ögonblicksbilden.
 
+**j) Ska `index.html` få samma OCR-bilduppladdning som den publika
+`dela/`-varianten? — BESLUTAT ✓ (tillagd 2026-08-04, efter att Kent
+undrade varför hans eget verktyg saknade en uppladdningsruta när
+`dela/index.html` fått en).** Ja, som en frivillig genväg — men med en
+skriven rekommendation i sidan själv (rutan `.ocr-tradeoff`) om att
+huvudvägen fortfarande är att skicka skärmdumpen direkt till Claude i en
+chatt. Skälet: en bild i chatten läses av Claude med riktig
+bildförståelse (samma tillförlitlighet som när PRD:ns ursprungliga
+skärmdumpar först tolkades), medan OCR-genvägen är regelbaserad
+textigenkänning — mindre träffsäker (se kända buggar, `SPEC_publik_variant.md`
+Ändringslogg v4) och kan, till skillnad från en chattkonversation, varken
+skriva en rad i `data.md` eller ge en trendanalys (ingen backend, inget
+minne mellan sidladdningar — samma arkitekturbegränsning som
+`PRD_publik_variant.md` redan beskriver). OCR-genvägen fyller bara i
+fälten för stunden; resten av veckorutinen (`claude-kostnad`-skillen)
+kräver fortfarande en konversation. Återanvänder `dela/ocr.js` och
+Tesseract.js rakt av — ingen ny tolkningslogik.
+
 ## 5. Leveranser
 
 - [x] De tre skärmdumparna granskade och förstådda
@@ -383,3 +401,14 @@ README/site-nav/GitHub-hörna på plats i både `Claude_kostnad/` och
   `index.html`-sidfoten, `Claude_kostnad/README.md`, `Ovrigt/README.md` och
   som ny källa (Lundgren, 2026) i avsnitt 7 ovan, alfabetiskt placerad efter
   Claude Help Center-källorna. Leveranser uppdaterad.
+- 2026-08-04 (v10): Ny delfråga j beslutad och genomförd — `index.html`
+  fick en frivillig OCR-uppladdningsruta (samma `dela/ocr.js` och
+  Tesseract.js som den publika varianten), efter att Kent undrade varför
+  hans eget verktyg inte hade samma funktion. Landade i en medelväg: ja,
+  men med en tydlig, skriven varning i sidan om att chatt-uppladdning
+  (Claudes riktiga bildförståelse, plus automatisk `data.md`-loggning och
+  trendanalys) fortfarande är huvudvägen — OCR-genvägen fyller bara i
+  fälten, loggar och analyserar inget. Verifierat i webbläsaren: samma
+  fältmappning som `dela/`-sidan (7/7 fält), integrationen mot de
+  befintliga fälten (`sessPct`, `weekPct` osv.) testad direkt, ingen
+  regression i den befintliga beräkningen.
