@@ -3,7 +3,7 @@
 **Namn:** PRD_publik_variant
 **Plats:** `Claude_kostnad/PRD/PRD_publik_variant.md`
 **Skapad:** 2026-08-04
-**Version:** 2 (utkast)
+**Version:** 3 (utkast)
 **Status:** **Utkast — inte fryst.** Alla delfrågor (a–g) beslutade.
 Återstår: fräscha-ögon-genomläsning (Regel 7) och Kents formella frysning.
 **Typ:** Vidarebyggnad — ny, fristående leverans i samma mapp
@@ -18,6 +18,19 @@ det befintliga, personliga verktyget.
 > en skärmdump av sin egen Claude-användning och få samma typ av
 > "ligger jag i fas"-analys som Kent redan får av sitt eget verktyg — utan
 > att Kent behöver bygga eller betala för en backend?
+
+**Det som faktiskt gör svaret värt något: takt-jämförelsen.** Anthropics
+egen Usage-sida visar redan råa procenttal ("66% used"). Det en
+förstagångsbesökare **inte** kan se där är om 66% är bra eller dåligt just
+nu — det beror på hur långt in i veckan/månaden man är. 66% förbrukat vid
+40% av veckan gången är ett helt annat läge än 66% förbrukat vid 90% av
+veckan gången, men Anthropics UI gör ingen skillnad på de två. Just den
+jämförelsen — förbrukad andel mot förfluten andel av cykeln — är verktygets
+enda faktiska mervärde jämfört med att bara läsa av Claude.ai direkt, och
+är därför obligatorisk i den publika varianten, inte en valfri extra
+funktion. Se delfråga e för hur beslutet togs och vad som gäller
+gränsfallen (t.ex. det flaggade antagandet om usage credits-cykelns
+kalendermånad).
 
 ## 1. Bakgrund
 
@@ -74,6 +87,12 @@ denna leverans.
 
 ## 2. Syfte
 
+- Ge en förstagångsbesökare svaret på den enda fråga de faktiska
+  procenttalen på Claude.ai inte kan svara på själva: ligger jag **före
+  eller efter** en jämn takt, givet hur långt in i cykeln jag är just nu?
+  Det är takt-jämförelsen, inte de råa procenttalen, som är hela poängen
+  med verktyget — utan den är det bara en omväg till samma information
+  Claude.ai redan visar.
 - Låta vem som helst som besöker `Claude_kostnad/index.html` få samma
   "ligger jag i fas"-analys som Kent, baserat på sin egen skärmdump —
   utan inloggning, utan backend, utan att Kent bär en löpande kostnad per
@@ -99,7 +118,10 @@ denna leverans.
   ibland (typsnitt, mörkt/ljust läge, beskuren bild, annat språk).
 - Samma kärnberäkning som det befintliga verktyget: session/vecka/usage
   credits, boost-omräkning mot normal 100%-baslinje (delfråga h i
-  `PRD_tokenanvandning.md`).
+  `PRD_tokenanvandning.md`) — **och, avgörande, takt-jämförelsen** (andel
+  förbrukat vs. andel av cykeln som gått, delfråga e). Utan den senare
+  levererar sidan inte det verktyget faktiskt är till för; den är alltså
+  lika obligatorisk som själva procentavläsningen, inte en tilläggsfunktion.
 - En tydlig, synlig disclaimer: verktyget är inte ett officiellt
   Anthropic- eller Claude-verktyg, och Kent ansvarar inte för att OCR:en
   läser rätt — besökaren bekräftar alltid talen själv.
@@ -268,3 +290,14 @@ fräscha-ögon-genomläsning (Regel 7) och Kents formella frysning.
   fas"-frågan och ska ingå. g: SPEC.md beslutat, författas av Claude,
   Kent granskar snarare än skriver den. Leveranser och Status
   uppdaterade.
+- 2026-08-04 (v3): På Kents uttryckliga begäran lyft takt-jämförelsen från
+  att bara stå i delfråga e till att synas tydligt redan i Kärnfrågan och
+  Syfte — riktat mot en förstagångsbesökare som inte känner till
+  bakgrunden, inte bara mot Kent själv. Ny förklarande stycke direkt under
+  Kärnfrågan ("Det som faktiskt gör svaret värt något"), Syftets första
+  punkt omskriven till att leda med takt-jämförelsen i stället för att
+  nämna den indirekt, och Omfattningens kärnberäknings-punkt uppdaterad
+  för att explicit markera takt-jämförelsen som obligatorisk, inte en
+  tilläggsfunktion. Inga nya beslut — samma sakinnehåll som v2, bara
+  omprioriterat för att göra verktygets faktiska värde omöjligt att missa
+  för en läsare som inte redan vet det.
