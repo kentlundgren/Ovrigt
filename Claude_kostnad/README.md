@@ -1,12 +1,13 @@
 # Claude-kostnad – ligger jag i fas med mitt Pro-abonnemang?
 
-_Version 1.0, 2026-08-03_
+_Version 2.0, 2026-08-04_
 
-## Live-sida
+## Live-sidor
 
 | Sida | URL |
 | ---- | --- |
-| Claude-kostnad | [index.html – live](https://kentlundgren.github.io/Ovrigt/Claude_kostnad/index.html) |
+| Claude-kostnad (Kents eget verktyg) | [index.html – live](https://kentlundgren.github.io/Ovrigt/Claude_kostnad/index.html) |
+| Dela — publik variant | [dela/index.html – live](https://kentlundgren.github.io/Ovrigt/Claude_kostnad/dela/index.html) |
 
 ## Om projektet
 
@@ -32,11 +33,34 @@ bakgrund, alla beslut och källor, eller blogginlägget
 (klel.wordpress.com, 4/8 2026) för en mer berättande version av samma
 resonemang.
 
+## Publik variant — `dela/`
+
+En separat, publik sida där **vem som helst** kan ladda upp sin egen
+skärmdump av Inställningar → Usage och få samma "ligger jag i fas"-analys
+— utan inloggning, utan att något sparas. Bilden analyseras helt lokalt i
+besökarens egen webbläsare med [Tesseract.js](https://tesseract.projectnaptha.com/)
+(OCR/teckenigenkänning) — den skickas aldrig till någon server. Beräknings-
+logiken (session/vecka/usage credits, boost-omräkning, takt-jämförelse) är
+utbruten till [`js/berakning.js`](js/berakning.js) och delas mellan Kents
+eget verktyg och den publika sidan, så att en framtida ändring i formlerna
+bara behöver göras på ett ställe.
+
+Föddes ur ett rollspel där Kent testade om en anonym besökares skärmdump
+skulle ge samma analys som hans egen — se
+[`PRD/PRD_publik_variant.md`](PRD/PRD_publik_variant.md) och
+[`PRD/SPEC_publik_variant.md`](PRD/SPEC_publik_variant.md) för fullständigt
+resonemang, delfrågor och tekniska beslut.
+
 ## Filer
 
 | Fil | Innehåll |
 | --- | -------- |
-| `index.html` | Det interaktiva verktyget |
-| `data.md` | Manuellt förd historik-logg |
-| `PRD/PRD_tokenanvandning.md` | Kravdokument — bakgrund, terminologi, beslut, källor |
-| `Bilder/` | Skärmdumpar som underlag för PRD:n |
+| `index.html` | Kents eget interaktiva verktyg |
+| `data.md` | Manuellt förd historik-logg (bara för Kents eget verktyg) |
+| `js/berakning.js` | Delade beräkningsformler — används av båda sidorna |
+| `dela/index.html` | Den publika sidan — bilduppladdning + manuell inmatning |
+| `dela/ocr.js` | OCR-anrop (Tesseract.js) och fältmappning för den publika sidan |
+| `PRD/PRD_tokenanvandning.md` | Kravdokument för Kents eget verktyg — bakgrund, terminologi, beslut, källor |
+| `PRD/PRD_publik_variant.md` | Kravdokument för den publika varianten |
+| `PRD/SPEC_publik_variant.md` | Teknisk spec för OCR-fältmappning och gränsfall |
+| `Bilder/` | Skärmdumpar som underlag för PRD:erna |

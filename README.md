@@ -1,6 +1,6 @@
 # Ovrigt – Kent Lundgrens övriga projekt
 
-_Version 1.4, 2026-08-04_
+_Version 1.5, 2026-08-04_
 
 ---
 
@@ -44,11 +44,12 @@ Se mer i [`Fritid/ol_Tyskland/README.md`](Fritid/ol_Tyskland/README.md).
 
 ## Claude-kostnad
 
-### Live-sida (GitHub Pages)
+### Live-sidor (GitHub Pages)
 
 | Sida | URL |
 | ---- | --- |
-| Claude-kostnad | [index.html – live](https://kentlundgren.github.io/Ovrigt/Claude_kostnad/index.html) |
+| Claude-kostnad (Kents eget verktyg) | [index.html – live](https://kentlundgren.github.io/Ovrigt/Claude_kostnad/index.html) |
+| Dela — publik variant | [dela/index.html – live](https://kentlundgren.github.io/Ovrigt/Claude_kostnad/dela/index.html) |
 
 ### Om projektet
 
@@ -61,8 +62,14 @@ förklaringar (med källor) för begrepp som saldo, månadsgräns och
 promotional credit. Data matas in manuellt; historik sparas i
 [`Claude_kostnad/data.md`](Claude_kostnad/data.md), inte i webbläsaren.
 
-Se mer i [`Claude_kostnad/README.md`](Claude_kostnad/README.md) och
-[`Claude_kostnad/PRD/PRD_tokenanvandning.md`](Claude_kostnad/PRD/PRD_tokenanvandning.md),
+**Dela-varianten** (`dela/index.html`) är en separat, publik sida där vem
+som helst kan ladda upp sin egen skärmdump och få samma analys — ingen
+inloggning, inget sparas, bilden analyseras lokalt i besökarens webbläsare
+med OCR (Tesseract.js), skickas aldrig till någon server.
+
+Se mer i [`Claude_kostnad/README.md`](Claude_kostnad/README.md),
+[`Claude_kostnad/PRD/PRD_tokenanvandning.md`](Claude_kostnad/PRD/PRD_tokenanvandning.md)
+och [`Claude_kostnad/PRD/PRD_publik_variant.md`](Claude_kostnad/PRD/PRD_publik_variant.md),
 eller läs bakgrunden som blogginlägg:
 [Ligger jag i fas med Claude?](https://klel.wordpress.com/2026/08/04/ligger-jag-i-fas-med-claude/)
 (klel.wordpress.com, 4/8 2026).
@@ -151,4 +158,4 @@ Commit och push är alltid användarens (Kents) ansvar.
 
 ---
 
-_README v1.4, 2026-08-04_
+_README v1.5, 2026-08-04_
