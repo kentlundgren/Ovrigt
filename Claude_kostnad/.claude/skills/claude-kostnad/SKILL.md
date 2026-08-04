@@ -36,6 +36,34 @@ rullande från första meddelandet — inte fasta klockslag), **vecka** (fast
 dag/tid, kan vara tillfälligt boostad), **usage credits** (€, månatligt
 tak, aktiveras först när plangränsen nås).
 
+## Nyckelbegrepp — samma definitioner överallt
+
+De här tre begreppen återkommer i `data.md`, `index.html`, `dela/index.html` och
+`testad_260804.html`. Texten nedan är **ordagrant samma** som badge-tooltipsen i
+verktygen (mönstret tillagt i `testad_260804.html` 2026-08-04) — ändras definitionen,
+ändra den på båda ställena samtidigt, annars glider skill och verktyg isär. Syftet är
+att framtida vecka-mot-vecka-jämförelser (vecka X mot X+1, X+2, osv.) alltid utgår från
+samma betydelse, oavsett vilken session eller vilket verktyg som gör jämförelsen.
+
+**Vecka, normalbaslinje** — Andelen av din NORMALA (icke-boostade) 100%-veckogräns som
+är förbrukad. Anthropic visar bara andelen mot den just nu gällande (ev. tillfälligt
+höjda) gränsen — det talet omräknas hit med formeln `avläst% × (1 + boost%/100)`, så
+att veckor med olika boost-nivå blir jämförbara med varandra. Källa:
+`PRD_tokenanvandning.md`, delfråga h.
+
+**Takt-avvikelse (vecka eller månad)** — Hur många procentenheter du ligger före eller
+efter en jämn (linjär) förbrukningstakt: `(förbrukad andel av gränsen) − (andel av
+cykeln som redan gått)`. Positivt tal = du förbrukar snabbare än en jämn takt (ligger
+"före"). Negativt tal = du har marginal kvar. Samma tröskel (över 10 procentenheter)
+styr när Kärnfrågan-bannern visar "Inte i fas". Källa: `PRD_tokenanvandning.md`, v8
+(takt-jämförelsen).
+
+**Usage credits** — Anthropics overflow-mekanism: ett belopp i euro som dras när du
+överskrider dina vanliga plangränser (session/vecka). Det loggade beloppet är vad som
+förbrukats av DIN egen satta månadsgräns denna cykel — inte ditt totala förbetalda
+saldo, som är en separat pott (se de rena referensfälten i `index.html`). Källa: Claude
+Help Center, "Manage usage credits for paid Claude plans".
+
 ## Den återkommande veckorutinen
 
 När Kent delar en ny skärmdump av Inställningar → Usage (en enda bild
@@ -129,3 +157,11 @@ räcker — session, vecka och usage credits visas där tillsammans):
   nollställde boost-fälten. **Viktigare bugg rättad: Kärnfrågan-bannern
   räknade bara på hårda gränser, aldrig på takt-avvikelsen** — se egen
   punkt under "Viktiga mekaniker" ovan.
+- 2026-08-04 (v4): Ny sektion "Nyckelbegrepp" tillagd, på Kents uttryckliga
+  fråga om definitionerna (vecka normalbaslinje, takt-avvikelse, usage
+  credits) också borde finnas i en skill — inte bara som tooltips i
+  verktygen — för att garantera samma uppfattning i framtida vecka-mot-
+  vecka-jämförelser. Texten är ordagrant identisk med badge-tooltipsen i
+  `testad_260804.html`, medvetet, så de två inte kan glida isär över tid.
+  Föddes ur den nya publika varianten (`dela/`) och dess testrapport —
+  se `PRD/PRD_publik_variant.md` och `testad_260804.html`.
