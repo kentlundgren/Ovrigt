@@ -254,9 +254,15 @@ steg 4, Kent granskar och godkänner snarare än skriver den själv.
       och rättade i v2 (stale "preliminärt"-formulering i Omfattning,
       fel sidhänvisning, villkorade SPEC.md-skrivningar)
 - [x] PRD fryst av Kent (2026-08-04)
-- [ ] SPEC.md skriven för OCR-fältmappning och gränsfall
-- [ ] Funktion byggd och testad mot flera olika skärmdumpar (ljust/mörkt
-      läge, beskurna bilder, andra produkter än Claude Code)
+- [x] SPEC.md skriven, granskad och godkänd (`SPEC_publik_variant.md`)
+- [x] `js/berakning.js` utbruten (alternativ C) och `index.html` justerad —
+      verifierat identisk output mot en sparad baslinje i webbläsaren
+- [x] `dela/index.html` och `dela/ocr.js` byggda — samma beräkningsresultat
+      som `index.html` verifierat i webbläsaren
+- [~] Fältmappningen testad — tre riktiga buggar hittades och rättades
+      (se `SPEC_publik_variant.md` Ändringslogg v4). **Kvarstår:** en
+      riktig filuppladdning genom webbläsarens fildialog, som inte kunde
+      testas automatiskt — Kents eget sista test.
 - [ ] Disclaimer, README-uppdatering och site-nav enligt `Ovrigt/CLAUDE.md`
 
 ## 6. Produktionsordning

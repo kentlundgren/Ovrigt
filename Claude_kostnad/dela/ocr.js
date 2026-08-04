@@ -32,8 +32,14 @@ const CKO = (function(){
   // tidig implementation systematiskt fel värde så fort två tal låg olika långt
   // före/efter nyckelordet (t.ex. "€6.13 ... Monthly spend limit ... €104.75" —
   // "först i strängen" plockade €6.13 trots att €20.00 stod närmast).
-  function nearestValueMatch(text, keywordIndex, keywordLen, valueRegex, windowChars){
-    const start = Math.max(0, keywordIndex - windowChars);
+  // forwardOnly: sök bara EFTER nyckelordet, inte före. Används för "Resets" och
+  // "through", där etiketten alltid kommer före sitt värde i skärmdumparna
+  // ("Resets Sep 1", "through August 19") — utan detta kunde en dagsangivelse i en
+  // helt annan, tidigare mening (t.ex. "...through August 5.\nAll models\nResets
+  // Thu...") felaktigt plockas upp som om den hörde till "Resets"-förekomsten,
+  // bara för att den råkade stå textmässigt nära.
+  function nearestValueMatch(text, keywordIndex, keywordLen, valueRegex, windowChars, forwardOnly){
+    const start = forwardOnly ? (keywordIndex + keywordLen) : Math.max(0, keywordIndex - windowChars);
     const end = Math.min(text.length, keywordIndex + keywordLen + windowChars);
     const win = text.slice(start, end);
     const keywordCenter = (keywordIndex - start) + keywordLen / 2;
@@ -52,11 +58,11 @@ const CKO = (function(){
   // förekomsten som faktiskt har ett värde av rätt sort i sin närhet (närmaste
   // värdet inom fönstret, se nearestValueMatch) — hoppar över förekomster som
   // inte ger någon träff alls, i stället för att ge upp vid första försöket.
-  function firstNearMatch(text, keywordRegex, valueRegex, windowChars){
+  function firstNearMatch(text, keywordRegex, valueRegex, windowChars, forwardOnly){
     const occurrences = allMatches(text, keywordRegex);
     for (let i = 0; i < occurrences.length; i++){
       const km = occurrences[i];
-      const vm = nearestValueMatch(text, km.index, km[0].length, valueRegex, windowChars);
+      const vm = nearestValueMatch(text, km.index, km[0].length, valueRegex, windowChars, forwardOnly);
       if (vm) return vm;
     }
     return null;
@@ -79,7 +85,7 @@ const CKO = (function(){
   function findDateNear(text, keywordRegex, refNow, windowChars){
     const monthNames = Object.keys(MONTHS).sort((a,b)=>b.length-a.length).join('|');
     const dateRegex = new RegExp('(' + monthNames + ')\\.?\\s+(\\d{1,2})(?:,?\\s*(\\d{4}))?', 'i');
-    const dm = firstNearMatch(text, keywordRegex, dateRegex, windowChars || 40);
+    const dm = firstNearMatch(text, keywordRegex, dateRegex, windowChars || 40, true);
     if (!dm) return null;
     const month = MONTHS[dm[1].toLowerCase()];
     const day = parseInt(dm[2], 10);

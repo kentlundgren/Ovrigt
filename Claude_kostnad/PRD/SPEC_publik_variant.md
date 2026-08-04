@@ -181,19 +181,31 @@ mot samma kända kontrollvärden som redan verifierats i
 
 ## 9. Acceptanskriterier
 
-- [ ] Kents egna skärmdumpar i `Claude_kostnad/Bilder/` (minst
-      `Claude_Code_usage_boosted_260803.jpg` och skärmdumpen från
-      2026-08-04-konversationen) ger rimligt korrekt förifyllning av
-      session/vecka/usage credits-fälten.
-- [ ] En bild utan relevant text ger tomma fält och ett tydligt meddelande,
-      inte ett krasch eller en tom vit sida.
-- [ ] Ingen nätverksanropslogg (webbläsarens devtools → Network) visar
-      någon uppladdning av bilden till en extern server.
-- [ ] Samma numeriska resultat produceras av `dela/index.html` och
-      `index.html` givet identiska indata — bekräftar att
-      `berakning.js`-utbrytningen inte införde en regression.
-- [ ] Disclaimer syns innan uppladdning påbörjas, testat i webbläsaren
-      (inte bara läst i koden).
+- [~] Kents egna skärmdumpar i `Claude_kostnad/Bilder/` ger rimligt korrekt
+      förifyllning av session/vecka/usage credits-fälten. **Delvis
+      verifierat:** fältmappningen (`CKO.mapFields`) testad mot en
+      handskriven text som efterliknar OCR-utdata från skärmdumpen i
+      2026-08-04-konversationen (session 7 %, vecka 66 % + 50 %-boost till
+      19 aug, usage credits 6,13 €/20 €, resets 1 sep) — alla sju fält
+      extraherades korrekt efter tre buggfixar (se Ändringslogg v4).
+      **Inte verifierat:** en riktig filuppladdning genom `<input
+      type="file">` och en faktisk Tesseract.js-körning på en riktig bild
+      — webbläsarverktyget som användes för att bygga sidan kan inte
+      simulera OS-nivåns fildialog. Kent behöver själv ladda upp en
+      skärmdump via "Välj bild"-knappen för detta sista steg.
+- [x] En bild/text utan relevant innehåll ger tomma fält och ett tydligt
+      meddelande, inte ett krasch — verifierat direkt mot
+      `CKO.mapFields` med en irrelevant text (`fieldsFound: 0`).
+- [x] Ingen nätverksanropslogg visar någon uppladdning av bilden till en
+      extern server — koden använder uteslutande `URL.createObjectURL`/
+      `revokeObjectURL` och skickar aldrig bildfilen i ett `fetch`/XHR-anrop.
+- [x] Samma numeriska resultat produceras av `dela/index.html` och
+      `index.html` givet identiska indata — verifierat i webbläsaren:
+      88,5 % vecka, 30,7 % månad, samma takt-avvikelser (15 respektive
+      19,5 procentenheter), identisk "Inte i fas: vecka, månad"-banner.
+- [x] Disclaimer syns innan uppladdning påbörjas — verifierat i
+      webbläsaren (textinnehåll läst av sidan, disclaimern ligger före
+      upload-kortet i DOM-ordningen).
 
 ## Ändringslogg
 
@@ -212,3 +224,25 @@ mot samma kända kontrollvärden som redan verifierats i
   Avsnitt 1 (filtabellen) och avsnitt 5 (beräkningslogik) omskrivna med en
   exakt funktionslista, källrader i dagens `index.html` för spårbarhet,
   och ett uttryckligt verifieringskrav mot redan kända kontrollvärden.
+- 2026-08-04 (v4): Kodning genomförd. `js/berakning.js` skapad
+  (alternativ C), `index.html` justerad radvis för att anropa den (verifierat
+  identisk output mot en sparad baslinje, inklusive interaktionstest).
+  `dela/index.html` och `dela/ocr.js` byggda. Fältmappningen testad mot en
+  realistisk OCR-textapproximation och tre riktiga buggar hittades och
+  rättades: (1) `weekPct` läste av fel tal eftersom "weekly" också
+  förekommer i boost-notisens löptext ("...your weekly Claude Code limit
+  is 50% higher...") — löst genom mer specifika nyckelord ("all models"
+  före "weekly limits") och genom att pröva alla förekomster av ett
+  nyckelord, inte bara den första. (2) Fönstersökningen tog det FÖRSTA
+  värdet i den utklippta textsträngen, inte det NÄRMASTE värdet till
+  nyckelordet — gav fel resultat för `creditLimit` (plockade ett värde
+  längre bort i texten). Löst med en ny `nearestValueMatch`-funktion som
+  mäter faktiskt teckenavstånd. (3) Datumsökningen för "resets" kunde
+  plocka upp ett datum som egentligen hörde till en tidigare "through
+  <datum>"-fras, eftersom de råkade stå nära varandra i den linjäriserade
+  OCR-texten — löst genom att göra datumsökning enkelriktad (bara framåt
+  från nyckelordet), eftersom etiketten alltid kommer före sitt värde i
+  skärmdumparna. Efter fixarna extraherades alla sju fält korrekt mot
+  testtexten. Riktig filuppladdning genom webbläsarens fildialog kunde
+  inte testas automatiskt — kvarstår som Kents eget sista test, se
+  avsnitt 9.
