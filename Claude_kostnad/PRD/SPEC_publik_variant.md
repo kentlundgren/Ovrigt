@@ -181,18 +181,16 @@ mot samma kända kontrollvärden som redan verifierats i
 
 ## 9. Acceptanskriterier
 
-- [~] Kents egna skärmdumpar i `Claude_kostnad/Bilder/` ger rimligt korrekt
-      förifyllning av session/vecka/usage credits-fälten. **Delvis
-      verifierat:** fältmappningen (`CKO.mapFields`) testad mot en
-      handskriven text som efterliknar OCR-utdata från skärmdumpen i
-      2026-08-04-konversationen (session 7 %, vecka 66 % + 50 %-boost till
-      19 aug, usage credits 6,13 €/20 €, resets 1 sep) — alla sju fält
-      extraherades korrekt efter tre buggfixar (se Ändringslogg v4).
-      **Inte verifierat:** en riktig filuppladdning genom `<input
-      type="file">` och en faktisk Tesseract.js-körning på en riktig bild
-      — webbläsarverktyget som användes för att bygga sidan kan inte
-      simulera OS-nivåns fildialog. Kent behöver själv ladda upp en
-      skärmdump via "Välj bild"-knappen för detta sista steg.
+- [x] Kents egna skärmdumpar ger rimligt korrekt förifyllning av
+      session/vecka/usage credits-fälten. **Fullt verifierat i två steg:**
+      (1) fältmappningen (`CKO.mapFields`) testad mot en handskriven text
+      som efterliknar OCR-utdata (tre buggfixar, se Ändringslogg v4), (2)
+      Kent laddade själv upp en riktig skärmdump genom "Välj bild" —
+      första försöket avslöjade en stale-cache-bugg (löst med
+      `?v=20260804b` på skriptinläsningarna), andra försöket läste av
+      7 av 7 fält korrekt mot en äkta bild. Se
+      [`../testad_260804.html`](../testad_260804.html) för fullständig
+      testlogg.
 - [x] En bild/text utan relevant innehåll ger tomma fält och ett tydligt
       meddelande, inte ett krasch — verifierat direkt mot
       `CKO.mapFields` med en irrelevant text (`fieldsFound: 0`).
@@ -246,3 +244,11 @@ mot samma kända kontrollvärden som redan verifierats i
   testtexten. Riktig filuppladdning genom webbläsarens fildialog kunde
   inte testas automatiskt — kvarstår som Kents eget sista test, se
   avsnitt 9.
+- 2026-08-04 (v5): Kents eget test genomfört. Första riktiga
+  uppladdningen avslöjade en stale-cache-bugg (webbläsaren återanvände en
+  äldre, orättad `ocr.js` trots att filen på disken redan var
+  uppdaterad) — löst med en cache-buster på skriptinläsningarna. Andra
+  uppladdningen (samma bild) lyckades: 7 av 7 fält lästes av korrekt.
+  Avsnitt 9 uppdaterat till fullt godkänt. Hela testkedjan dokumenterad i
+  en ny sida, [`testad_260804.html`](../testad_260804.html), länkad från
+  både `index.html` och `dela/index.html`.

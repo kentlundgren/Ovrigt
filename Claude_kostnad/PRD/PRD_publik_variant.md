@@ -259,11 +259,15 @@ steg 4, Kent granskar och godkänner snarare än skriver den själv.
       verifierat identisk output mot en sparad baslinje i webbläsaren
 - [x] `dela/index.html` och `dela/ocr.js` byggda — samma beräkningsresultat
       som `index.html` verifierat i webbläsaren
-- [~] Fältmappningen testad — tre riktiga buggar hittades och rättades
-      (se `SPEC_publik_variant.md` Ändringslogg v4). **Kvarstår:** en
-      riktig filuppladdning genom webbläsarens fildialog, som inte kunde
-      testas automatiskt — Kents eget sista test.
-- [ ] Disclaimer, README-uppdatering och site-nav enligt `Ovrigt/CLAUDE.md`
+- [x] Fältmappningen testad och verifierad — tre buggar hittades och
+      rättades i simulerat test, sedan verifierad av Kent mot en riktig
+      skärmdump (avslöjade och löste ytterligare en stale-cache-bugg på
+      vägen). 7 av 7 fält lästes av korrekt. Fullständig testlogg:
+      [`testad_260804.html`](../testad_260804.html), länkad från båda
+      verktygen.
+- [x] Disclaimer, README-uppdatering och site-nav enligt `Ovrigt/CLAUDE.md`
+- [x] Teknik-modal-knapp (nedre högra hörnet) tillagd på båda sidorna,
+      enligt Kents generella mönster (se `kent-bygg-sidor`)
 
 ## 6. Produktionsordning
 
@@ -292,13 +296,13 @@ välja OCR i stället för en backend-kopplad AI-bildanalys.)*
 
 ## 8. Status
 
-**Fryst.** Alla sju delfrågor (a–g) beslutade, en fräscha-ögon-genomläsning
-genomförd (tre glapp rättade i v2), och takt-jämförelsen lyft fram som
-verktygets faktiska kärna (v3) efter att Kent uttryckligen bad om det.
-Kent bekräftade 2026-08-04 att PRD:n är redo att frysas och att han inte
-har mer att bidra med till SPEC.md-processen — Claude författar den som
-nästa steg, se `SPEC_publik_variant.md`. Ingen kod skrivs förrän SPEC.md
-är granskad av Kent.
+**Genomfört och testat.** Alla sju delfrågor (a–g) beslutade, PRD och
+SPEC frysta/godkända, kodat enligt alternativ C (delfråga d.1). Testat i
+två led: ett simulerat OCR-test (tre buggar hittade och rättade) och
+Kents eget test mot en riktig skärmdump (avslöjade och löste ytterligare
+en cache-bugg, sedan 7/7 fält korrekt). Fullständig testlogg i
+`testad_260804.html`, länkad från båda verktygen. Kvarstår: README-
+uppdatering (delvis gjord, se `Ovrigt/README.md`) och Kents commit.
 
 ## Ändringslogg
 
@@ -350,3 +354,12 @@ nästa steg, se `SPEC_publik_variant.md`. Ingen kod skrivs förrän SPEC.md
   formeldelen redan en gång behövde rättas, vilket gör den värd att bara
   underhålla på ett ställe. Exakt funktionslista specificerad. SPEC.md
   uppdateras i linje med detta.
+- 2026-08-04 (v6): Kodning genomförd och testad. Kents eget test av en
+  riktig filuppladdning avslöjade en stale-cache-bugg (löst med en
+  cache-buster) — andra försöket läste av 7/7 fält korrekt, den sista
+  återstående acceptanskriteriet i SPEC:en är nu uppfyllt. Hela
+  testkedjan dokumenterad i en ny sida, `testad_260804.html`, länkad från
+  både `index.html` och `dela/index.html`. På Kents begäran har båda
+  sidorna även fått en teknik-modal-knapp (nedre högra hörnet) — ett nytt
+  generellt mönster som dokumenterats i `kent-bygg-sidor`-skillen för
+  återanvändning i framtida projekt. Leveranser och Status uppdaterade.

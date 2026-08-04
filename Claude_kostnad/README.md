@@ -63,4 +63,5 @@ resonemang, delfrågor och tekniska beslut.
 | `PRD/PRD_tokenanvandning.md` | Kravdokument för Kents eget verktyg — bakgrund, terminologi, beslut, källor |
 | `PRD/PRD_publik_variant.md` | Kravdokument för den publika varianten |
 | `PRD/SPEC_publik_variant.md` | Teknisk spec för OCR-fältmappning och gränsfall |
+| `testad_260804.html` | Testrapport 2026-08-04 — verifierar att `index.html` och `dela/index.html` ger samma resultat, och loggar OCR-testet mot en riktig skärmdump |
 | `Bilder/` | Skärmdumpar som underlag för PRD:erna |

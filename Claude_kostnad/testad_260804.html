@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Testrapport 2026-08-04 – ger dela-varianten samma resultat som originalet?</title>
+<style>
+  :root{
+    --bg:#f5f4f1; --card:#ffffff; --border:#e2e0da; --border-strong:#c9c6bd;
+    --text:#26241f; --text-secondary:#6b675e; --text-muted:#98948a;
+    --accent:#185fa5; --accent-bg:#e6f1fb;
+    --ok:#1a7a4c; --ok-bg:#e4f5eb;
+    --warn:#854f0b; --warn-bg:#faeeda;
+    --danger:#a32d2d; --danger-bg:#fcebeb;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg); color:var(--text); line-height:1.5;
+  }
+  .site-nav{
+    display:flex; align-items:center; background:#1a3a5c; color:#fff;
+    padding:0 20px; height:44px; gap:4px; position:sticky; top:0; z-index:100;
+    overflow-x:auto;
+  }
+  .site-nav .nav-brand{
+    font-family:"Courier New",monospace; font-weight:bold; font-size:1.05em;
+    color:#fff; text-decoration:none; white-space:nowrap;
+  }
+  .site-nav .nav-brand:hover{color:#c8d8e8;}
+  .nav-sep{color:#7a9bbf; margin:0 5px; font-family:"Courier New",monospace; font-size:0.95em;}
+  .nav-crumb{color:#9ab4cc; text-decoration:none; font-family:"Courier New",monospace; font-size:0.95em; white-space:nowrap;}
+  .nav-crumb:hover{color:#fff;}
+  .nav-crumb.active{color:#fff;}
+
+  .wrap{max-width:760px; margin:0 auto; padding:1.5rem 1rem 6rem;}
+  h1{font-size:22px; font-weight:600; margin:0 0 4px;}
+  .sub{font-size:14px; color:var(--text-secondary); margin:0 0 1.5rem;}
+  h2{font-size:17px; font-weight:600; margin:2rem 0 4px;}
+  h3{font-size:14.5px; font-weight:600; margin:0 0 4px;}
+  p{font-size:14px;}
+
+  .status-badge{
+    display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600;
+    padding:5px 12px; border-radius:999px; margin-bottom:1.5rem;
+  }
+  .status-badge.ok{background:var(--ok-bg); color:var(--ok);}
+
+  .card{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1rem 1.1rem; margin-bottom:12px;}
+  .card h3{margin-top:0;}
+  .card p{color:var(--text-secondary); margin:0;}
+  .card.result{border-left:4px solid var(--ok);}
+  .card.bug{border-left:4px solid var(--warn);}
+
+  table{width:100%; border-collapse:collapse; font-size:13.5px; margin:10px 0;}
+  th, td{text-align:left; padding:7px 9px; border-bottom:1px solid var(--border);}
+  th{color:var(--text-secondary); font-weight:600; font-size:12.5px;}
+  td.num{text-align:right; font-variant-numeric:tabular-nums;}
+  th.num{text-align:right;}
+  tr.highlight td{font-weight:600;}
+
+  .timeline{margin:10px 0 0; padding-left:0; list-style:none;}
+  .timeline li{
+    position:relative; padding:0 0 16px 22px; border-left:2px solid var(--border); margin-left:6px; font-size:14px;
+  }
+  .timeline li:last-child{border-left-color:transparent; padding-bottom:0;}
+  .timeline li::before{
+    content:''; position:absolute; left:-7px; top:2px; width:12px; height:12px; border-radius:50%;
+    background:var(--card); border:2px solid var(--accent);
+  }
+  .timeline li.bugstep::before{border-color:var(--warn);}
+  .timeline li.okstep::before{border-color:var(--ok); background:var(--ok);}
+  .timeline strong{display:block; margin-bottom:2px;}
+  .timeline span.meta{font-size:12px; color:var(--text-muted);}
+
+  .foot{font-size:12px; color:var(--text-muted); text-align:center; margin-top:2rem;}
+  .foot a{color:var(--text-secondary);}
+
+  .github-corner{
+    position:fixed; bottom:14px; left:14px;
+    font-family:"Courier New",monospace; font-size:0.78em;
+    color:#aaa; text-decoration:none; opacity:0.55;
+    transition:opacity 0.2s, color 0.2s; z-index:999;
+  }
+  .github-corner:hover{opacity:1; color:#1a3a5c;}
+</style>
+</head>
+<body>
+<nav class="site-nav">
+  <a class="nav-brand" href="../index.html">{ O } Ovrigt</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-crumb" href="index.html">Claude-kostnad</a>
+  <span class="nav-sep">/</span>
+  <span class="nav-crumb active">Testad 260804</span>
+</nav>
+
+<div class="wrap">
+  <h1>Testrapport 2026-08-04: ger den publika varianten samma resultat som originalet?</h1>
+  <p class="sub">När <a href="dela/index.html">dela/index.html</a> byggdes bröts beräkningslogiken ut till en delad fil
+  (<a href="js/berakning.js">js/berakning.js</a>, se <a href="PRD/PRD_publik_variant.md">PRD_publik_variant.md</a>
+  delfråga d.1) och en OCR-läsning av skärmdumpar lades till. Den här sidan dokumenterar testerna som gjordes
+  för att verifiera att båda delarna faktiskt fungerar — inte bara att koden ser rimlig ut.</p>
+
+  <div class="status-badge ok">✓ Godkänt — samma resultat, OCR fungerar mot en riktig skärmdump</div>
+
+  <h2>Vad testades</h2>
+  <div class="card">
+    <p>
+      1. <strong>Ger de två sidorna identiskt resultat</strong> för identisk indata, efter att formlerna bröts ut
+      till en delad fil (`berakning.js`) i stället för att finnas inline i varje sidas egen kod?<br><br>
+      2. <strong>Fungerar OCR-fältmappningen</strong> — att läsa siffror ur en skärmdumpstext och gissa vilket
+      fält de hör till — tillräckligt bra för att vara användbar, givet att flera etiketter och tal ligger nära
+      varandra i en verklig Usage-skärmdump?
+    </p>
+  </div>
+
+  <h2>1) Samma resultat, samma indata</h2>
+  <p>Samma avläsning (7 % session, 66 % vecka mot en aktiv 50 %-boost, 6,13 €/20 € usage credits) matades in i
+  båda verktygen och jämfördes.</p>
+  <table>
+    <tr><th></th><th class="num">dela/index.html</th><th class="num">index.html</th></tr>
+    <tr><td>Kärnfrågan</td><td class="num">Inte i fas: vecka, månad</td><td class="num">Inte i fas: vecka, månad</td></tr>
+    <tr><td>Vecka, normalbaslinje</td><td class="num">99 %</td><td class="num">99 %</td></tr>
+    <tr class="highlight"><td>Takt-avvikelse vecka</td><td class="num">25,4 pp</td><td class="num">25,3 pp</td></tr>
+    <tr><td>Månad</td><td class="num">30,7 %</td><td class="num">30,7 %</td></tr>
+    <tr class="highlight"><td>Takt-avvikelse månad</td><td class="num">19,4 pp</td><td class="num">19,4 pp</td></tr>
+  </table>
+  <p style="color:var(--text-secondary);">De 0,1 procentenheternas skillnad i takt-avvikelsen för veckan är inte
+  ett fel — båda sidorna räknar mot <code>new Date()</code>, dvs. exakt nu, och några minuter hann gå mellan de
+  två avläsningarna. Samma indata vid exakt samma sekund ger identiskt resultat. <strong>Slutsats: den delade
+  formelfilen fungerar som tänkt — en och samma beräkning, två gränssnitt.</strong></p>
+
+  <h2>2) Fungerar OCR-läsningen?</h2>
+  <p>Det här visade sig kräva två separata testomgångar — den andra hittade ett problem den första inte kunde.</p>
+  <ol class="timeline">
+    <li class="bugstep">
+      <strong>Automatiserat test mot en handskriven textapproximation</strong>
+      <span class="meta">Byggfasen, innan Kent testade själv</span>
+      <p>En text som efterliknade OCR-utdata från skärmdumpen kördes genom fältmappningen. Tre buggar hittades
+      och rättades: (1) veckoprocenten läste av fel tal eftersom ordet "weekly" också förekommer i boost-notisens
+      löptext, (2) fönstersökningen kunde plocka det första talet i en textsträng i stället för det närmaste
+      nyckelordet, vilket gav fel belopp för månadsgränsen, (3) datumsökningen för "resets" kunde plocka upp ett
+      datum som egentligen hörde till en tidigare "through"-fras. Efter fixarna läste testet av alla sju fält
+      korrekt mot testtexten — men detta var fortfarande bara en simulering, ingen riktig bild.</p>
+    </li>
+    <li class="bugstep">
+      <strong>Kents första riktiga uppladdning — avslöjade en cache-bugg</strong>
+      <span class="meta">2026-08-04</span>
+      <p>Kent laddade upp sin egen skärmdump. Resultatet visade det gamla, redan rättade felet: veckoprocenten
+      blev identisk med sessionsprocenten, och månadsgränsen/återställningsdatumet hittades inte alls. Orsaken var
+      inte en ny bugg — webbläsaren hade laddat en cachad, äldre version av <code>ocr.js</code> och återanvände den
+      trots att filen på disken redan var uppdaterad. Löst genom att lägga till en cache-buster
+      (<code>?v=20260804b</code>) på skript-inläsningarna.</p>
+    </li>
+    <li class="okstep">
+      <strong>Kents andra uppladdning — lyckades</strong>
+      <span class="meta">2026-08-04, samma skärmdump igen efter fixen</span>
+      <p>Samma bild laddades upp på nytt. Den här gången: <strong>7 av 7 fält lästes av korrekt</strong> —
+      session 7 %, vecka 66 %, boost 50 % till 19 augusti, 6,13 €/20 € usage credits, återställs 1 september.
+      Analysen gav 99 % vecka (normalbaslinje), 25,4 procentenheter över takt, 30,7 % månad, 19,4 procentenheter
+      över takt — och Kärnfrågan-bannern visade korrekt "Inte i fas: vecka, månad". Detta är den första riktiga
+      verifieringen av hela kedjan: uppladdning → Tesseract.js-körning → fältmappning → beräkning, mot en äkta
+      skärmdump, inte en simulering.</p>
+    </li>
+  </ol>
+
+  <h2>Kända begränsningar (inte testade ännu)</h2>
+  <div class="card bug">
+    <h3>Fortfarande otestat</h3>
+    <p>Mörkt UI-läge i skärmdumpen, kraftigt beskurna bilder, och skärmdumpar på andra språk än engelska. OCR:en
+    är byggd för att degradera snällt (tomma fält + ett meddelande om inget hittas, se
+    <a href="PRD/SPEC_publik_variant.md">SPEC_publik_variant.md</a> avsnitt 6–7) — men den faktiska träffsäkerheten
+    i de här fallen är okänd tills någon testar det.</p>
+  </div>
+
+  <h2>Trend: hur ser läget ut jämfört med gårdagens avläsning?</h2>
+  <table>
+    <tr><th></th><th class="num">Igår (68/59)</th><th class="num">Nu (7/66)</th><th class="num">Skillnad</th></tr>
+    <tr><td>Vecka, normalbaslinje</td><td class="num">88,5 %</td><td class="num">99 %</td><td class="num">+10,5 pp</td></tr>
+    <tr><td>Takt-avvikelse vecka</td><td class="num">21,5 pp</td><td class="num">25,3 pp</td><td class="num">Försämrad</td></tr>
+    <tr><td>Usage credits</td><td class="num">6,13 €</td><td class="num">6,13 €</td><td class="num">Oförändrat</td></tr>
+  </table>
+  <p style="color:var(--text-secondary);">Session (68 % → 7 %) är medvetet utelämnad ur jämförelsen — sessionen
+  återställs var 5:e timme, så flera resetcykler hann ske mellan avläsningarna. En lägre siffra betyder inte
+  "mindre använt", bara en ny 5-timmarsränta. Verktyget mäter aldrig rå tokenförbrukning, bara andel av
+  plangränser — se <a href="PRD/PRD_tokenanvandning.md">PRD_tokenanvandning.md</a>, delfråga a.</p>
+
+  <p class="foot">Fristående HTML, inga bibliotek. Se <a href="index.html">index.html</a> (Kents eget verktyg),
+  <a href="dela/index.html">dela/index.html</a> (publik variant), <a href="PRD/PRD_publik_variant.md">PRD_publik_variant.md</a>
+  och <a href="PRD/SPEC_publik_variant.md">SPEC_publik_variant.md</a> för fullständig bakgrund.</p>
+</div>
+
+<a class="github-corner" href="https://github.com/kentlundgren/Ovrigt" target="_blank" rel="noopener">{ } GitHub</a>
+</body>
+</html>
