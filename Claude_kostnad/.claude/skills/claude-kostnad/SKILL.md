@@ -98,6 +98,19 @@ räcker — session, vecka och usage credits visas där tillsammans):
   fylls kända värden i automatiskt (`KNOWN_BOOSTS` i `index.html`), men
   "Annat/alla modeller" rör **aldrig** boost-fälten (lämnar dem orörda
   snarare än att anta 0%, efter ett verkligt missförstånd 2026-08-03).
+  **Bekräftat i praktiken 2026-08-04:** Claude Codes egen in-app-varning
+  ("Approaching weekly usage limit") räknar också mot den aktiva
+  (boostade) gränsen, precis som Usage-sidan — den visade bara
+  "approaching" trots att verktyget samtidigt räknade ut 114 % av
+  normalbaslinjen. Ingen motsägelse: två olika referensramar för samma
+  tal. Poängen (och boost-omräkningens hela syfte) är att den 19 augusti,
+  när boosten upphör, återgår gränsen till 100 % — och ett läge som redan
+  motsvarar >100 % av normalbaslinjen blir då genast "exceeded", utan att
+  någon ny användning skett. Nämn alltid den här skillnaden när Kent
+  visar en Anthropic-varning (Usage-sidan eller Claude Codes egen
+  in-app-banner) som verkar mildare än verktygets normalbaslinje-tal —
+  det beror nästan alltid på att varningen räknar mot den boostade
+  gränsen, inte på att något är fel i beräkningen.
 - **"All models"-osäkerhet:** trolig tolkning är att "All models 59% used"
   i Usage-vyn betyder "alla Claude-modeller inom Claude Code-vecko-potten"
   — inte Claude Code + Cowork kombinerat, eftersom Cowork inte syns i
@@ -119,6 +132,29 @@ räcker — session, vecka och usage credits visas där tillsammans):
   utgång om oanvänd. Verktyget har rena referensfält för dessa tre
   begrepp (påverkar ingen beräkning) med hover/klick-tooltips + källor,
   samma badge/tooltip-mönster som Ölkalkylen (`Fritid/ol_Tyskland/index.html`).
+- **"Monthly spend limit" ≠ Pro-abonnemangets fasta avgift — ett verkligt
+  missförstånd 2026-08-04.** Kent förväxlade sitt eget satta usage
+  credits-tak (ursprungligen 20 €, höjt till 25 € samma dag) med sin
+  fasta månadsavgift för Pro-planen (~22,50 €, ett separat, återkommande
+  belopp på Billing-sidan, se delfråga i i `PRD_tokenanvandning.md`) —
+  lätt hänt eftersom talen råkar ligga nära varandra. De är två helt
+  olika saker: abonnemangsavgiften betalas oavsett användning, medan
+  Monthly spend limit bara är ett självvalt tak för hur mycket
+  *overflow*-betalning (usage credits) som får dras automatiskt när
+  session- eller veckogränsen är nådd. Var tydlig med den skillnaden
+  varje gång usage credits-gränsen diskuteras, särskilt om Kent nämner
+  ett belopp som "vad jag betalar per månad" — kontrollera om han menar
+  abonnemangsavgiften eller usage credits-taket innan du svarar.
+- **Session/vecka 100 %+ → usage credits stiger — verifierat konkret
+  2026-08-04.** När Kent låg på session 100 % ("Resets in 4 min") och
+  vecka 114 % av normalbaslinjen, steg usage credits "spent" med exakt
+  4,04 € på kort tid, och både "Current balance" och "Promotional
+  credit" minskade med precis samma 4,04 € — en direkt, siffermässigt
+  bekräftad demonstration av att overflow-mekanismen (Claude Help Center)
+  faktiskt triggas när plangränserna nås, inte bara en teoretisk
+  beskrivning. Använd gärna den här typen av saldo-avstämning (spent upp
+  = balance/promo ner, med samma belopp) för att verifiera att en
+  avläsning är rimlig, inte bara för att förklara mekaniken.
 - **Månadstakt (samma mönster som veckan):** andel av usage credits-cykeln
   som gått jämförs med andel av gränsen förbrukad. Cykelstart härleds som
   "en kalendermånad före reset-datumet" — ett antagande, flaggat i verktyget.
@@ -198,3 +234,21 @@ räcker — session, vecka och usage credits visas där tillsammans):
   uppdaterade med avläsningen (se raderna för 2026-08-04, tredje/fjärde
   posten). `index.html` fick även en frivillig OCR-uppladdningsruta
   (delfråga j i `PRD_tokenanvandning.md`).
+- 2026-08-04 (v7): Två nya punkter under "Viktiga mekaniker" efter en
+  femte avläsning samma dag: (1) Kent förväxlade Monthly spend limit
+  (självvalt usage credits-tak, höjt 20 € → 25 €) med Pro-planens fasta
+  abonnemangsavgift (~22,50 €, separat post på Billing-sidan) — nu
+  explicit dokumenterat som två olika saker. (2) En konkret, siffermässig
+  bekräftelse på overflow-mekanismen: session 100 % + vecka 114 % av
+  normalbaslinjen sammanföll med att usage credits steg 4,04 € medan
+  balance/promo minskade med exakt samma belopp. `index.html` och
+  `data.md` uppdaterade (femte/sjätte raden för 2026-08-04).
+- 2026-08-04 (v8): Boost-omräknings-punkten under "Viktiga mekaniker"
+  utökad efter att Kent visade Claude Codes egen in-app-varning
+  ("Approaching weekly usage limit") och undrade varför den bara varnade
+  för att närma sig gränsen, trots att verktyget redan visade 114 % av
+  normalbaslinjen. Bekräftat: varningen räknar mot den aktiva (boostade)
+  gränsen, precis som Usage-sidan — ingen motsägelse, bara ytterligare
+  ett konkret exempel på det delfråga h redan förutsåg. Skärmdumpen
+  bekräftade också veckoåterställningen (torsdag ~08:00) som verktyget
+  redan antog.

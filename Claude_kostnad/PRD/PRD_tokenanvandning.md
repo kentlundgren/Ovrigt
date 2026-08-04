@@ -3,7 +3,7 @@
 **Namn:** PRD_tokenanvandning
 **Plats:** `Claude_kostnad/PRD/PRD_tokenanvandning.md`
 **Skapad:** 2026-08-03
-**Version:** 10 (OCR-genväg tillagd, delfråga j)
+**Version:** 11 (delfråga h bekräftad i praktiken)
 **Status:** **Genomfört och vidareutvecklat.** Verktyg, `data.md`,
 README/nav, veckovis kalenderpåminnelse, månadstakt, hover-tooltips, en
 rättad Kärnfrågan-banner och ett publicerat blogginlägg är levererade och
@@ -198,6 +198,16 @@ slutdatum, och beräkna (4) motsvarande andel av den normala 100%-baslinjen
 produkt (Claude Code och Cowork boostas olika mycket, med olika slutdatum,
 enligt bilden) — verktyget/loggen ska kunna hålla isär dem, inte anta att
 en enda boost-procent gäller överallt.
+
+**Bekräftat i praktiken 2026-08-04:** Claude Codes egen in-app-varning
+("Approaching weekly usage limit") visade sig också räkna mot den aktiva
+(boostade) gränsen, precis som Usage-sidan — trots att verktyget samtidigt
+räknade ut 114% av normalbaslinjen. Det var alltså inte bara en teoretisk
+risk delfrågan förutsåg, utan ett konkret exempel på exakt den situationen:
+Anthropics gränssnitt (både Usage-sidan och Claude Codes egen varning)
+döljer att man redan ligger över sin normala gräns, ända fram till att
+boosten faktiskt upphör. Se `claude-kostnad`-skillen, "Viktiga mekaniker",
+för fullständigt resonemang.
 
 **i) Ska verktyget/`data.md` utgå från fakturabeloppen på Billing-sidan
 eller förbrukningssiffran på Usage-sidan för "månad"? — BESLUTAT ✓
@@ -412,3 +422,9 @@ README/site-nav/GitHub-hörna på plats i både `Claude_kostnad/` och
   fältmappning som `dela/`-sidan (7/7 fält), integrationen mot de
   befintliga fälten (`sessPct`, `weekPct` osv.) testad direkt, ingen
   regression i den befintliga beräkningen.
+- 2026-08-04 (v11): Delfråga h utökad med en bekräftelse i praktiken —
+  Claude Codes egen in-app-varning ("Approaching weekly usage limit")
+  visade sig räkna mot samma boostade gräns som Usage-sidan, trots att
+  verktyget samtidigt visade 114% av normalbaslinjen. Ingen ny logik,
+  bara ett konkret exempel som stärker det ursprungliga beslutet. Se
+  `claude-kostnad`-skillen för fullständig text.
