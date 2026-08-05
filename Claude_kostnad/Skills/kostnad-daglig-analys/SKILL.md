@@ -8,10 +8,23 @@ description: "Automatisk daglig analys av kostnader när Kent rapporterar usage 
 Denna skill triggas varje gång Kent rapporterar sin usage — antingen via skärmdump av Inställningar → Usage, eller genom att manuellt ange de aktuella siffrorna. Skillen gör följande **automatiskt**:
 
 1. **Läser in avlästa siffror** från Kents rapport
-2. **Uppdaterar data.md** — lägger till nya rader i både huvudtabellen och daglig-förbruknings-tabellen
-3. **Uppdaterar data_oversikt.md** — om Sessions/Messages/Tokens/streaks-data rapporteras
-4. **Genererar en ny analysfil i Analyser-mappen** — `Analyser/analys_YYYY-MM-DD_HHMM.md` med detaljerad Harvardformaterad analys
-5. **Presenterar en kort sammanfattning** i chatten — vad som hände idag, hur vi står, nästa steg
+2. **Kontrollerar om data.md redan innehåller denna avläsning** — om ja, hoppa över data.md men gå ändå vidare till steg 4
+3. **Uppdaterar data.md** om avläsningen är ny — lägger till nya rader i både huvudtabellen och daglig-förbruknings-tabellen
+4. **Uppdaterar index.html** — alltid, oavsett om data.md var ny eller redan uppdaterad:
+   - Förifyllda inputfält (session %, vecka %, spenderat €, gräns €, saldo, promo-credit)
+   - "Förbrukning senaste veckan"-tabellen (daglig delta-tabell)
+   - `today`-klassen i veckotabellen (flytta till rätt dag)
+   - Datum-texter i rubrik/meta ("senast kända avläsningen")
+   - KNOWN_BOOSTS om boost ändrats
+5. **Uppdaterar data_oversikt.md** — om Sessions/Messages/Tokens/streaks-data rapporteras
+6. **Genererar en ny analysfil i Analyser-mappen** — `Analyser/analys_YYYY-MM-DD_HHMM.md` med detaljerad Harvardformaterad analys
+7. **Presenterar en kort sammanfattning** i chatten — vad som hände idag, hur vi står, nästa steg
+
+---
+
+## Viktig regel: index.html uppdateras ALLTID
+
+Även om data.md redan är korrekt (t.ex. avläsningen loggades i en tidigare session), **ska index.html alltid kontrolleras och uppdateras**. Fälten i index.html är statiska standardvärden som inte uppdateras automatiskt — de måste skrivas om manuellt varje gång. Att hoppa över index.html för att "datan redan finns" är ett fel.
 
 ---
 
@@ -21,17 +34,12 @@ Denna skill triggas varje gång Kent rapporterar sin usage — antingen via skä
 Kent laddar upp en .png/.jpg av `Inställningar → Usage` i Claude.ai eller Cowork. Skillen:
 - Läser skärmdumpen och extraherar de relevanta värdena
 - Bekräftar värden med Kent innan de läggs in ("Jag läste av X %, Y €... stämmer det?")
-- Uppdaterar alla loggar
+- Uppdaterar alla loggar och index.html
 
 ### Trigger 2: Manuell rapportering
 Kent skriver något i stil med:
 - "Usage 5 aug kl 24: Session 0 %, Vecka 100 %, 51,00 € spenderat, 60,00 € limit..."
 - Eller: "Rapport: 2026-08-06 kl 17 — 32 %, 89 %, 61,34 €..."
-
-Skillen:
-- Tolkar de inmatade värdena
-- Bekräftar om någon siffra verkar märklig ("Vecka 89 % — låter låg jämfört med igår. Menar du 98 %?")
-- Fyller i alla uppdateringar
 
 ### Trigger 3: Explicit anrop
 Kent skriver: "analysera min usage från igår" eller "gör en kostnad-analys för 6 aug"
@@ -40,54 +48,71 @@ Kent skriver: "analysera min usage från igår" eller "gör en kostnad-analys f�
 
 ---
 
-## Vad skillen fyller i automatiskt
+## Checklist innan uppdatering
 
-Allt nedan beräknas och fylls i automatiskt — Kent behöver bara rapportera två–tre källa-siffror:
+Skillen kontrollerar alltid **innan** det fyller i data.md:
 
-### Från Usage-sidan (Inställningar → Usage)
-Kent rapporterar **dessa** (direkt från sidan):
-- Session % (återställs när?)
-- Vecka % (motsvarar All models)
-- Vecka-boost (Claude Code %, Cowork %)
-- Boost-slutdatum
-- Usage credits spenderat (€X)
-- Balance (€X)
-- Auto-reload (ON/OFF)
-- Monthly spend limit (€X)
+- [ ] **Datum & tid är rimlig** — Är det samma dag eller senare än förra avläsningen?
+- [ ] **Session % är mellan 0–100** — Om >100 eller värde verkar dublett, flagga
+- [ ] **Vecka % är mellan 0–200 (med boost upp till +100%)** — Om högre, bekräfta
+- [ ] **€ spent ökar eller är oförändrat** — Aldrig bakåt (om det händer: ny cykel? Refund?)
+- [ ] **Usage credits < Monthly spend limit (eller bara lite över)** — Om mycket över sedan igår: auto-reload?
+- [ ] **Balance minskar motsvarande € spent-ökningen** — Om inte: ny påfyllning eller redovisningsfel
 
-Skillen **beräknar** automatiskt:
-- Vecka % (normalbaslinje) = avläst % × (1 + boost/100)
-- Andel av veckan gången = (tid gången denna vecka) / (7 dagar)
-- Takt-avvikelse vecka = normalbaslinje % − andel av veckan gången
-- Takt-avvikelse månad = (€spent / €limit) − (dag / 31)
-- Budget återstår = €limit − €spent
-- Andel av cykeln gången (%) = (dag av cykel) / (31 dagar)
-- Daglig delta = €spent idag − €spent igår (från tidigare avläsning)
-
-### Från Usage/Overview-fliken (valfritt)
-Om Kent rapporterar från Inställningar → Usage → Overview:
-- Sessions, Messages, Total tokens, Active days, Current streak, Longest streak, Peak hour, Favorite model
-
-Skillen lägger detta i data_oversikt.md.
+Om något verkar konstigt — **stoppa, fråga Kent, uppdatera inte förrän han bekräftar.**
 
 ---
 
-## Analysfil-formatet
+## Workflow steg för steg
 
-Varje dag genereras en ny fil i mappen **Analyser/**: `Analyser/analys_YYYY-MM-DD_HHMM.md`
+### Steg 1: Inmatning
+Kent: "Här är usage från 6 aug kl 17 — [skärmdump eller siffror]"
 
-**Struktur**:
-1. Rubrik + metadata — Datum, tid, modeller aktiva
-2. Bakgrund — Vad som är nytt sedan förra dagen
-3. Situationsbild — Tabell med alla mätvärden
-4. Förbrukningstakt — Daglig delta, trender, jämförelser
-5. Nya events/policy-ändringar — Om spend-limit höjdes, auto-reload byttes, boost slutade osv.
-6. Prognoser — Scenario A (oförändrad takt), Scenario B (med optimering), Scenario C (hybrid)
-7. Nyckeltal i korthet — Tabell med de viktigaste värdena
-8. Slutsats & rekommendationer — Vad Kent ska fokusera på nästa dag
-9. Källor — Harvardformaterade referenser med verifierade länkar och notion
+### Steg 2: Tolkning & bekräftelse
+Claude presenterar avlästa värden:
+```
+Jag läste av följande:
+- Session: 24 %
+- Vecka: 89 % (Claude Code, +50%-boost till 19 aug → normalbaslinje 133,5 %)
+- Usage credits: €61,34 av €60,00 limit
+- Balance: €56,10 | Promo: €18,43 | Auto-reload: OFF
 
-Ton: Svenska, analytisk men mänsklig, Harvardformat för alla externa referenser, konkreta actionable conclusions.
+Stämmer detta? (Tryck Enter för att bekräfta eller korrigera)
+```
+
+### Steg 3: data.md
+Om avläsningen är ny: lägg till rader. Om redan loggad: notera det och gå vidare.
+
+### Steg 4: index.html (ALLTID)
+Uppdatera dessa fält i index.html med de nya värdena:
+
+| Fält (id) | Värde |
+|---|---|
+| `sessPct` | Session % |
+| `sessReset` | Återstår till reset (t.ex. "4h 30min") |
+| `weekPct` | Vecka % mot aktiv gräns |
+| `boostPct` | Aktiv boost % |
+| `boostEnd` | Boostens slutdatum |
+| `creditSpent` | €spent (decimaltal med punkt: 51.00) |
+| `creditLimit` | Månadsgräns € |
+| `refBalance` | Nuvarande saldo € |
+| `refPromo` | Promotional credit € |
+| `refPromoExpiry` | Promo-utgångsdatum |
+| KNOWN_BOOSTS cowork pct | 0 om boostens slutdatum passerat |
+| Veckotabell `today`-klass | Flytta till rätt veckodag |
+| Veckotabell EUR-kolumn | Lägg till dagens delta (kl 24-avläsning) |
+| Datumtexter i `<p class="sub">` och `coreBanner` | Uppdatera till senaste avläsningsdatum |
+
+### Steg 5: Analysfil
+Generera `Analyser/analys_YYYY-MM-DD_HHMM.md` med:
+- Situationsbild (tabell med alla mätvärden)
+- Förbrukningstrend (daglig delta, jämförelse mot föregående dag)
+- Prognoser: Scenario A (oförändrad takt), Scenario B (optimering), Scenario C (hybrid)
+- Slutsats & rekommendationer
+- Källor i Harvardformat med verifierade länkar
+
+### Steg 6: Sammanfattning i chatten
+Kort sammanfattning (5–10 rader) med vad som hände, nuläge och nästa steg.
 
 ---
 
@@ -95,25 +120,25 @@ Ton: Svenska, analytisk men mänsklig, Harvardformat för alla externa referense
 
 | Fil | Vad | Frekvens |
 |---|---|---|
-| `data.md` | Nya tabellrader | Varje rapport |
+| `data.md` | Nya tabellrader (Claude Code + Cowork) | Om avläsningen är ny |
+| `data.md` → Daglig förbrukning | Delta €; anteckning | Om avläsningen är ny |
+| `index.html` | Förifyllda fält + veckotabell + datum | **Alltid** |
 | `data_oversikt.md` | Sessions/Messages/Tokens | Valfritt vid Overview-avläsning |
 | `Analyser/analys_YYYY-MM-DD_HHMM.md` | Ny analysfil | Varje rapport |
-| `index.html` | "Förbrukning senaste veckan"-tabell | Varje dag vid kväll |
 
 ---
 
-## Triggers
+## Utgångspunkter & antaganden
 
-Skillen triggas på:
-- "usage" + datum + siffror
-- Skärmdump av Usage-sidan
-- "analysera min usage från [datum]"
-- "kostnad-rapport"
-
-Triggas **inte** på lösa kostnadssamtal utan konkreta siffror.
+- Cykeln antas börja den 1:a varje månad (resets Sep 1 → bekräftar detta)
+- Veckobandet återställs varje torsdag ~08:00
+- Boost-% läggs på normalbaslinjen (100 %) för att beräkna normalbaslinje-%
+- Overflow dras från promotional credit först (observerat mönster, ej officiellt bekräftat av Anthropic)
+- Om Kent byter standardmodell — notera det och mät påverkan på daglig delta
 
 ---
 
 ## Uppdateringslogg
 
-- **2026-08-06 (v1):** Skill skapad. Sparad i AppData och synkad till `Skills/kostnad-daglig-analys/SKILL.md` på OneDrive.
+- **2026-08-06 (v1):** Skill skapad.
+- **2026-08-06 (v2):** Förbättrad efter incident där index.html inte uppdaterades (data.md var redan korrekt men index.html glömdes). Lade till: explicit regel om att index.html alltid uppdateras, detaljerad fält-tabell för index.html, workflow-steg, checklist, antaganden. Slogs samman med innehållet från SKILL_claude-kostnad-daglig-analys.md (som raderades som duplikat).
