@@ -1,6 +1,6 @@
 # Claude-kostnad – ligger jag i fas med mitt Pro-abonnemang?
 
-_Version 2.0, 2026-08-04_
+_Version 2.1, 2026-08-05_
 
 ## Live-sidor
 
@@ -32,11 +32,19 @@ Historik sparas inte i webbläsaren utan i en enkel, git-spårad logg:
 [`data.md`](data.md). Verktyget har en "Kopiera rad"-knapp som formaterar
 en färdig markdown-rad att klistra in där.
 
+Vid kritiska lägen eller på begäran tar Claude fram en **fördjupad analys-rapport**
+(format: `analys_ÅÅÅÅ-MM-DD.md`) som dokumenterar situationen, förbrukningstakt,
+orsaker och nästa steg. Se [`analys_2026-08-05.md`](analys_2026-08-05.md) för
+det första exemplet — skrivet den dag veckogränsen nåddes och modellen nedgraderades
+till Haiku 4.5. Dispositionen för dessa rapporter är beskriven i
+[`.claude/skills/claude-kostnad/SKILL.md`](.claude/skills/claude-kostnad/SKILL.md).
+
 Se [`PRD/PRD_tokenanvandning.md`](PRD/PRD_tokenanvandning.md) för fullständig
-bakgrund, alla beslut och källor, eller blogginlägget
+bakgrund, alla beslut och källor, eller blogginläggen
 [Ligger jag i fas med Claude?](https://klel.wordpress.com/2026/08/04/ligger-jag-i-fas-med-claude/)
-(klel.wordpress.com, 4/8 2026) för en mer berättande version av samma
-resonemang.
+(klel.wordpress.com, 4/8 2026) och
+[Jämför Haiku 4.5 med Sonnet 5](https://klel.wordpress.com/2026/08/05/jamfor-haiku-4-5-med-sonnet-5/)
+(klel.wordpress.com, 5/8 2026) för mer berättande versioner av samma resonemang.
 
 ## Publik variant — `dela/`
 
@@ -70,4 +78,6 @@ resonemang, delfrågor och tekniska beslut.
 | `PRD/PRD_publik_variant.md` | Kravdokument för den publika varianten |
 | `PRD/SPEC_publik_variant.md` | Teknisk spec för OCR-fältmappning och gränsfall |
 | `testad_260804.html` | Testrapport 2026-08-04 — verifierar att `index.html` och `dela/index.html` ger samma resultat, och loggar OCR-testet mot en riktig skärmdump |
+| `analys_2026-08-05.md` | Fördjupad analys 5 aug 2026 — dokumenterar det kritiska läget (veckogräns nådd, spend-limit 86% förbrukad dag 5), beslutet att byta till Haiku 4.5, och rekommendationer framåt |
+| `.claude/skills/claude-kostnad/SKILL.md` | Projektlokal Claude-skill — innehåller rutiner, begrepp, mekaniker och (v13) disposition för analys-rapporter |
 | `Bilder/` | Skärmdumpar som underlag för PRD:erna |
