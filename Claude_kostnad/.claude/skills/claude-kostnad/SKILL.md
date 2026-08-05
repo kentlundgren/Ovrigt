@@ -148,6 +148,65 @@ cykel-bunden mot en återställningsklocka.
 - **Osäkerhet:** vad "All" räknar sitt startdatum från (kontoskapande
   eller något annat) är inte bekräftat.
 
+## Fördjupad analys-rapport (vid behov)
+
+När Kent ber om en mer fullständig genomgång av sin kostnadssituation — t.ex. vid ett
+kritiskt läge (veckogränsen nådd, spend-limiten nära, ovanligt hög daglig förbrukning)
+eller som ett regelbundet avstämningsdokument — tas en **analys-rapport** fram och
+sparas som en markdownfil i projektmappen `Claude_kostnad/`.
+
+### Filnamnskonvention
+
+`analys_ÅÅÅÅ-MM-DD.md` — ett dokument per dag (om fler avläsningar sker samma dag
+ersätts/kompletteras den befintliga filen, inte en ny skapas). Sparas i
+`C:\Users\kentl\OneDrive\AI\Claude\Ovrigt\Claude_kostnad\`.
+
+### Standarddisposition (baserad på `analys_2026-08-05.md`)
+
+Rapporten ska som utgångspunkt följa nedanstående disposition. Varje avsnitt har ett
+tydligt syfte — hoppa inte över något avsnitt utan anledning, men anpassa djupet
+utifrån hur mycket nytt som faktiskt hänt sedan föregående rapport.
+
+1. **Rubrik och metadata** — datum, klockslag för avläsning, vem som tagit fram rapporten.
+2. **Bakgrund** — vad som utlöste rapporten (kritiskt läge, begäran, planerad avstämning).
+   Länka till relevanta blogginlägg eller tidigare loggfiler där det tillför kontext.
+3. **Situationsbild (tabell)** — kompakt tabell med alla avlästa nyckeltal:
+   session %, vecka %, boost, normalbaslinje %, usage credits (€ spenderat / limit),
+   andel av cykeln gången, takt-avvikelse, balance, promo-credit, auto-reload, spend-limit.
+4. **Förbrukningstakt** — daglig förbrukning (delta mot föregående avläsning),
+   genomsnitt, projektion framåt (vad händer om takten fortsätter oförändrad),
+   och om möjligt en indikation på vilken modell som drivit förbrukningen.
+5. **Orsaksanalys / beslut** — vad som hände och varför: modellval, boost-slut,
+   beteendeförändringar, tekniska faktorer. Om Kent fattat ett beslut (byta modell,
+   justera spend-limit, aktivera/stänga auto-reload) — dokumentera beslutet,
+   motivera det, och lyft eventuella avvägningar eller risker.
+6. **Nyckeltal i korthet (tabell)** — sammanfattande tabell med de viktigaste talen
+   och en enkel bedömning (OK / Varning / Kritisk) per rad.
+7. **Slutsats och nästa steg** — konkreta åtgärder, nästa avläsning att följa upp mot,
+   eventuella öppna frågor att bekräfta.
+8. **Källor (Harvardstil)** — alla externa källor som citeras, med klickbara URL:er.
+   Inkludera alltid Anthropic-dokumentation och relevanta blogginlägg av Kent.
+
+### AI:s övervägande om layout
+
+Ovanstående disposition är en **mall, inte ett tvång**. Om situationen avviker
+markant från ett normalt läge ska AI:n göra ett aktivt övervägande om layouten:
+
+- Om ett avsnitt inte tillför något nytt kan det slås ihop med ett annat eller
+  utelämnas — med en kort kommentar om varför.
+- Om situationen kräver ett nytt avsnitt som saknas i mallen (t.ex. jämförelse
+  mot föregående cykel, eller redogörelse för en ny Anthropic-mekanism) läggs
+  det till där det passar bäst i flödet.
+- **Motivera layoutavvikelsen** i rapporten eller i chatten när rapporten levereras,
+  kortfattat — ett par meningar räcker.
+
+### Samband med data.md och kvällsrutinen
+
+En analys-rapport **kompletterar** — ersätter inte — de löpande loggraderna i
+`data.md`. Rapporten tas fram vid behov eller på begäran; `data.md` uppdateras
+fortlöpande vid varje avläsning. En analys-rapport bör hänvisa till aktuella rader
+i `data.md` för rådata, snarare än att duplicera alla siffror i löptext.
+
 ## Viktiga mekaniker att komma ihåg
 
 - **Boost-omräkning (delfråga h):** Anthropics UI visar % mot den *just nu
@@ -285,6 +344,13 @@ cykel-bunden mot en återställningsklocka.
   bara göras tyst i koden.
 
 ## Uppdateringslogg
+
+- 2026-08-05 (v13): Ny sektion "Fördjupad analys-rapport (vid behov)" tillagd,
+  på Kents begäran. Sektionen beskriver när en analys-rapport ska tas fram, filnamnskonventionen
+  (`analys_ÅÅÅÅ-MM-DD.md`), standarddispositionen (8 avsnitt, baserad på `analys_2026-08-05.md`
+  som togs fram samma dag), och ett explicit utrymme för AI:n att avvika från mallen när
+  situationen motiverar det — med kravet att avvikelsen motiveras kortfattat. Klargör också
+  sambandet med `data.md` (rapporten kompletterar, ersätter inte, den löpande loggen).
 
 - 2026-08-05 (v12): Ny sektion "Overview-statistik" tillagd efter att Kent
   delade en andra sorts skärmdump (Inställningar → Usage → Overview-fliken:
