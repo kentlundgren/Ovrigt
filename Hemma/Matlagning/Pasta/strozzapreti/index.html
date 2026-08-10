@@ -171,7 +171,48 @@
   <footer>
     <p>En del av Matlagning-projektet i Ovrigt-repot</p>
     <p><a href="../index.html">← Tillbaka till Pasta-samlingen</a></p>
-    <a href="https://github.com/kentlundgren/Ovrigt" class="github-link">{ } GitHub</a>
   </footer>
+
+  <a class="github-corner" href="https://github.com/kentlundgren/Ovrigt" target="_blank" rel="noopener">{ } GitHub</a>
+  <button type="button" class="tech-corner" id="techBtn" aria-label="Tekniköversikt">&lt;/&gt; teknik</button>
+
+  <div class="modal-overlay" id="techModal">
+    <div class="modal">
+      <button type="button" class="modal-close" id="techModalClose" aria-label="Stäng">×</button>
+      <h2>Hur den här sidan är byggd</h2>
+      <p class="modal-intro">Ingen extern ram eller byggtool — ren HTML, CSS och JavaScript, publicerad via GitHub Pages. Ingen inloggning, inget konto krävs.</p>
+      <div class="tech-grid">
+        <div class="tech-card">
+          <h3>Statisk receptsida</h3>
+          <p>Ingen server, ingen databas. Del av receptsamlingen i <code>Pasta/</code>, en egen mapp per rätt.</p>
+        </div>
+        <div class="tech-card">
+          <h3>Delad CSS</h3>
+          <p>All styling ligger i <code>../css/style.css</code>, med CSS-variabler i <code>:root</code> för enkelt temabyte.</p>
+        </div>
+        <div class="tech-card">
+          <h3>Print-optimerad för A4</h3>
+          <p><code>@media print</code>-regler visar bara den korta historien, ingredienser, instruktioner och de viktigaste källorna — allt får plats på en enda A4-sida.</p>
+        </div>
+        <div class="tech-card">
+          <h3>Bild med verifierad källa</h3>
+          <p>Bilden är hämtad från Wikimedia Commons (Andreone93, CC0) — hash-URL och licens kontrollerad, inte gissad.</p>
+        </div>
+      </div>
+      <div class="modal-foot">Källkod: <a href="https://github.com/kentlundgren/Ovrigt/tree/main/Hemma/Matlagning/Pasta/strozzapreti" target="_blank" rel="noopener">github.com/kentlundgren/Ovrigt/Hemma/Matlagning/Pasta/strozzapreti</a></div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('techBtn').addEventListener('click', function(){
+      document.getElementById('techModal').classList.add('show');
+    });
+    document.getElementById('techModalClose').addEventListener('click', function(){
+      document.getElementById('techModal').classList.remove('show');
+    });
+    document.getElementById('techModal').addEventListener('click', function(e){
+      if (e.target === this) this.classList.remove('show');
+    });
+  </script>
 </body>
 </html>
