@@ -1,0 +1,475 @@
+/* ========================================
+   Pasta-samlingen — CSS med flexibelt tema
+   ======================================== */
+
+:root {
+  /* Färgschema — lätt att byta för olika teman */
+  --brand-primary: #1a3a5c;      /* Marinblå (Ekonomi/Ovrigt) */
+  --brand-accent: #d4a574;       /* Guldbrons accent */
+  --text-dark: #1a1a1a;
+  --text-light: #ffffff;
+  --bg-light: #f8f7f3;
+  --bg-white: #ffffff;
+  --border-color: #e0e0e0;
+  --print-break: #333333;
+}
+
+/* ========================================
+   ALLMÄN LAYOUT
+   ======================================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.6;
+  color: var(--text-dark);
+  background-color: var(--bg-light);
+}
+
+/* ========================================
+   SITE NAVIGATION (breadcrumb)
+   ======================================== */
+
+.site-nav {
+  background-color: var(--brand-primary);
+  padding: 1rem 2rem;
+  color: var(--text-light);
+  font-family: "Courier New", monospace;
+  font-size: 0.95rem;
+  border-bottom: 3px solid var(--brand-accent);
+}
+
+.site-nav a {
+  color: var(--brand-accent);
+  text-decoration: none;
+  margin: 0 0.5rem;
+}
+
+.site-nav a:hover {
+  text-decoration: underline;
+}
+
+/* ========================================
+   HEADER
+   ======================================== */
+
+header {
+  background-color: var(--bg-white);
+  padding: 2rem 2rem;
+  border-bottom: 1px solid var(--border-color);
+  text-align: center;
+}
+
+h1 {
+  font-size: 2.5rem;
+  color: var(--brand-primary);
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: #666;
+  font-style: italic;
+}
+
+/* ========================================
+   CONTAINER
+   ======================================== */
+
+.container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+}
+
+/* ========================================
+   OVERVIEW PAGE (Pasta/index.html)
+   ======================================== */
+
+.recipe-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+.recipe-card {
+  background-color: var(--bg-white);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.recipe-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.recipe-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+.recipe-card-content {
+  padding: 1.5rem;
+}
+
+.recipe-card h2 {
+  color: var(--brand-primary);
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+}
+
+.recipe-card .summary {
+  font-size: 0.95rem;
+  color: #666;
+  line-height: 1.5;
+}
+
+/* ========================================
+   RECIPE PAGE (strozzapreti/index.html, etc.)
+   ======================================== */
+
+.recipe-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.recipe-image {
+  max-width: 100%;
+  height: auto;
+  margin: 1rem 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* History Section */
+.history {
+  background-color: var(--bg-white);
+  padding: 1.5rem;
+  border-left: 4px solid var(--brand-accent);
+  margin: 2rem 0;
+  border-radius: 4px;
+}
+
+.history h2 {
+  color: var(--brand-primary);
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.history p {
+  margin-bottom: 1rem;
+  text-align: justify;
+}
+
+/* Recipe Content */
+.recipe-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+.ingredients, .instructions {
+  background-color: var(--bg-white);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.ingredients h3, .instructions h3 {
+  color: var(--brand-primary);
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--brand-accent);
+  padding-bottom: 0.5rem;
+}
+
+.ingredients ul {
+  list-style: none;
+  padding: 0;
+}
+
+.ingredients li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.ingredients li:last-child {
+  border-bottom: none;
+}
+
+.instructions ol {
+  padding-left: 1.5rem;
+}
+
+.instructions li {
+  margin-bottom: 1rem;
+  line-height: 1.7;
+}
+
+/* ========================================
+   SOURCES (Harvard-format)
+   ======================================== */
+
+.sources {
+  background-color: var(--bg-white);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  margin: 2rem 0;
+}
+
+.sources h3 {
+  color: var(--brand-primary);
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--brand-accent);
+  padding-bottom: 0.5rem;
+}
+
+.sources ol {
+  list-style: decimal;
+  padding-left: 2rem;
+}
+
+.sources li {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.sources a {
+  color: var(--brand-primary);
+  text-decoration: none;
+}
+
+.sources a:hover {
+  text-decoration: underline;
+}
+
+/* ========================================
+   FOOTER
+   ======================================== */
+
+footer {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-size: 0.9rem;
+  border-top: 1px solid var(--border-color);
+  margin-top: 3rem;
+}
+
+.github-link {
+  display: inline-block;
+  margin-top: 1rem;
+  font-family: "Courier New", monospace;
+  background-color: var(--brand-primary);
+  color: var(--text-light);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+.github-link:hover {
+  background-color: var(--brand-accent);
+}
+
+/* ========================================
+   PRINT CSS (A4 - Ensidig utskrift)
+   ======================================== */
+
+@media print {
+  * {
+    background: transparent !important;
+    color: var(--text-dark) !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  @page {
+    size: A4;
+    margin: 1cm;
+    orphans: 2;
+    widows: 2;
+  }
+
+  body {
+    background-color: white;
+    font-size: 11pt;
+    line-height: 1.4;
+  }
+
+  /* Dölj navigationselement */
+  .site-nav {
+    display: none;
+  }
+
+  footer {
+    display: none;
+  }
+
+  /* Dölj overview-grid på utskrift */
+  .recipe-grid {
+    display: none;
+  }
+
+  /* Header */
+  header {
+    page-break-after: avoid;
+    border-bottom: 2px solid var(--print-break);
+    padding: 0.5cm 0 1cm 0;
+    text-align: left;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+  }
+
+  /* Bild — optimerad för A4 */
+  .recipe-image {
+    max-height: 8cm;
+    margin: 0.5cm 0 1cm 0;
+    page-break-inside: avoid;
+    page-break-after: avoid;
+  }
+
+  /* History — KORT version vid print */
+  .history {
+    page-break-inside: avoid;
+    page-break-after: avoid;
+    margin: 0.5cm 0;
+    padding: 0.75cm;
+    border-left: 3px solid var(--print-break);
+    max-height: 4cm; /* Begränsa historia-höjd */
+    overflow: hidden;
+  }
+
+  .history h2 {
+    font-size: 1.1rem;
+    margin-bottom: 0.3rem;
+    page-break-after: avoid;
+  }
+
+  .history p {
+    font-size: 10pt;
+    margin-bottom: 0.3rem;
+    text-align: left;
+  }
+
+  /* Dölj extra historia-stycken vid print */
+  .history p:nth-child(n+3) {
+    display: none;
+  }
+
+  /* Recipe Content — ej tvåkolumns vid print */
+  .recipe-content {
+    display: block;
+    margin: 0.75cm 0;
+  }
+
+  .ingredients, .instructions {
+    page-break-inside: avoid;
+    margin-bottom: 0.75cm;
+    padding: 0.75cm;
+    border: 1px solid var(--print-break);
+  }
+
+  .ingredients h3, .instructions h3 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    page-break-after: avoid;
+  }
+
+  .ingredients li {
+    font-size: 10pt;
+    padding: 0.2cm 0;
+    border-bottom: none;
+  }
+
+  .instructions li {
+    font-size: 10pt;
+    margin-bottom: 0.3cm;
+    page-break-inside: avoid;
+  }
+
+  /* Sources — kort version */
+  .sources {
+    page-break-inside: avoid;
+    margin: 0.75cm 0 0 0;
+    padding: 0.75cm;
+    border: 1px solid var(--print-break);
+  }
+
+  .sources h3 {
+    font-size: 1rem;
+    margin-bottom: 0.3rem;
+    page-break-after: avoid;
+  }
+
+  .sources ol {
+    padding-left: 1.5rem;
+  }
+
+  .sources li {
+    font-size: 9pt;
+    margin-bottom: 0.2cm;
+    line-height: 1.3;
+  }
+
+  .sources a {
+    color: var(--text-dark);
+    text-decoration: underline;
+  }
+
+  /* Säkerställ att allt får plats på EN A4:a */
+  .recipe-header {
+    page-break-after: avoid;
+    margin-bottom: 0.5cm;
+  }
+
+  /* Ingen sidbrytning inom receptet */
+  .container {
+    page-break-inside: avoid;
+  }
+}
+
+/* ========================================
+   RESPONSIV DESIGN
+   ======================================== */
+
+@media (max-width: 768px) {
+  .recipe-content {
+    grid-template-columns: 1fr;
+  }
+
+  .recipe-grid {
+    grid-template-columns: 1fr;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  .site-nav {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+}
