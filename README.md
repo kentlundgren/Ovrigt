@@ -1,6 +1,6 @@
 # Ovrigt – Kent Lundgrens övriga projekt
 
-_Version 1.5, 2026-08-04_
+_Version 1.6, 2026-08-10_
 
 ---
 
@@ -18,6 +18,7 @@ _Version 1.5, 2026-08-04_
 | ---------- | ------- |
 | [`Hemma/laddboxar/`](Hemma/laddboxar/) | Utredning av elbilsladdning – Långkatekesens Samfällighetsförening |
 | [`Hemma/VM_tips/`](Hemma/VM_tips/) | VM 2026-tips (familjetips och analys) |
+| [`Hemma/Matlagning/Pasta/`](Hemma/Matlagning/Pasta/) | Italienska pastarätter med historia – Prästdödaren, Carbonara, Arrabbiata |
 | [`Fritid/ol_Tyskland/`](Fritid/ol_Tyskland/) | Ölkalkylen – lönar det sig att köra till Tyskland? |
 | [`Claude_kostnad/`](Claude_kostnad/) | Claude-kostnad – ligger jag i fas med mitt Pro-abonnemang? |
 | `main_has_no_remote_branch.html` | Biprojekt: Git & GitHub-guide – koppla Cursor till GitHub |
@@ -78,6 +79,42 @@ eller läs bakgrunden som blogginlägg:
 veckorutinen för det här projektet är dokumenterade som en egen,
 projektlokal skill —
 [`Claude_kostnad/.claude/skills/claude-kostnad/SKILL.md`](Claude_kostnad/.claude/skills/claude-kostnad/SKILL.md).
+
+---
+
+## Hemma / Matlagning / Pasta
+
+### Live-sidor (GitHub Pages)
+
+| Sida | URL |
+| ---- | --- |
+| Pasta – översikt | [index.html – live](https://kentlundgren.github.io/Ovrigt/Hemma/Matlagning/Pasta/index.html) |
+| Strozzapreti (Prästdödaren) | [index.html – live](https://kentlundgren.github.io/Ovrigt/Hemma/Matlagning/Pasta/strozzapreti/index.html) |
+| Spaghetti alla Carbonara | [index.html – live](https://kentlundgren.github.io/Ovrigt/Hemma/Matlagning/Pasta/carbonara/index.html) |
+| Penne all'Arrabbiata | [index.html – live](https://kentlundgren.github.io/Ovrigt/Hemma/Matlagning/Pasta/arrabbiata/index.html) |
+
+### Om projektet
+
+En växande samling italienska pastarätter, alla kopplade till en spännande historia
+eller legend bakom rätten — precis som "Prästdödaren" (Strozzapreti). Varje receptsida
+har en fyllig historia-sektion på webben, ingredienser/instruktioner, och
+Harvard-formaterade källor med verifierade länkar. Bilderna är hämtade från Wikimedia
+Commons med kontrollerad CC-licens och fotokreditering. Varje recept kan skrivas ut på
+en enda A4-sida (`@media print` visar då en kortare version av historien, så allt
+ryms på en sida).
+
+Strozzapreti-receptet är byggt i Amatriciana-stil (guanciale, pecorino romano, tomat,
+chili) efter Kents egen variant, med milda tomatbaserade alternativ länkade som
+"bygg vidare"-tips.
+
+Se mer i [`Hemma/Matlagning/Pasta/README.md`](Hemma/Matlagning/Pasta/README.md).
+
+**Claude Code-skill:** mönstret för hur nya pastarätter byggs (filstruktur,
+breadcrumb-nav, bildhämtning, print-CSS, hörn-länkar) är dokumenterat som en egen,
+projektlokal skill —
+[`Hemma/Matlagning/.claude/skills/pasta-recept-byggare/SKILL.md`](Hemma/Matlagning/.claude/skills/pasta-recept-byggare/SKILL.md).
+Skillen är synkad så att både Claude Code och Claude Cowork kan använda den i samma
+projektmapp, se [`Hemma/Matlagning/Skills/README.md`](Hemma/Matlagning/Skills/README.md).
 
 ---
 
@@ -158,4 +195,4 @@ Commit och push är alltid användarens (Kents) ansvar.
 
 ---
 
-_README v1.5, 2026-08-04_
+_README v1.6, 2026-08-10_
