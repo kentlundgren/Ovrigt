@@ -309,6 +309,15 @@ h1 {
   font-size: 0.95rem;
 }
 
+.build-on-note a {
+  color: var(--brand-primary);
+  text-decoration: underline;
+}
+
+.build-on-note a:hover {
+  color: var(--brand-accent);
+}
+
 /* ========================================
    SOURCES (Harvard-format)
    ======================================== */
