@@ -221,6 +221,95 @@ h1 {
 }
 
 /* ========================================
+   CALLOUT BOX (kommersiell referens, tomatval)
+   ======================================== */
+
+.callout-box {
+  background-color: var(--bg-white);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--brand-primary);
+  padding: 1.25rem 1.5rem;
+  border-radius: 4px;
+  margin: 1.5rem 0;
+}
+
+.callout-box h3 {
+  color: var(--brand-primary);
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+}
+
+.tomato-comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.tomato-option {
+  background-color: var(--bg-light);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.25rem;
+}
+
+.tomato-option h4 {
+  color: var(--brand-primary);
+  margin-bottom: 0.5rem;
+  font-size: 1.05rem;
+}
+
+.tomato-option ul {
+  padding-left: 1.2rem;
+  font-size: 0.92rem;
+}
+
+.tomato-option li {
+  margin-bottom: 0.4rem;
+}
+
+/* ========================================
+   VARIATIONS
+   ======================================== */
+
+.variations {
+  background-color: var(--bg-white);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 2rem 0;
+}
+
+.variations h3 {
+  color: var(--brand-primary);
+  border-bottom: 2px solid var(--brand-accent);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.variations ul {
+  padding-left: 1.5rem;
+}
+
+.variations li {
+  margin-bottom: 0.75rem;
+  line-height: 1.6;
+}
+
+/* ========================================
+   BUILD-ON NOTE ("bygg vidare på receptet")
+   ======================================== */
+
+.build-on-note {
+  background-color: #fdf6ec;
+  border: 1px dashed var(--brand-accent);
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+  font-size: 0.95rem;
+}
+
+/* ========================================
    SOURCES (Harvard-format)
    ======================================== */
 
@@ -323,6 +412,13 @@ footer {
 
   /* Dölj overview-grid på utskrift */
   .recipe-grid {
+    display: none;
+  }
+
+  /* Dölj webb-only sektioner: kommersiell referens, tomatval, variationer, bygg-vidare-not */
+  .callout-box,
+  .variations,
+  .build-on-note {
     display: none;
   }
 
@@ -437,6 +533,24 @@ footer {
   .sources a {
     color: var(--text-dark);
     text-decoration: underline;
+  }
+
+  /* Visa bara de viktigaste källorna vid utskrift — fler finns på webben */
+  .sources ol li:nth-child(n+5) {
+    display: none;
+  }
+
+  .sources p {
+    display: none;
+  }
+
+  .sources::after {
+    content: "Fler källor på webbversionen av receptet.";
+    display: block;
+    font-size: 8pt;
+    font-style: italic;
+    margin-top: 0.2cm;
+    color: #555;
   }
 
   /* Säkerställ att allt får plats på EN A4:a */
