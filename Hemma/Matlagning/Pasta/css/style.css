@@ -154,6 +154,17 @@ h1 {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+.photo-credit {
+  font-size: 0.8rem;
+  color: #888;
+  margin-top: -0.5rem;
+  margin-bottom: 1rem;
+}
+
+.photo-credit a {
+  color: #888;
+}
+
 /* History Section */
 .history {
   background-color: var(--bg-white);
@@ -427,7 +438,8 @@ footer {
   /* Dölj webb-only sektioner: kommersiell referens, tomatval, variationer, bygg-vidare-not */
   .callout-box,
   .variations,
-  .build-on-note {
+  .build-on-note,
+  .photo-credit {
     display: none;
   }
 
