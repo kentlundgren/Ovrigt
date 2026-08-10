@@ -69,6 +69,10 @@ Help Center, "Manage usage credits for paid Claude plans".
 När Kent delar en ny skärmdump av Inställningar → Usage (en enda bild
 räcker — session, vecka och usage credits visas där tillsammans):
 
+0. **Visa indata innan kodning** — läs av skärmdumpen helt och visa en tabell
+   med alla värden innan du gör några ändringar i filer. Låt Kent bekräfta att
+   indata är korrekt tolkade. Detta minskar risken för att fel värden hamnar i
+   loggen. (Tillagd 2026-08-10 efter att en skärmdump missades på försöket.)
 1. **Läs av bilden direkt** (Claude kan läsa skärmdumpar utan att Kent
    skriver av siffrorna).
 2. **Uppdatera `index.html`:s defaultvärden** (`value=`-attributen på
@@ -84,7 +88,13 @@ räcker — session, vecka och usage credits visas där tillsammans):
    gången: 21,5 pp vs 51 pp över takt, se raderna för 2026-08-04).
 4. **Testa i webbläsaren** innan leverans (samma mönster som all annan
    sidbyggnad i Ovrigt — se `kent-bygg-sidor`-skillen).
-5. **Ge en trendanalys**: jämför nya värden mot senast loggade rad(er) i
+5. **Generera analysfil** — skapa `Analyser/analys_ÅÅÅÅ-MM-DD_HHMM.md` enligt
+   mallen från `Skills/kostnad-daglig-analys/SKILL.md`. Märk filen med den
+   aktuella veckan (t.ex. "Vecka 33" i rubriken). Analysfilen ska innehålla:
+   veckosammanfattning, bakgrund, situationsbild, takt-beräkningar
+   (vecka/månad enligt `js/berakning.js`-formlerna), prognoser och
+   rekommendationer. Sparas i `Analyser/`-mappen.
+6. **Ge en trendanalys**: jämför nya värden mot senast loggade rad(er) i
    `data.md` — särskilt "Takt-avvikelse"-kolumnerna (positivt = över
    linjär takt, negativt = marginal kvar). Har läget förbättrats eller
    försämrats sedan förra avläsningen?
@@ -344,6 +354,19 @@ i `data.md` för rådata, snarare än att duplicera alla siffror i löptext.
   bara göras tyst i koden.
 
 ## Uppdateringslogg
+
+- 2026-08-10 (v15): Steg 5 ("Generera analysfil") tillagt i Den återkommande veckorutinen.
+  Analysfil ska nu skapas varje gång en avläsning rapporteras, enligt mallen från
+  Cowork-skillen (`Skills/kostnad-daglig-analys/SKILL.md`). Filen sparas som
+  `Analyser/analys_ÅÅÅÅ-MM-DD_HHMM.md` och märks med aktuell vecka i rubriken.
+  Innehåller veckosammanfattning, situationsbild, takt-beräkningar enligt
+  `js/berakning.js`-formlerna, prognoser och rekommendationer.
+
+- 2026-08-10 (v14): Steg 0 ("Visa indata innan kodning") tillagt i Den återkommande
+  veckorutinen. Efter att Kent påpekade att en skärmdump inte lästes helt korrekt på
+  första försöket, är det nu en explicit del av rutinen att visa en tabell med alla
+  avlästa värden och låta Kent bekräfta innan filuppdateringar börjar. Minskar risken
+  för felaktiga värden i loggen.
 
 - 2026-08-05 (v13): Ny sektion "Fördjupad analys-rapport (vid behov)" tillagd,
   på Kents begäran. Sektionen beskriver när en analys-rapport ska tas fram, filnamnskonventionen
