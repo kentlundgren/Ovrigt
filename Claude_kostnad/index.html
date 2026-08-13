@@ -211,12 +211,12 @@
 
 <div class="wrap">
   <h1>Ligger jag i fas med Claude – hur många tokens förbrukar jag just nu, per vecka, per månad?</h1>
-  <p class="sub">Läs av Inställningar → Usage i claude.ai (en enda skärmdump räcker – session, vecka och usage credits visas där tillsammans) och mata in siffrorna nedan. Allt beräknas direkt i webbläsaren, inget sparas här — kopiera raden längst ner till <a href="data.md">data.md</a> om du vill spara historik. <strong>Fälten är förifyllda med den senast kända avläsningen (kl 14, 10 augusti 2026)</strong> — ersätt med nya siffror nästa gång du kollar.</p>
+  <p class="sub">Läs av Inställningar → Usage i claude.ai (en enda skärmdump räcker – session, vecka och usage credits visas där tillsammans) och mata in siffrorna nedan. Allt beräknas direkt i webbläsaren, inget sparas här — kopiera raden längst ner till <a href="data.md">data.md</a> om du vill spara historik. <strong>Fälten är förifyllda med den senast kända avläsningen (kl 13, 13 augusti 2026)</strong> — ersätt med nya siffror nästa gång du kollar.</p>
   <p class="tested-note">✓ Verifierat 2026-08-04: den publika varianten ger samma resultat som det här verktyget. Se <a href="testad_260804.html">testrapporten</a>.</p>
 
   <div class="core ok" id="coreBanner">
     <p class="q">Kärnfrågan</p>
-    <p class="meta">"Är du i fas med ditt Claude-abonnemang?" — baserat på avläsningen kl 14, 10 augusti 2026 (programmet uppdaterat 10 augusti 2026)</p>
+    <p class="meta">"Är du i fas med ditt Claude-abonnemang?" — baserat på avläsningen kl 13, 13 augusti 2026 (programmet uppdaterat 13 augusti 2026)</p>
     <p class="a" id="coreText">Fyll i siffrorna nedan för att se läget</p>
   </div>
 
@@ -262,11 +262,11 @@
     <div class="row">
       <div class="field">
         <label for="sessPct">Använt av sessionsgränsen (%)</label>
-        <input id="sessPct" type="number" min="0" max="100" step="1" placeholder="t.ex. 27" value="8">
+        <input id="sessPct" type="number" min="0" max="100" step="1" placeholder="t.ex. 27" value="4">
       </div>
       <div class="field">
         <label for="sessReset">Återstår till reset (valfritt, t.ex. "2h 49min")</label>
-        <input id="sessReset" type="text" placeholder="2h 49min" value="4h 42min">
+        <input id="sessReset" type="text" placeholder="2h 49min" value="4h 56min">
       </div>
     </div>
     <div class="hero">
@@ -295,7 +295,7 @@
       </div>
       <div class="field">
         <label for="weekPct">Använt av (ev. boostad) gräns (%)</label>
-        <input id="weekPct" type="number" min="0" max="100" step="0.1" placeholder="t.ex. 55" value="10">
+        <input id="weekPct" type="number" min="0" max="100" step="0.1" placeholder="t.ex. 55" value="1">
       </div>
       <div class="field">
         <label for="weekResetDay">Återställningsdag</label>
@@ -313,7 +313,7 @@
     <div class="row three" style="margin-top:10px;">
       <div class="field">
         <label for="weekResetTime">Återställningstid</label>
-        <input id="weekResetTime" type="time" value="08:00">
+        <input id="weekResetTime" type="time" value="07:59">
       </div>
       <div class="field">
         <label for="boostPct">Aktiv boost just nu (%) — 0 om ingen</label>
@@ -402,15 +402,14 @@
     <p class="card-note">Daglig usage credits-överförbrukning i euro — <strong>inte råa tokens</strong>, det är den enda datan verktyget har tillgång till. Kvällsrutin startad 2026-08-04: Kent skickar en skärmdump av Usage-sidan innan han går och lägger sig, Claude läser av och räknar ut dagens mellanskillnad mot föregående kväll. Tomma dagar betyder "ingen avläsning än", inte 0 €. Uppdateras manuellt varje kväll (sidan är stateless) — se <a href="data.md">data.md</a> för den fullständiga loggen och undantaget för första dagen.</p>
     <table class="week-table">
       <tr><th>Veckodag</th><th class="num">EUR</th><th>Kommentar</th></tr>
-      <tr><td>Måndag</td><td class="num">–</td><td>Ingen avläsning (rutinen startade tisdag)</td></tr>
-      <tr><td>Tisdag</td><td class="num">19,07</td><td>Slutsumma för dagen (kl 24-avläsning): 6,13 € → 25,20 €, hela dygnet</td></tr>
-      <tr><td>Onsdag</td><td class="num">25,80</td><td>Slutsumma för dagen (kl 24-avläsning): 25,20 € → 51,00 €, hela dygnet. Haiku 4.5-byte från förmiddag, spend-limit höjd 50→60 €, Cowork-boost slutade</td></tr>
-      <tr class="today"><td>Torsdag</td><td class="num">2,94</td><td>Slutsumma för dagen (kl 24-avläsning): 51,00 € → 53,94 €, hela dygnet. Mycket låg förbrukning — Haiku-optimering fungerar väl</td></tr>
-      <tr><td>Fredag</td><td class="num">–</td><td>Ingen avläsning (okänt om Kent arbetade denna dag)</td></tr>
-      <tr><td>Lördag</td><td class="num">–</td><td>Kent arbetade inte, satt inte vid datorn — ingen avläsning</td></tr>
-      <tr><td>Söndag</td><td class="num">0</td><td>Kent arbetade inte — noll förbrukning. Helgbekräftelse från avläsning kl 24: spent oförändrat 53,94 €</td></tr>
-      <tr><td>Måndag</td><td class="num">0</td><td>Förlöpande avläsning kl 14: spent fortsatt 53,94 € (noll delta från söndag kl 24). Slutgiltig dagssumma väntas senare</td></tr>
-      <tr class="sum"><td>Summa senaste veckan</td><td class="num">47,81 €</td><td>Tre arbetsdagar från förra veckan loggade (tis–tor); två helgdagar utan arbete (lör–sön). Måndag förlöpande. Se <a href="data.md">data.md</a> för fullständig historik</td></tr>
+      <tr><td>Måndag</td><td class="num">0</td><td>10 aug — ingen enskild kvällsavläsning, spridd jämnt: totaldeltat 9–13 aug är 0 €, se anteckning nedan</td></tr>
+      <tr><td>Tisdag</td><td class="num">0</td><td>11 aug — samma jämna fördelning, ingen enskild avläsning gjord</td></tr>
+      <tr><td>Onsdag</td><td class="num">0</td><td>12 aug — samma jämna fördelning, ingen enskild avläsning gjord</td></tr>
+      <tr class="today"><td>Torsdag</td><td class="num">0</td><td>13 aug, hittills (avläsning kl 13, inte en kl 24-slutsumma) — spent fortsatt exakt 53,94 €, sjunde dagen i rad utan overflow-förbrukning</td></tr>
+      <tr><td>Fredag</td><td class="num">–</td><td>Väntar på avläsning</td></tr>
+      <tr><td>Lördag</td><td class="num">–</td><td>Väntar på avläsning</td></tr>
+      <tr><td>Söndag</td><td class="num">–</td><td>Väntar på avläsning</td></tr>
+      <tr class="sum"><td>Summa senaste veckan</td><td class="num">0 €</td><td>Ingen daglig avläsning rapporterad 10–12 aug — Kent bad att totaldeltat sedan 9 aug delas jämnt över dagarna. Ny avläsning 13 aug visar spent oförändrat (53,94 €) sedan 6 aug, så det jämna deltat blir 0 €/dag oavsett metod. Se <a href="data.md">data.md</a> för fullständig historik</td></tr>
     </table>
   </div>
 
