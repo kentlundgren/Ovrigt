@@ -93,6 +93,9 @@ Korsreferenser: → index.html, → ekonomisk_kalkyl.html, → styrning_och_effe
     }
     .big-yes strong { color: #0f766e; }
 
+    /* Hover-förklaring för produktnamn – native title-attribut, fungerar utan JS */
+    .hover-explain { border-bottom: 1px dotted #0f766e; cursor: help; text-decoration: none; color: inherit; }
+
     table { width: 100%; border-collapse: collapse; font-size: 0.92rem; margin: 12px 0; }
     th { background: #2d3748; color: white; padding: 10px 14px; text-align: left; }
     th.right, td.right { text-align: right; }
@@ -229,7 +232,8 @@ Korsreferenser: → index.html, → ekonomisk_kalkyl.html, → styrning_och_effe
             garagelängorna, och sätter upp en liten kopplingspunkt ("A-box") vid <strong>varje</strong>
             av de 23 garagen — även de garage vars ägare inte vill ha en laddbox just nu.
             Sex av dessa kopplingspunkter förses direkt med en färdig laddbox
-            (Zaptec Pro MID). Resten står redo för framtiden.
+            (<a class="hover-explain" href="https://laddboxkillarna.se/laddboxar/zaptec-pro/" target="_blank" rel="noopener" title="OCPP 1.6J (native/box-level) – vanligaste OCPP-versionen på marknaden, men inte den senaste (OCPP 2.0.1/2.1 finns ännu inte på Zaptec Pro). V2G-förberedd i hårdvaran, men inte fullt V2G-kapabel ännu. 22 kW, 1- och 3-fas, 5 års garanti, tillverkad i Norge.">Zaptec Pro MID</a>).
+            Resten står redo för framtiden.
         </p>
         <p>
             En separat liten enhet (Perific) mäter hela tiden hur mycket ström som är ledig
@@ -526,10 +530,16 @@ Korsreferenser: → index.html, → ekonomisk_kalkyl.html, → styrning_och_effe
         <p><strong>Källor (Harvardstil):</strong></p>
 
         <p>
-            Laddboxkillarna AB (2026) <em>Offert – 6 st Zaptec Pro i garage, Långkatekesens
+            Laddboxkillarna AB (2026a) <em>Offert – 6 st Zaptec Pro i garage, Långkatekesens
             Samfällighetsförening.</em> Laddboxkillarna AB, Mölndal.
             Tillgänglig: <a href="offerter/Offert från Laddboxkillarna AB_ 6 st Zaptec Pro i garage - Långkatekesens Samfällighetsförening.pdf" target="_blank">offerten (PDF)</a>.
             <em>(Primärkälla för alla priser och den tekniska omfattningen på denna sida — textextraherad 2026-08-23, då PDF:en är en skannad bild utan sökbar text i webbläsaren.)</em>
+        </p>
+
+        <p>
+            Laddboxkillarna AB (2026b) <em>Zaptec Pro.</em> Produktsida, Laddboxkillarna AB, Mölndal.
+            Tillgänglig: <a href="https://laddboxkillarna.se/laddboxar/zaptec-pro/" target="_blank" rel="noopener">https://laddboxkillarna.se/laddboxar/zaptec-pro/</a>.
+            <em>(Källa för produktbild, allmän prisbild och specifikationer för Zaptec Pro — separat från den specifika samfällighetsofferten ovan.)</em>
         </p>
 
         <p>
@@ -544,6 +554,13 @@ Korsreferenser: → index.html, → ekonomisk_kalkyl.html, → styrning_och_effe
             Tillgänglig:
             <a href="https://perific.com/integrationer" target="_blank" rel="noopener">https://perific.com/integrationer</a>.
             <em>(Fullständig lista över de ca 24 laddboxmärken Perific har en byggd integration mot.)</em>
+        </p>
+
+        <p>
+            Zaptec (2026) <em>Zaptec supports open protocols (OCPP).</em> Zaptec AS, Stavanger.
+            Tillgänglig:
+            <a href="https://www.zaptec.com/en-uk/what-is-ocpp" target="_blank" rel="noopener">https://www.zaptec.com/en-uk/what-is-ocpp</a>.
+            <em>(Källa för att Zaptec Go och Zaptec Pro stödjer OCPP 1.6J, och att OCPP 2.0/2.0.1 ännu inte stöds men finns på färdplanen.)</em>
         </p>
 
         <p style="margin-top:10px; color:#cbd5e0;">
