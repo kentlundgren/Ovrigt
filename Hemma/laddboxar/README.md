@@ -22,7 +22,7 @@ _Version 1.1, 2026-08-23_
 | Zaptec Pro vs Easee Charge Pro | [Zaptec_Easee.html – live](https://kentlundgren.github.io/Ovrigt/Hemma/laddboxar/Zaptec_Easee.html) |
 | Offertanalys | [offertanalys.html – live](https://kentlundgren.github.io/Ovrigt/Hemma/laddboxar/offertanalys.html) |
 | Styrning, effekt & V2G (fördjupning) | [styrning_och_effekt.html – live](https://kentlundgren.github.io/Ovrigt/Hemma/laddboxar/styrning_och_effekt.html) |
-| Vårt förslag i korthet | [forslag_laddboxkillarna.html – live](https://kentlundgren.github.io/Ovrigt/Hemma/laddboxar/forslag_laddboxkillarna.html) |
+| Förslag i korthet | [forslag_laddboxkillarna.html – live](https://kentlundgren.github.io/Ovrigt/Hemma/laddboxar/forslag_laddboxkillarna.html) |
 
 ---
 
