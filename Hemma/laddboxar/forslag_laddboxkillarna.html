@@ -321,32 +321,89 @@ Korsreferenser: → index.html, → ekonomisk_kalkyl.html, → styrning_och_effe
             huvudsäkringens storlek, inte av antalet laddboxar.
         </p>
 
-        <h3>Förslag: dela lika mellan alla 23 garage</h3>
         <p>
-            Eftersom el-infrastrukturen byggs för <strong>alla</strong> 23 garage på en gång — inte
-            bara de 6 som får laddbox nu — föreslår vi att den nya nätavgiften delas lika mellan
-            samtliga 23 garage. Det ger alla samma rätt till enkel framtida anslutning, oavsett
-            om de nyttjar den idag.
+            Tre modeller nedan, från "alla betalar exakt lika" till "bara de aktiva betalar".
+            Alla tre måste summera till exakt <strong>2 160 kr/månad</strong> totalt (den faktiska
+            merkostnaden) — varje tabell visar därför en <strong>delsumma per grupp</strong>
+            (kr/månad per garage × antal garage i gruppen) så att totalen går att räkna efter.
         </p>
 
+        <h3>Modell A: exakt lika för alla 23 garage</h3>
+        <p>
+            2 160 kr / 23 garage = 93,91 kr/mån per garage, avrundat till <strong>94 kr/mån</strong>.
+            Eftersom alla betalar exakt samma belopp per garage blir gruppsumman bara antalet
+            garage i respektive grupp gånger 94 kr — inget mer komplicerat än så.
+        </p>
         <table>
-            <thead><tr><th>Grupp</th><th class="right">Antal garage</th><th class="right">kr/månad, var</th><th class="right">kr/år, var</th></tr></thead>
+            <thead><tr><th>Grupp</th><th class="right">Antal garage</th><th class="right">kr/mån, var</th><th class="right">Delsumma grupp (kr/mån)</th><th class="right">Delsumma grupp (kr/år)</th></tr></thead>
             <tbody>
-                <tr><td>Medlemmar med laddbox nu</td><td class="right">6</td><td class="right">94 kr</td><td class="right">1 127 kr</td></tr>
-                <tr><td>Medlemmar utan laddbox (ännu)</td><td class="right">17</td><td class="right">94 kr</td><td class="right">1 127 kr</td></tr>
-                <tr class="total"><td><strong>Alla garage, totalt</strong></td><td class="right"><strong>23</strong></td><td class="right"></td><td class="right"><strong>25 920 kr</strong></td></tr>
+                <tr><td>Medlemmar med laddbox nu</td><td class="right">6</td><td class="right">94 kr</td><td class="right">564 kr</td><td class="right">6 768 kr</td></tr>
+                <tr><td>Medlemmar utan laddbox (ännu)</td><td class="right">17</td><td class="right">94 kr</td><td class="right">1 598 kr</td><td class="right">19 176 kr</td></tr>
+                <tr class="total"><td><strong>Alla garage, totalt</strong></td><td class="right"><strong>23</strong></td><td class="right"></td><td class="right"><strong>2 162 kr</strong></td><td class="right"><strong>25 944 kr</strong></td></tr>
             </tbody>
         </table>
-
-        <p>
-            De 6 aktiva betalar därutöver sin egen faktiska elförbrukning för laddningen
-            (mäts individuellt av laddboxens inbyggda MID-godkända mätare), vilket är en
-            rörlig kostnad — inte en fast avgift.
+        <p style="font-size:0.82rem; color:#718096;">
+            94 kr × 23 garage = 2 162 kr/mån, någon krona mer än de faktiska 2 160 kr/mån —
+            mellanskillnaden (2 kr/mån ≈ 24 kr/år) är bara en avrundningsmarginal från att 94 är
+            ett helt krontal, inte en extra avgift.
         </p>
 
-        <h3>Alternativ modell, för jämförelse: bara de aktiva betalar</h3>
+        <h3>Modell B: differentierad — låg fast avgift för icke-aktiva, resten på aktiva</h3>
+        <p>
+            Din tanke: medlemmar <strong>utan</strong> laddbox betalar en låg fast avgift
+            (här: <strong>50 kr/mån</strong>) för att ha fått möjligheten till enkel framtida
+            anslutning, medan medlemmar <strong>med</strong> laddbox betalar vad som blir kvar av
+            de 2 160 kr/mån.
+        </p>
         <table>
-            <thead><tr><th>Grupp</th><th class="right">Antal garage</th><th class="right">kr/månad, var</th></tr></thead>
+            <thead><tr><th>Grupp</th><th class="right">Antal garage</th><th class="right">kr/mån, var</th><th class="right">Delsumma grupp (kr/mån)</th></tr></thead>
+            <tbody>
+                <tr><td>Medlemmar utan laddbox</td><td class="right">17</td><td class="right">50 kr</td><td class="right">850 kr</td></tr>
+                <tr><td>Medlemmar med laddbox nu</td><td class="right">6</td><td class="right">218 kr</td><td class="right">1 310 kr</td></tr>
+                <tr class="total"><td><strong>Alla garage, totalt</strong></td><td class="right"><strong>23</strong></td><td class="right"></td><td class="right"><strong>2 160 kr</strong></td></tr>
+            </tbody>
+        </table>
+        <p style="font-size:0.82rem; color:#718096;">
+            Uträkning: 17 × 50 kr = 850 kr/mån. Kvar till de aktiva: 2 160 − 850 = 1 310 kr/mån,
+            delat på 6 = 218,33 kr/mån, avrundat till 218 kr/mån. Denna modell går <strong>jämnt
+            upp</strong> utan avrundningsmarginal, eftersom de aktivas avgift räknas fram som
+            "resten" snarare än ett eget rundat tal.
+        </p>
+
+        <h3>Modell B vid fler aktiva — känslighetstabell</h3>
+        <p>
+            Om fler medlemmar skaffar laddbox över tid, och den fasta avgiften för icke-aktiva
+            hålls kvar på 50 kr/mån, sjunker priset per aktiv medlem så här (antal icke-aktiva
+            minskar i takt med att antal aktiva ökar, så summan är alltid 23 garage):
+        </p>
+        <table>
+            <thead><tr><th>Antal med laddbox</th><th class="right">Antal utan laddbox</th><th class="right">kr/mån per aktiv</th><th class="right">kr/mån per icke-aktiv</th></tr></thead>
+            <tbody>
+                <tr><td>6</td><td class="right">17</td><td class="right">218 kr</td><td class="right">50 kr</td></tr>
+                <tr><td>7</td><td class="right">16</td><td class="right">194 kr</td><td class="right">50 kr</td></tr>
+                <tr><td>8</td><td class="right">15</td><td class="right">176 kr</td><td class="right">50 kr</td></tr>
+            </tbody>
+        </table>
+        <div class="warning-box">
+            <strong>⚠️ Avviker medvetet från din skiss</strong>
+            I din bifogade tabell låg "antal utan laddbox" kvar på 17 även när "antal med laddbox"
+            ökade till 7 och 8 — vilket ger 24 respektive 25 garage totalt, mer än de 23 som finns.
+            Tabellen ovan håller i stället totalen fast vid 23 (så att t.ex. 7 aktiva motsvaras av
+            16 icke-aktiva, inte 17), vilket ger andra per-person-belopp (194 kr och 176 kr i
+            stället för dina 187 kr och 164 kr). <strong>Säg till om du menade något annat</strong> —
+            t.ex. att 17 alltid ska vara ett golv oavsett hur många fler som ansluter, eller att
+            beräkningen ska basera sig på fler än 23 platser av något skäl.
+        </div>
+
+        <p>
+            Oavsett modell betalar de aktiva medlemmarna därutöver sin egen faktiska
+            elförbrukning för laddningen (mäts individuellt av laddboxens inbyggda MID-godkända
+            mätare) — det är alltid en rörlig kostnad, inte en fast avgift.
+        </p>
+
+        <h3>Modell C, för jämförelse: bara de aktiva betalar allt</h3>
+        <table>
+            <thead><tr><th>Grupp</th><th class="right">Antal garage</th><th class="right">kr/mån, var</th></tr></thead>
             <tbody>
                 <tr><td>Medlemmar med laddbox nu</td><td class="right">6</td><td class="right">360 kr</td></tr>
                 <tr><td>Medlemmar utan laddbox</td><td class="right">17</td><td class="right">0 kr</td></tr>
@@ -359,10 +416,12 @@ Korsreferenser: → index.html, → ekonomisk_kalkyl.html, → styrning_och_effe
         </p>
 
         <div class="info-box">
-            <strong>Rekommendation:</strong> 94 kr/månad per garage (alla 23) är vårt förslag —
-            det matchar principen att infrastrukturinvesteringen är gemensam, och ger en
-            begriplig, förutsägbar kostnad för alla medlemmar oavsett laddbehov idag.
-            Styrelsen bör dock fastställa vilken modell som ska gälla.
+            <strong>Ingen given "rätt" modell:</strong> A ger enklast administration och tydligast
+            "alla är med"-princip. B (din idé) låter de som faktiskt nyttjar effekten idag betala
+            mer, samtidigt som icke-aktiva bidrar något för optionen. C lägger hela bördan på de
+            första att ansluta sig, vilket kan bromsa anslutning. Styrelsen bör välja modell och,
+            om B väljs, fastställa beloppet för icke-aktiva (50 kr/mån är ett exempel, inte ett
+            facit).
         </div>
     </div>
 
@@ -381,9 +440,10 @@ Korsreferenser: → index.html, → ekonomisk_kalkyl.html, → styrning_och_effe
             på den redan förberedda kopplingspunkten.
         </p>
         <p>
-            Utöver detta engångsbelopp betalar den medlemmen samma 94 kr/månad som alla andra
-            (ingen extra fast avgift tillkommer för att man faktiskt använder sin laddbox),
-            plus sin egen elförbrukning.
+            Utöver detta engångsbelopp övergår medlemmen till "med laddbox"-avgiften i den
+            fördelningsmodell styrelsen väljer (se punkt 4 — 94 kr/mån i Modell A, oavsett
+            antal aktiva; ett lägre belopp i Modell B eftersom fler nu delar på resten), plus sin
+            egen elförbrukning.
         </p>
 
         <h3>Kan jag välja ett annat märke än Zaptec?</h3>
