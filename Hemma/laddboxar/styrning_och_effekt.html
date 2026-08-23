@@ -186,11 +186,36 @@ Korsreferenser: → index.html, → kalkylator.html, → ekonomisk_kalkyl.html
     @media (max-width: 600px) {
         header h1 { font-size: 1.4rem; }
     }
+
+    /* ---- Brödsmulor / sidnavigering ---- */
+    .breadcrumb-nav {
+        display: flex; align-items: center; gap: 4px; flex-wrap: nowrap;
+        overflow-x: auto; background: #1a3a5c; padding: 10px 16px;
+        border-radius: 10px; margin-bottom: 16px;
+        font-family: 'Courier New', monospace; font-size: 0.8rem; white-space: nowrap;
+    }
+    .breadcrumb-nav a { color: #9ab4cc; text-decoration: none; padding: 3px 7px; border-radius: 5px; }
+    .breadcrumb-nav a:hover { color: #fff; background: rgba(255,255,255,0.1); }
+    .breadcrumb-nav .crumb-here {
+        color: #fff; font-weight: 700; background: rgba(255,255,255,0.16);
+        padding: 3px 7px; border-radius: 5px;
+    }
+    .breadcrumb-nav .sep { color: #4a6a8a; }
 </style>
 </head>
 <body>
 
 <div class="container">
+
+    <nav class="breadcrumb-nav" aria-label="Sidnavigering">
+        <a href="index.html">🏠 Översikt</a><span class="sep">/</span>
+        <a href="kalkylator.html">⚡ Kalkylator</a><span class="sep">/</span>
+        <a href="ekonomisk_kalkyl.html">💰 Ekonomisk kalkyl</a><span class="sep">/</span>
+        <span class="crumb-here">🧭 Styrning &amp; V2G</span><span class="sep">/</span>
+        <a href="Zaptec_Easee.html">🔌 Zaptec vs Easee</a><span class="sep">/</span>
+        <a href="offertanalys.html">📋 Offertanalys</a><span class="sep">/</span>
+        <a href="forslag_laddboxkillarna.html">✅ Vårt förslag</a>
+    </nav>
 
     <header>
         <div class="badge">📍 Lund, Sverige &nbsp;|&nbsp; Underlag inför styrelsemöte 2026-08-25</div>
@@ -268,7 +293,7 @@ Korsreferenser: → index.html, → kalkylator.html, → ekonomisk_kalkyl.html
 
         <table>
             <thead>
-                <tr><th>Abonnemang</th><th class="right">kr/månad</th><th class="right">kr/år</th></tr>
+                <tr><th>Abonnemang</th><th class="right">kr/månad (inkl. moms)</th><th class="right">kr/år (inkl. moms)</th></tr>
             </thead>
             <tbody>
                 <tr><td>Enfas 16 A (nuläge)</td><td class="right">620 kr</td><td class="right">7 440 kr</td></tr>
@@ -278,13 +303,21 @@ Korsreferenser: → index.html, → kalkylator.html, → ekonomisk_kalkyl.html
         </table>
 
         <p style="font-size:0.82rem; color:#a0aec0;">
-            Privattaxa inkl. moms, gäller fr.o.m. 2026-07-01
+            Samtliga belopp i tabellen är <strong>privattaxa inkl. 25 % moms</strong>, gäller fr.o.m. 2026-07-01
             (<a href="https://www.kraftringen.se/foretag/elnat/elnatsavgifter/sakringsabonnemang/" target="_blank" rel="noopener">Kraftringen, 2026a</a>).
             Källan ovan är samma prislista som ligger till grund för både 620 kr/mån (enfas 16 A)
             och 2 780 kr/mån / 33 360 kr/år (trefas 63 A) i tabellen. Fast avgift
             enligt säkringsstorlek — den variabla överföringsavgiften (öre/kWh) och energiskatten
             tillkommer separat och beror på faktisk förbrukning.
         </p>
+
+        <div class="info-box">
+            <strong>Moms räknas inte bort:</strong> en samfällighetsförening är normalt inte
+            momsregistrerad för elnätskostnader och kan inte dra av ingående moms. Beloppen ovan
+            (inkl. moms) är därför föreningens faktiska kostnad, inte ett bruttobelopp som ska
+            reduceras. Företagstaxan exkl. moms (496 kr/mån enfas, 2 224 kr/mån trefas) är alltså
+            <strong>inte</strong> rätt siffra att utgå från här.
+        </div>
 
         <div class="info-box">
             <strong>Att ta med till styrelsen:</strong> ca 26 000 kr/år i ny löpande kostnad är en

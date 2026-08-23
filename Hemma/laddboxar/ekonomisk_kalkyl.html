@@ -357,10 +357,35 @@
             text-align: center;
         }
         footer a { color: #276749; }
+
+        /* ---- Brödsmulor / sidnavigering ---- */
+        .breadcrumb-nav {
+            display: flex; align-items: center; gap: 4px; flex-wrap: nowrap;
+            overflow-x: auto; background: #1a3a5c; padding: 10px 16px;
+            border-radius: 10px; margin-bottom: 16px;
+            font-family: 'Courier New', monospace; font-size: 0.8rem; white-space: nowrap;
+        }
+        .breadcrumb-nav a { color: #9ab4cc; text-decoration: none; padding: 3px 7px; border-radius: 5px; }
+        .breadcrumb-nav a:hover { color: #fff; background: rgba(255,255,255,0.1); }
+        .breadcrumb-nav .crumb-here {
+            color: #fff; font-weight: 700; background: rgba(255,255,255,0.16);
+            padding: 3px 7px; border-radius: 5px;
+        }
+        .breadcrumb-nav .sep { color: #4a6a8a; }
     </style>
 </head>
 <body>
 <div class="container">
+
+    <nav class="breadcrumb-nav" aria-label="Sidnavigering">
+        <a href="index.html">🏠 Översikt</a><span class="sep">/</span>
+        <a href="kalkylator.html">⚡ Kalkylator</a><span class="sep">/</span>
+        <span class="crumb-here">💰 Ekonomisk kalkyl</span><span class="sep">/</span>
+        <a href="styrning_och_effekt.html">🧭 Styrning &amp; V2G</a><span class="sep">/</span>
+        <a href="Zaptec_Easee.html">🔌 Zaptec vs Easee</a><span class="sep">/</span>
+        <a href="offertanalys.html">📋 Offertanalys</a><span class="sep">/</span>
+        <a href="forslag_laddboxkillarna.html">✅ Vårt förslag</a>
+    </nav>
 
     <!-- ================================================================
          SIDHUVUD
@@ -681,6 +706,14 @@
                 <span class="unit">kr</span>
             </div>
         </div>
+        <div class="warn-box" style="margin-bottom:12px;">
+            <strong>⚠️ Att bekräfta:</strong> offerten skriver själv uttryckligen "Totalt exkl moms"
+            vid 118 093 kr-summan ovan. Om moms (25 %) tillkommer blir beloppet i stället
+            ≈ 147 616 kr — samfälligheten kan inte dra av ingående moms. Se
+            <a href="forslag_laddboxkillarna.html">forslag_laddboxkillarna.html</a> för
+            fullständig genomgång, inklusive frågan om hur "grönt teknik-avdrag" (90 000 kr)
+            praktiskt kan tillämpas när köparen är en förening och inte en privatperson.
+        </div>
         <!-- Dolda hjälpfält för JS-kompatibilitet -->
         <span id="lb1LaddboxarTot" style="display:none"></span>
         <span id="lb1InstallationTot" style="display:none"></span>
@@ -948,7 +981,9 @@
             Nätavgiftens merkostnad tillkommer <strong>oavsett antal installerade laddboxar</strong>
             så snart huvudsäkringen uppgraderas till 63 A trefas — den bör räknas in i den
             kollektiva/individuella finansieringsmodellen ovan, inte bara engångsavgiften på
-            35 875 kr. Fullständig uträkning och källa: <a href="styrning_och_effekt.html">styrning_och_effekt.html</a>.
+            35 875 kr. Beloppen är inkl. moms, som samfälligheten inte kan dra av som ingående
+            moms — det är alltså föreningens faktiska kostnad. Fullständig uträkning och källa:
+            <a href="styrning_och_effekt.html">styrning_och_effekt.html</a>.
         </p>
     </div>
 

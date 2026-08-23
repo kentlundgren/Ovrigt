@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vårt förslag: Laddboxkillarna AB – Laddboxar Långkatekesens Samfällighetsförening</title>
+
+<!--
+================================================================
+FORSLAG_LADDBOXKILLARNA.HTML
+Enkel, icke-teknisk sammanfattning av förslaget för styrelsemötet
+----------------------------------------------------------------
+Syfte:
+  Sammanfatta VARFÖR vi föreslår Laddboxkillarna AB, VAD det kostar
+  (engångs- och löpande), och en förslagsmodell för hur den nya
+  löpande nätavgiften fördelas mellan aktiva och vilande garage.
+  Byggd för läsare utan teknisk bakgrund.
+
+Underlag:
+  offerter/Offert från Laddboxkillarna AB_ 6 st Zaptec Pro i garage...pdf
+  (textextraherad 2026-08-23 via pdftotext, ej tidigare maskinläsbar)
+
+Skapad:  2026-08-23
+Projekt: Långkatekesens Samfällighetsförening – laddboxar
+Källa:   github.com/kentlundgren/Ovrigt/Hemma/laddboxar
+Korsreferenser: → index.html, → ekonomisk_kalkyl.html, → styrning_och_effekt.html
+================================================================
+-->
+
+<style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        background: #f0f4f8;
+        color: #2d3748;
+        line-height: 1.7;
+        padding: 16px 16px 70px;
+    }
+
+    .container { max-width: 960px; margin: 0 auto; }
+
+    /* ---- Brödsmulor / sidnavigering ---- */
+    .breadcrumb-nav {
+        display: flex; align-items: center; gap: 4px; flex-wrap: nowrap;
+        overflow-x: auto; background: #1a3a5c; padding: 10px 16px;
+        border-radius: 10px; margin-bottom: 16px;
+        font-family: 'Courier New', monospace; font-size: 0.8rem; white-space: nowrap;
+    }
+    .breadcrumb-nav a {
+        color: #9ab4cc; text-decoration: none; padding: 3px 7px; border-radius: 5px;
+    }
+    .breadcrumb-nav a:hover { color: #fff; background: rgba(255,255,255,0.1); }
+    .breadcrumb-nav .crumb-here {
+        color: #fff; font-weight: 700; background: rgba(255,255,255,0.16);
+        padding: 3px 7px; border-radius: 5px;
+    }
+    .breadcrumb-nav .sep { color: #4a6a8a; }
+
+    header {
+        background: linear-gradient(135deg, #0f766e 0%, #0c5c56 100%);
+        color: white;
+        padding: 32px 36px;
+        border-radius: 14px;
+        margin-bottom: 24px;
+        box-shadow: 0 4px 20px rgba(15, 118, 110, 0.28);
+    }
+    header .badge {
+        display: inline-block; background: rgba(255,255,255,0.18);
+        border: 1px solid rgba(255,255,255,0.35); border-radius: 999px;
+        padding: 3px 14px; font-size: 0.78rem; letter-spacing: 0.05em; margin-bottom: 12px;
+    }
+    header h1 { font-size: 1.85rem; font-weight: 800; margin-bottom: 8px; line-height: 1.2; }
+    header p { opacity: 0.9; font-size: 0.97rem; max-width: 680px; }
+
+    .card {
+        background: white; border-radius: 14px; padding: 28px 32px;
+        margin-bottom: 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+    .card h2 {
+        font-size: 1.2rem; color: #0f766e; border-bottom: 2px solid #ccfbf1;
+        padding-bottom: 8px; margin-bottom: 16px;
+    }
+    .card h3 { font-size: 1rem; color: #2d3748; margin: 16px 0 8px; }
+    .card p { font-size: 0.95rem; color: #4a5568; margin-bottom: 10px; }
+    .card p:last-child { margin-bottom: 0; }
+    .card ul { padding-left: 20px; font-size: 0.95rem; color: #4a5568; }
+    .card li { margin-bottom: 8px; }
+
+    .big-yes {
+        background: #f0fdfa; border: 2px solid #0f766e; border-radius: 12px;
+        padding: 18px 22px; margin: 14px 0; font-size: 1rem; color: #115e59;
+    }
+    .big-yes strong { color: #0f766e; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.92rem; margin: 12px 0; }
+    th { background: #2d3748; color: white; padding: 10px 14px; text-align: left; }
+    th.right, td.right { text-align: right; }
+    td { padding: 9px 14px; border-bottom: 1px solid #edf2f7; vertical-align: top; }
+    tr:nth-child(even) td { background: #f7fafc; }
+    tr.total td { background: #f0fdfa; font-weight: 700; border-top: 2px solid #0f766e; color: #115e59; }
+    tr.diff td { background: #fffbeb; font-weight: 700; color: #7b6000; }
+
+    .warning-box {
+        background: #fffbeb; border: 1px solid #fef08a; border-radius: 10px;
+        padding: 16px 20px; margin: 14px 0; font-size: 0.9rem; color: #7b6000;
+    }
+    .warning-box strong { display: block; margin-bottom: 4px; }
+
+    .info-box {
+        background: #ebf8ff; border-left: 4px solid #3182ce; border-radius: 6px;
+        padding: 12px 16px; margin: 12px 0; font-size: 0.92rem; color: #2c5282;
+    }
+
+    .checklist { list-style: none; padding-left: 0; }
+    .checklist li {
+        display: flex; align-items: flex-start; gap: 10px; padding: 6px 0;
+        border-bottom: 1px solid #f0f4f8; font-size: 0.92rem;
+    }
+    .checklist li:last-child { border-bottom: none; }
+    .checklist .box {
+        flex-shrink: 0; width: 16px; height: 16px; border: 2px solid #d69e2e;
+        border-radius: 3px; margin-top: 3px;
+    }
+
+    footer {
+        font-size: 0.78rem; color: #a0aec0; padding: 20px 0 6px;
+        border-top: 1px solid #e2e8f0; line-height: 1.9;
+    }
+    footer a { color: #0f766e; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ---- Hörn-länkar ---- */
+    .github-corner {
+        position: fixed; bottom: 14px; left: 14px;
+        font-family: 'Courier New', monospace; font-size: 0.78em;
+        color: #aaa; text-decoration: none; opacity: 0.55;
+        transition: opacity 0.2s, color 0.2s; z-index: 999;
+    }
+    .github-corner:hover { opacity: 1; color: #0f766e; }
+    .tech-corner {
+        position: fixed; bottom: 14px; right: 14px;
+        font-family: 'Courier New', monospace; font-size: 0.78em;
+        color: #aaa; background: none; border: none; padding: 0; cursor: pointer;
+        opacity: 0.55; transition: opacity 0.2s, color 0.2s; z-index: 999;
+    }
+    .tech-corner:hover { opacity: 1; color: #0f766e; }
+    .modal-overlay {
+        display: none; position: fixed; inset: 0; background: rgba(38,36,31,0.5);
+        align-items: center; justify-content: center; padding: 1.5rem; z-index: 1000;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+        background: white; border: 1px solid #e2e0da; border-radius: 14px;
+        max-width: 640px; width: 100%; max-height: 85vh; overflow-y: auto;
+        padding: 1.6rem 1.8rem; position: relative;
+    }
+    .modal h2 { margin: 0 0 6px; font-size: 19px; font-weight: 600; border: none; padding: 0; }
+    .modal-intro { font-size: 13px; color: #6b675e; margin: 0; }
+    .modal-close {
+        position: absolute; top: 0.9rem; right: 1rem; background: none; border: none;
+        font-size: 1.3rem; cursor: pointer; color: #6b675e; line-height: 1;
+    }
+    .tech-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 10px; margin-top: 12px; }
+    .tech-card { background: #f0fdfa; border-radius: 8px; padding: 0.8rem 1rem; }
+    .tech-card h3 { margin: 0 0 4px; font-size: 14px; color: #0f766e; }
+    .tech-card p { margin: 0; font-size: 13px; color: #2d3748; line-height: 1.55; }
+    .modal-foot { margin-top: 14px; padding-top: 10px; border-top: 1px dashed #e2e0da; font-size: 12px; color: #98948a; }
+    .modal-foot a { color: #6b675e; }
+
+    @media (max-width: 600px) {
+        header h1 { font-size: 1.4rem; }
+        .card { padding: 22px 20px; }
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <nav class="breadcrumb-nav" aria-label="Sidnavigering">
+        <a href="index.html">🏠 Översikt</a><span class="sep">/</span>
+        <a href="kalkylator.html">⚡ Kalkylator</a><span class="sep">/</span>
+        <a href="ekonomisk_kalkyl.html">💰 Ekonomisk kalkyl</a><span class="sep">/</span>
+        <a href="styrning_och_effekt.html">🧭 Styrning &amp; V2G</a><span class="sep">/</span>
+        <a href="Zaptec_Easee.html">🔌 Zaptec vs Easee</a><span class="sep">/</span>
+        <a href="offertanalys.html">📋 Offertanalys</a><span class="sep">/</span>
+        <span class="crumb-here">✅ Vårt förslag</span>
+    </nav>
+
+    <header>
+        <div class="badge">📍 Lund, Sverige &nbsp;|&nbsp; Underlag inför styrelsemöte 2026-08-25</div>
+        <h1>✅ Vårt förslag i korthet: Laddboxkillarna AB</h1>
+        <p>
+            En enkel sammanfattning utan teknisk jargong: vad vi föreslår, varför,
+            vad det kostar nu och löpande — och vad det betyder för dig som medlem,
+            oavsett om du vill ha en laddbox idag eller om några år.
+        </p>
+    </header>
+
+    <div class="big-yes">
+        <strong>I korthet:</strong> vi föreslår att samfälligheten drar el till <strong>alla 23 garage
+        på en gång</strong> (så ingen behöver gräva om senare), installerar <strong>6 laddboxar nu</strong>
+        åt de medlemmar som vill ha en idag, och sätter in en gemensam "trafikpolis"
+        (Perific) som ser till att alla bilar kan ladda samtidigt utan att huvudsäkringen
+        löser ut. Övriga 17 medlemmar kan sedan lätt koppla in en egen laddbox när de
+        skaffar elbil.
+    </div>
+
+
+    <!-- ================================================================
+         VAD VI FÖRESLÅR
+         ================================================================ -->
+    <div class="card">
+        <h2>1. Vad vi föreslår, i vanligt språk</h2>
+        <p>
+            Laddboxkillarna AB drar två elkablar från fastighetens elcentral, genom båda
+            garagelängorna, och sätter upp en liten kopplingspunkt ("A-box") vid <strong>varje</strong>
+            av de 23 garagen — även de garage vars ägare inte vill ha en laddbox just nu.
+            Sex av dessa kopplingspunkter förses direkt med en färdig laddbox
+            (Zaptec Pro MID). Resten står redo för framtiden.
+        </p>
+        <p>
+            En separat liten enhet (Perific) mäter hela tiden hur mycket ström som är ledig
+            på fastighetens huvudsäkring, och fördelar den mellan de bilar som laddar just
+            då — som en trafikpolis som aldrig låter för många bilar dra ström samtidigt.
+            Utan den enheten skulle huvudsäkringen kunna lösa ut om många laddar samtidigt.
+        </p>
+        <p>
+            Allt kopplas upp mot internet via en inbyggd 4G-router (5 års dataabonnemang ingår
+            kostnadsfritt i offerten), så ingen fast bredbandsanslutning behövs i garagen.
+        </p>
+    </div>
+
+
+    <!-- ================================================================
+         VARFÖR VI TROR PÅ FÖRSLAGET
+         ================================================================ -->
+    <div class="card">
+        <h2>2. Varför vi tror på det här förslaget</h2>
+        <ul>
+            <li><strong>Byggt för just detta ändamål.</strong> Zaptec Pro MID är enligt tillverkaren
+                specifikt gjord för "företag, bostadsrättsföreningar, samfällighet eller allmänna
+                parkeringsplatser där fler elbilar behöver laddas samtidigt" — inte en hemmaprodukt
+                anpassad i efterhand.</li>
+            <li><strong>Ingen ombyggnad senare.</strong> Eftersom el dras till alla 23 garage direkt
+                ("gör-redo") slipper föreningen gräva upp asfalt och mark en gång till när fler
+                medlemmar vill ha laddbox om några år.</li>
+            <li><strong>Väletablerad styrteknik.</strong> Perific (som sköter fördelningen av ström)
+                har funnits sedan 2007, har över 3 500 anslutna installatörer och fungerar i
+                fastigheter från 16 A upp till 2 500 A — vår 63 A-anläggning är alltså långt inom
+                vad tekniken är byggd för att klara (<a href="https://perific.com/lastbalansering-zaptec" target="_blank" rel="noopener">Perific, 2026a</a>).
+                Fördjupning: <a href="styrning_och_effekt.html">styrning_och_effekt.html</a>.</li>
+            <li><strong>Garantier på plats.</strong> 5 års produkt- och installationsgaranti, samt
+                ansvarsförsäkring hos Länsförsäkringar, enligt offerten.</li>
+            <li><strong>Skattereduktion sänker kostnaden kraftigt</strong> — se punkt 3, med en
+                viktig brasklapp om vem som faktiskt kan använda den.</li>
+        </ul>
+    </div>
+
+
+    <!-- ================================================================
+         ENGÅNGSKOSTNAD
+         ================================================================ -->
+    <div class="card">
+        <h2>3. Vad det kostar just nu – engångskostnad</h2>
+        <p>
+            Enligt offerten från Laddboxkillarna AB (6 st laddboxar + el till alla 23 garage):
+        </p>
+        <table>
+            <thead><tr><th>Post</th><th class="right">Belopp</th></tr></thead>
+            <tbody>
+                <tr><td>Offertpris, totalt</td><td class="right">208 093 kr</td></tr>
+                <tr><td>Naturvårdsverkets grönt teknik-avdrag (50 % av 15 000 kr/laddbox × 6)</td><td class="right">−90 000 kr</td></tr>
+                <tr class="total"><td><strong>Nettokostnad enligt offerten</strong></td><td class="right"><strong>118 093 kr</strong></td></tr>
+                <tr><td>Kraftringens anslutningsavgift (säkring 16 A → 63 A)</td><td class="right">35 875 kr</td></tr>
+                <tr class="total"><td><strong>Total engångsinvestering</strong></td><td class="right"><strong>≈ 153 968 kr</strong></td></tr>
+            </tbody>
+        </table>
+
+        <div class="warning-box">
+            <strong>⚠️ Viktigt att bekräfta innan beslut: är 118 093 kr inkl. eller exkl. moms?</strong>
+            Offerten skriver själv uttryckligen <strong>"Totalt exkl moms"</strong> vid slutsumman
+            118 093 kr. Om moms tillkommer (25 %) blir nettokostnaden i stället
+            <strong>≈ 147 616 kr</strong>, och den totala engångsinvesteringen
+            <strong>≈ 183 491 kr</strong>. Eftersom samfälligheten inte kan dra av ingående moms
+            (se <a href="styrning_och_effekt.html">styrning_och_effekt.html</a>) är det här en
+            skillnad på nästan 30 000 kr — <strong>be Laddboxkillarna bekräfta skriftligt vilket som
+            gäller innan styrelsen beslutar.</strong>
+        </div>
+
+        <div class="warning-box">
+            <strong>⚠️ Att bekräfta: gäller grönt teknik-avdrag för en samfällighet?</strong>
+            "Grönt teknik-avdrag" är en skattereduktion för <strong>privatpersoner</strong>
+            (Skatteverket). En samfällighetsförening är en egen juridisk person och kan inte
+            själv göra skatteavdrag på sin inkomstdeklaration på samma sätt. Rimligtvis förutsätter
+            offertens avdrag på 90 000 kr att <strong>de enskilda garageägarna</strong> själva ansöker
+            om avdraget för sin andel, inte att föreningen automatiskt får rabatten.
+            <strong>Be Laddboxkillarna förklara exakt hur avdraget praktiskt ska hanteras för en
+            samfällighet</strong> innan beloppet räknas in som säkert i budgeten.
+        </div>
+
+        <p style="font-size:0.85rem; color:#718096;">
+            Denna engångskostnad föreslås betalas av samfälligheten gemensamt, eftersom
+            el-infrastrukturen byggs för alla 23 garage samtidigt.
+        </p>
+    </div>
+
+
+    <!-- ================================================================
+         LÖPANDE KOSTNAD – FÖRSLAG PÅ FÖRDELNING
+         ================================================================ -->
+    <div class="card">
+        <h2>4. Vad det kostar löpande, per månad – och vem betalar vad</h2>
+        <p>
+            När huvudsäkringen uppgraderas till 63 A trefas ökar Kraftringens fasta nätavgift
+            med <strong>2 160 kr/månad</strong> (25 920 kr/år, inkl. moms) jämfört med dagens
+            enfas 16 A — se <a href="styrning_och_effekt.html">styrning_och_effekt.html</a> för
+            fullständig uträkning och källa. Den kostnaden tillkommer <strong>oavsett</strong> hur
+            många av de 23 garagen som faktiskt har en laddbox, eftersom den styrs av
+            huvudsäkringens storlek, inte av antalet laddboxar.
+        </p>
+
+        <h3>Förslag: dela lika mellan alla 23 garage</h3>
+        <p>
+            Eftersom el-infrastrukturen byggs för <strong>alla</strong> 23 garage på en gång — inte
+            bara de 6 som får laddbox nu — föreslår vi att den nya nätavgiften delas lika mellan
+            samtliga 23 garage. Det ger alla samma rätt till enkel framtida anslutning, oavsett
+            om de nyttjar den idag.
+        </p>
+
+        <table>
+            <thead><tr><th>Grupp</th><th class="right">Antal garage</th><th class="right">kr/månad, var</th><th class="right">kr/år, var</th></tr></thead>
+            <tbody>
+                <tr><td>Medlemmar med laddbox nu</td><td class="right">6</td><td class="right">94 kr</td><td class="right">1 127 kr</td></tr>
+                <tr><td>Medlemmar utan laddbox (ännu)</td><td class="right">17</td><td class="right">94 kr</td><td class="right">1 127 kr</td></tr>
+                <tr class="total"><td><strong>Alla garage, totalt</strong></td><td class="right"><strong>23</strong></td><td class="right"></td><td class="right"><strong>25 920 kr</strong></td></tr>
+            </tbody>
+        </table>
+
+        <p>
+            De 6 aktiva betalar därutöver sin egen faktiska elförbrukning för laddningen
+            (mäts individuellt av laddboxens inbyggda MID-godkända mätare), vilket är en
+            rörlig kostnad — inte en fast avgift.
+        </p>
+
+        <h3>Alternativ modell, för jämförelse: bara de aktiva betalar</h3>
+        <table>
+            <thead><tr><th>Grupp</th><th class="right">Antal garage</th><th class="right">kr/månad, var</th></tr></thead>
+            <tbody>
+                <tr><td>Medlemmar med laddbox nu</td><td class="right">6</td><td class="right">360 kr</td></tr>
+                <tr><td>Medlemmar utan laddbox</td><td class="right">17</td><td class="right">0 kr</td></tr>
+            </tbody>
+        </table>
+        <p style="font-size:0.85rem; color:#718096;">
+            Nackdel med denna modell: de 6 första medlemmarna får bära hela kostnaden för en
+            investering som gynnar alla 23 garage, vilket kan upplevas orättvist eftersom
+            infrastrukturen till samtliga garage redan är betald gemensamt (se punkt 3).
+        </p>
+
+        <div class="info-box">
+            <strong>Rekommendation:</strong> 94 kr/månad per garage (alla 23) är vårt förslag —
+            det matchar principen att infrastrukturinvesteringen är gemensam, och ger en
+            begriplig, förutsägbar kostnad för alla medlemmar oavsett laddbehov idag.
+            Styrelsen bör dock fastställa vilken modell som ska gälla.
+        </div>
+    </div>
+
+
+    <!-- ================================================================
+         FRAMTIDA LADDBOX
+         ================================================================ -->
+    <div class="card">
+        <h2>5. Om du vill ha en laddbox senare</h2>
+        <p>
+            Enligt offerten kan valfri medlem, när de skaffar elbil, installera en
+            <strong>Zaptec Pro MID</strong> i sitt förberedda garage för
+            <strong>7 990 kr inkl. moms</strong> (efter samma typ av 50 %-avdrag som ovan — med
+            samma brasklapp om att det är den enskilda medlemmen, inte föreningen, som ansöker).
+            Ingen ytterligare grävning eller kabeldragning behövs — bara laddboxen själv monteras
+            på den redan förberedda kopplingspunkten.
+        </p>
+        <p>
+            Utöver detta engångsbelopp betalar den medlemmen samma 94 kr/månad som alla andra
+            (ingen extra fast avgift tillkommer för att man faktiskt använder sin laddbox),
+            plus sin egen elförbrukning.
+        </p>
+
+        <h3>Kan jag välja ett annat märke än Zaptec?</h3>
+        <div class="warning-box">
+            <strong>⚠️ Viktig nyansering</strong>
+            Det system som styr strömfördelningen (Perific) är i grunden märkesoberoende — det
+            har färdiga integrationer med drygt <strong>20 andra laddboxmärken</strong> utöver
+            Zaptec, se punkt 6. <strong>Men den här specifika offerten prissätter och garanterar
+            bara framtida Zaptec Pro MID-installationer</strong> (7 990 kr, via Laddboxkillarna).
+            Vill en medlem längre fram ha ett annat märke behöver det redas ut separat med
+            Laddboxkillarna (eller en annan installatör) — och det bör bekräftas att
+            lastbalanseringen fortsätter fungera korrekt med det valda märket innan det
+            installeras.
+        </div>
+    </div>
+
+
+    <!-- ================================================================
+         PERIFICS KRAV
+         ================================================================ -->
+    <div class="card">
+        <h2>6. Perifics krav på laddboxen — vad "kompatibel" faktiskt betyder</h2>
+        <p>
+            Perific fungerar inte genom att "prata" med vilken laddbox som helst automatiskt.
+            Perific bygger och underhåller en <strong>egen integration mot varje laddboxmärkes
+            API</strong> (<a href="https://perific.com/lastbalansering-zaptec" target="_blank" rel="noopener">Perific, 2026a</a>).
+            De tre praktiska kraven blir därför:
+        </p>
+        <ul>
+            <li><strong>Märket måste finnas med på Perifics lista över integrerade laddboxar.</strong>
+                I dagsläget cirka 24 märken, bland andra Zaptec, Easee, Charge Amps, Wallbox, DEFA,
+                Garo, Autel, Go-e, Monta och CTEK — se
+                <a href="https://perific.com/integrationer" target="_blank" rel="noopener">Perifics fullständiga lista</a>
+                (<a href="https://perific.com/integrationer" target="_blank" rel="noopener">Perific, 2026b</a>).
+                Ett märke som inte finns på listan fungerar inte automatiskt, oavsett hur bra
+                laddboxen i övrigt är.</li>
+            <li><strong>Type 2-kontakt (Mennekes)</strong> — standard i Sverige och EU för nästan
+                alla laddboxar som säljs idag, sällan ett problem i praktiken.</li>
+            <li><strong>Installation enligt Perifics riktlinjer</strong>, normalt utförd av en
+                certifierad elektriker — inte en "koppla-själv"-produkt.</li>
+        </ul>
+        <p style="font-size:0.85rem; color:#718096;">
+            Sammanfattning: "vilken laddbox som helst" betyder i praktiken "vilken laddbox som
+            helst från Perifics lista över redan integrerade märken" — inte bokstavligen alla
+            laddboxar som säljs på marknaden.
+        </p>
+    </div>
+
+
+    <!-- ================================================================
+         ATT BEKRÄFTA MED LADDBOXKILLARNA
+         ================================================================ -->
+    <div class="card">
+        <h2>7. Checklista — att bekräfta skriftligt innan styrelsebeslut</h2>
+        <ul class="checklist">
+            <li><span class="box"></span> Är nettokostnaden 118 093 kr inkl. eller exkl. moms? (offerten säger själv "exkl moms")</li>
+            <li><span class="box"></span> Hur ska "grönt teknik-avdrag" praktiskt hanteras när köparen är en samfällighetsförening och inte en privatperson?</li>
+            <li><span class="box"></span> Vilka andra laddboxmärken än Zaptec kan i praktiken installeras i framtiden, till vilket pris, av vem?</li>
+            <li><span class="box"></span> Vad kostar en 4G-uppkoppling efter att de 5 kostnadsfria åren gått ut (ca 2031)?</li>
+            <li><span class="box"></span> Ingår ett eventuellt Perific Premium-abonnemang (uppskattat ca 79 kr/månad, oklart om det ens krävs) — eller är grundfunktionen för lastbalansering kostnadsfri efter installation?</li>
+        </ul>
+    </div>
+
+
+    <!-- ================================================================
+         KÄLLFÖRTECKNING
+         ================================================================ -->
+    <footer>
+        <p><strong>Källor (Harvardstil):</strong></p>
+
+        <p>
+            Laddboxkillarna AB (2026) <em>Offert – 6 st Zaptec Pro i garage, Långkatekesens
+            Samfällighetsförening.</em> Laddboxkillarna AB, Mölndal.
+            Tillgänglig: <a href="offerter/Offert från Laddboxkillarna AB_ 6 st Zaptec Pro i garage - Långkatekesens Samfällighetsförening.pdf" target="_blank">offerten (PDF)</a>.
+            <em>(Primärkälla för alla priser och den tekniska omfattningen på denna sida — textextraherad 2026-08-23, då PDF:en är en skannad bild utan sökbar text i webbläsaren.)</em>
+        </p>
+
+        <p>
+            Perific (2026a) <em>Perifics lastbalansering för Zaptec laddboxar.</em> Perific Technologies AB, Kista.
+            Tillgänglig:
+            <a href="https://perific.com/lastbalansering-zaptec" target="_blank" rel="noopener">https://perific.com/lastbalansering-zaptec</a>.
+            <em>(Källa för att integrationen sker mot laddboxens API, samt uppgiften om 3 500+ installatörer och skalbarhet 16 A–2 500 A.)</em>
+        </p>
+
+        <p>
+            Perific (2026b) <em>Perifics integrationer med laddboxar.</em> Perific Technologies AB, Kista.
+            Tillgänglig:
+            <a href="https://perific.com/integrationer" target="_blank" rel="noopener">https://perific.com/integrationer</a>.
+            <em>(Fullständig lista över de ca 24 laddboxmärken Perific har en byggd integration mot.)</em>
+        </p>
+
+        <p style="margin-top:10px; color:#cbd5e0;">
+            Skapad: 2026-08-23 &nbsp;|&nbsp;
+            Projekt: github.com/kentlundgren/Ovrigt/Hemma/laddboxar &nbsp;|&nbsp;
+            <a href="index.html">↩ Projektöversikt</a> &nbsp;|&nbsp;
+            <a href="ekonomisk_kalkyl.html">💰 Ekonomisk kalkyl</a> &nbsp;|&nbsp;
+            <a href="styrning_och_effekt.html">🧭 Styrning &amp; V2G</a>
+        </p>
+    </footer>
+
+</div><!-- /.container -->
+
+<a class="github-corner" href="https://github.com/kentlundgren/Ovrigt/tree/main/Hemma/laddboxar" target="_blank" rel="noopener">{ } GitHub</a>
+<button type="button" class="tech-corner" id="techBtn" aria-label="Tekniköversikt">&lt;/&gt; teknik</button>
+
+<div class="modal-overlay" id="techModal">
+  <div class="modal">
+    <button type="button" class="modal-close" id="techModalClose" aria-label="Stäng">×</button>
+    <h2>Hur den här sidan är byggd</h2>
+    <p class="modal-intro">Ren HTML/CSS, ingen extern ram eller byggtool, publicerad via GitHub Pages.</p>
+    <div class="tech-grid">
+      <div class="tech-card">
+        <h3>PDF-underlag textextraherat</h3>
+        <p>Offerten är en skannad PDF utan sökbar text. Innehållet på denna sida är hämtat via lokal <code>pdftotext</code>-extraktion 2026-08-23, inte genom att läsa PDF:en i webbläsaren.</p>
+      </div>
+      <div class="tech-card">
+        <h3>Flaggade osäkerheter</h3>
+        <p>Moms på 118 093 kr och hur grönt teknik-avdrag fungerar för en samfällighet är uttryckligen flaggade som obekräftade — inte tysta antaganden.</p>
+      </div>
+      <div class="tech-card">
+        <h3>Statisk sida</h3>
+        <p>Inga cookies, inget <code>localStorage</code>. Alla belopp är manuellt inhämtade, inte automatiskt uppdaterade.</p>
+      </div>
+      <div class="tech-card">
+        <h3>Källor</h3>
+        <p>Laddboxkillarnas offert samt Perifics egna produkt-/integrationssidor — se källförteckningen.</p>
+      </div>
+    </div>
+    <div class="modal-foot">Källkod: <a href="https://github.com/kentlundgren/Ovrigt/tree/main/Hemma/laddboxar" target="_blank" rel="noopener">github.com/kentlundgren/Ovrigt/Hemma/laddboxar</a></div>
+  </div>
+</div>
+
+<script>
+document.getElementById('techBtn').addEventListener('click', function(){
+  document.getElementById('techModal').classList.add('show');
+});
+document.getElementById('techModalClose').addEventListener('click', function(){
+  document.getElementById('techModal').classList.remove('show');
+});
+document.getElementById('techModal').addEventListener('click', function(e){
+  if (e.target === this) this.classList.remove('show');
+});
+</script>
+
+</body>
+</html>
