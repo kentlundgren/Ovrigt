@@ -158,6 +158,14 @@
             margin-top: 4px;
         }
 
+        /* Hover-förklaring för formler – native title-attribut, fungerar utan JS */
+        .hover-explain {
+            border-bottom: 1px dotted #1a56db;
+            cursor: help;
+        }
+        .param-item.warn { background: #fffbeb; }
+        .param-item.warn .value { color: #b7791f; }
+
         /* ============================================================
            SLIDERS – justerbara indata
            ============================================================ */
@@ -388,15 +396,41 @@
             Långkatekesens Samfällighetsförening &nbsp;|&nbsp;
             Visar tillgänglig laddeffekt per elbil vid given mätarsäkring
             &nbsp;|&nbsp; <a href="index.html">↩ Tillbaka till startsidan</a>
+            &nbsp;|&nbsp; <a href="styrning_och_effekt.html">🧭 Fördjupning: styrning, effekt och V2G</a>
         </p>
     </header>
+
+
+    <!-- ================================================================
+         NULÄGE VS FRAMTIDA – enfas 16 A vs trefas 63 A
+         ================================================================ -->
+    <div class="card card--info">
+        <h2>Nuläge vs framtida anslutning</h2>
+        <div class="param-grid">
+            <div class="param-item">
+                <span class="value hover-explain"
+                      title="Enfas: P = U × I = 230 V × 16 A = 3 680 W ≈ 3,7 kW. Ingen √3-faktor eftersom bara en fas används.">3,7 kW</span>
+                <span class="label">Nuläge: enfas 16 A</span>
+            </div>
+            <div class="param-item">
+                <span class="value hover-explain"
+                      title="Trefas: P = √3 × U × I = 1,732 × 400 V × 63 A = 43 670 W ≈ 43,5 kW. Källa: Kraftringen offert 3541.">43,5 kW</span>
+                <span class="label">Framtida: trefas 63 A</span>
+            </div>
+        </div>
+        <p class="formula-note">
+            OBS: förutsätter att dagens huvudsäkring är <strong>enfas</strong> 16 A – under
+            verifiering, se <a href="styrning_och_effekt.html">fördjupningssidan</a>. Om säkringen
+            i stället är trefas 16 A blir nulägeseffekten 11,1 kW (P = √3 × 400 V × 16 A).
+        </p>
+    </div>
 
 
     <!-- ================================================================
          FASTA PARAMETRAR (hämtade från Kraftringen-offert 3541)
          ================================================================ -->
     <div class="card card--info">
-        <h2>Fasta parametrar – Kraftringen offert 3541</h2>
+        <h2>Fasta parametrar – Kraftringen offert 3541 (efter uppgradering till trefas 63 A)</h2>
 
         <!-- Fyra faktarutor med nyckeltal -->
         <div class="param-grid">
@@ -622,7 +656,8 @@
         <p style="margin-top:10px; color:#cbd5e0;">
             Skapad 2026-05-21 &nbsp;|&nbsp;
             Formel: P = √3 × 400 V × 63 A ≈ 43,5 kW &nbsp;|&nbsp;
-            <a href="index.html">↩ Startsida</a>
+            <a href="index.html">↩ Startsida</a> &nbsp;|&nbsp;
+            <a href="styrning_och_effekt.html">🧭 Fördjupning: styrning, effekt och V2G</a>
         </p>
     </footer>
 

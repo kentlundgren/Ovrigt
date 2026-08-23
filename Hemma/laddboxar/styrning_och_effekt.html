@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Styrning, effekt och V2G – Laddboxar Långkatekesens Samfällighetsförening</title>
+
+<!--
+================================================================
+STYRNING_OCH_EFFEKT.HTML
+Fördjupning: effektberäkning, nätavgifter, lastbalansering och V2G
+----------------------------------------------------------------
+Syfte:
+  Underlag inför styrelsemöte 2026-08-25. Förklarar skillnaden mellan
+  dagens enfas 16 A och framtida trefas 63 A, Kraftringens löpande
+  nätavgift vid de två abonnemangen, hur en märkesoberoende
+  lastbalanserare för upp till 23 garage fungerar tekniskt, samt
+  vad som faktiskt krävs för V2G idag.
+
+Skapad:  2026-08-23
+Projekt: Långkatekesens Samfällighetsförening – laddboxar
+Källa:   github.com/kentlundgren/Ovrigt/Hemma/laddboxar
+Korsreferenser: → index.html, → kalkylator.html, → ekonomisk_kalkyl.html
+================================================================
+-->
+
+<style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        background: #f0f4f8;
+        color: #2d3748;
+        line-height: 1.7;
+        padding: 20px 16px 70px;
+    }
+
+    .container { max-width: 960px; margin: 0 auto; }
+
+    header {
+        background: linear-gradient(135deg, #1a56db 0%, #0e4baf 100%);
+        color: white;
+        padding: 32px 36px;
+        border-radius: 14px;
+        margin-bottom: 24px;
+        box-shadow: 0 4px 20px rgba(26, 86, 219, 0.28);
+    }
+    header .badge {
+        display: inline-block;
+        background: rgba(255,255,255,0.18);
+        border: 1px solid rgba(255,255,255,0.35);
+        border-radius: 999px;
+        padding: 3px 14px;
+        font-size: 0.78rem;
+        letter-spacing: 0.05em;
+        margin-bottom: 12px;
+    }
+    header h1 { font-size: 1.85rem; font-weight: 800; margin-bottom: 8px; line-height: 1.2; }
+    header p  { opacity: 0.88; font-size: 0.95rem; max-width: 680px; }
+
+    .nav-links {
+        display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;
+    }
+    .nav-links a {
+        background: white; border: 1px solid #cbd5e0; color: #2c5282;
+        padding: 7px 18px; border-radius: 8px; text-decoration: none;
+        font-size: 0.9rem; font-weight: 600;
+    }
+    .nav-links a:hover { background: #ebf8ff; border-color: #90cdf4; }
+
+    .card {
+        background: white; border-radius: 14px; padding: 28px 32px;
+        margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+    .card h2 {
+        font-size: 1.15rem; color: #1a3a8f;
+        border-bottom: 2px solid #ebf4ff;
+        padding-bottom: 8px; margin-bottom: 18px;
+    }
+    .card h3 { font-size: 1rem; color: #2d3748; margin: 18px 0 8px; }
+    .card p { font-size: 0.92rem; color: #4a5568; margin-bottom: 10px; }
+    .card p:last-child { margin-bottom: 0; }
+
+    /* Hover-förklaring för formler – ren HTML/CSS (title-attribut), fungerar utan JS */
+    .hover-explain {
+        border-bottom: 1px dotted #1a56db;
+        cursor: help;
+        color: #1a56db;
+        font-weight: 600;
+    }
+
+    .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 14px;
+        margin: 16px 0;
+    }
+    .stat-item {
+        background: #ebf4ff;
+        border-radius: 10px;
+        padding: 16px 14px;
+        text-align: center;
+    }
+    .stat-item.warn { background: #fffbeb; }
+    .stat-item .val {
+        display: block; font-size: 1.5rem; font-weight: 800; color: #1a56db; line-height: 1.2;
+    }
+    .stat-item.warn .val { color: #b7791f; }
+    .stat-item .lbl { display: block; font-size: 0.78rem; color: #718096; margin-top: 4px; }
+    .stat-item .formula {
+        display: block; font-size: 0.72rem; color: #a0aec0; margin-top: 6px; font-family: 'Courier New', monospace;
+        border-bottom: 1px dotted #a0aec0; cursor: help;
+    }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin: 12px 0; }
+    th { background: #2d3748; color: white; padding: 9px 12px; text-align: left; }
+    th.right, td.right { text-align: right; }
+    td { padding: 8px 12px; border-bottom: 1px solid #edf2f7; vertical-align: top; }
+    tr:nth-child(even) td { background: #f7fafc; }
+    tr.diff td { background: #fffbeb; font-weight: 700; color: #7b6000; border-top: 2px solid #f6c343; }
+
+    .warning-box {
+        background: #fffbeb; border: 1px solid #fef08a; border-radius: 10px;
+        padding: 16px 20px; margin: 14px 0; font-size: 0.88rem; color: #7b6000;
+    }
+    .warning-box strong { display: block; margin-bottom: 4px; }
+
+    .info-box {
+        background: #ebf8ff; border-left: 4px solid #3182ce; border-radius: 6px;
+        padding: 12px 16px; margin: 12px 0; font-size: 0.9rem; color: #2c5282;
+    }
+
+    .yes  { color: #38a169; font-weight: 700; }
+    .no   { color: #e53e3e; font-weight: 700; }
+    .part { color: #dd6b20; font-weight: 700; }
+
+    footer {
+        font-size: 0.78rem; color: #a0aec0; padding: 20px 0 6px;
+        border-top: 1px solid #e2e8f0; line-height: 1.9;
+    }
+    footer a { color: #1a56db; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ============================================================
+       HÖRN-LÄNKAR – GitHub (vänster) + Teknik-modal (höger)
+       ============================================================ */
+    .github-corner {
+        position: fixed; bottom: 14px; left: 14px;
+        font-family: 'Courier New', monospace; font-size: 0.78em;
+        color: #aaa; text-decoration: none; opacity: 0.55;
+        transition: opacity 0.2s, color 0.2s; z-index: 999;
+    }
+    .github-corner:hover { opacity: 1; color: #1a3a5c; }
+
+    .tech-corner {
+        position: fixed; bottom: 14px; right: 14px;
+        font-family: 'Courier New', monospace; font-size: 0.78em;
+        color: #aaa; background: none; border: none; padding: 0; cursor: pointer;
+        opacity: 0.55; transition: opacity 0.2s, color 0.2s; z-index: 999;
+    }
+    .tech-corner:hover { opacity: 1; color: #1a3a5c; }
+
+    .modal-overlay {
+        display: none; position: fixed; inset: 0; background: rgba(38,36,31,0.5);
+        align-items: center; justify-content: center; padding: 1.5rem; z-index: 1000;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+        background: white; border: 1px solid #e2e0da; border-radius: 14px;
+        max-width: 640px; width: 100%; max-height: 85vh; overflow-y: auto;
+        padding: 1.6rem 1.8rem; position: relative;
+    }
+    .modal h2 { margin: 0 0 6px; font-size: 19px; font-weight: 600; border: none; padding: 0; }
+    .modal-intro { font-size: 13px; color: #6b675e; margin: 0; }
+    .modal-close {
+        position: absolute; top: 0.9rem; right: 1rem; background: none; border: none;
+        font-size: 1.3rem; cursor: pointer; color: #6b675e; line-height: 1;
+    }
+    .tech-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 10px; margin-top: 12px; }
+    .tech-card { background: #ebf4ff; border-radius: 8px; padding: 0.8rem 1rem; }
+    .tech-card h3 { margin: 0 0 4px; font-size: 14px; color: #1a56db; }
+    .tech-card p { margin: 0; font-size: 13px; color: #2d3748; line-height: 1.55; }
+    .modal-foot { margin-top: 14px; padding-top: 10px; border-top: 1px dashed #e2e0da; font-size: 12px; color: #98948a; }
+    .modal-foot a { color: #6b675e; }
+
+    @media (max-width: 600px) {
+        header h1 { font-size: 1.4rem; }
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <header>
+        <div class="badge">📍 Lund, Sverige &nbsp;|&nbsp; Underlag inför styrelsemöte 2026-08-25</div>
+        <h1>⚡ Styrning, effekt och V2G – fördjupning</h1>
+        <p>
+            Förklarar skillnaden mellan dagens enfas 16 A och en framtida trefas 63 A-anslutning,
+            Kraftringens löpande nätavgift vid de två abonnemangen, hur en märkesoberoende
+            lastbalanserare fungerar för upp till 23 garage, samt vad som faktiskt krävs för
+            fordon-till-nät (V2G) idag.
+        </p>
+    </header>
+
+    <div class="nav-links">
+        <a href="index.html">← Projektöversikt</a>
+        <a href="kalkylator.html">⚡ Kapacitetskalkylator</a>
+        <a href="ekonomisk_kalkyl.html">💰 Ekonomisk kalkyl</a>
+    </div>
+
+    <div class="warning-box">
+        <strong>⚠️ Att verifiera innan styrelsemötet</strong>
+        Den här sidan utgår från att dagens huvudsäkring är <strong>enfas</strong> 16 A. Kontrollera
+        det mot elcentralen eller Kraftringens fakturaunderlag innan siffrorna nedan presenteras
+        för styrelsen — om säkringen i själva verket är trefas 16 A blir nulägeseffekten 11 kW
+        i stället för 3,7 kW (se uträkningen nedan).
+    </div>
+
+
+    <!-- ================================================================
+         EFFEKTBERÄKNING – NULÄGE VS FRAMTIDA
+         ================================================================ -->
+    <div class="card">
+        <h2>1. Effektberäkning – nuläge vs framtida</h2>
+        <p>
+            Skillnaden mellan enfas och trefas ligger i formeln, inte bara i amperetalet.
+            Vid trefas fördelas effekten över tre ledare samtidigt, vilket ger en extra
+            faktor √3 (≈ 1,732) i uträkningen.
+        </p>
+
+        <div class="stat-grid">
+            <div class="stat-item">
+                <span class="val">3,7 kW</span>
+                <span class="lbl">Nuläge: enfas 16 A</span>
+                <span class="formula" title="Enfas: P = U × I = 230 V × 16 A = 3 680 W ≈ 3,7 kW. Ingen √3-faktor eftersom bara en fas används.">P = U × I ⓘ</span>
+            </div>
+            <div class="stat-item">
+                <span class="val">43,5 kW</span>
+                <span class="lbl">Framtida: trefas 63 A</span>
+                <span class="formula" title="Trefas: P = √3 × U × I = 1,732 × 400 V × 63 A = 43 670 W ≈ 43,5 kW. Källa: Kraftringen offert 3541.">P = √3×U×I ⓘ</span>
+            </div>
+            <div class="stat-item warn">
+                <span class="val">×11,8</span>
+                <span class="lbl">Kapacitetsökning</span>
+                <span class="formula" title="43,5 kW / 3,7 kW ≈ 11,8. Notera att detta INTE är samma jämförelse som 63A/16A=3,9 — trefas-faktorn √3 och fasantalet gör ökningen mycket större än bara ampere-kvoten.">43,5 / 3,7 ⓘ</span>
+            </div>
+        </div>
+
+        <p style="font-size:0.82rem; color:#a0aec0;">
+            Håll muspekaren över <span class="hover-explain">ⓘ-texten</span> i respektive ruta för att se
+            fullständig uträkning. Om dagens säkring i stället är trefas 16 A blir nulägeseffekten
+            <strong>11,1 kW</strong> (P = √3 × 400 V × 16 A), och kapacitetsökningen till 63 A trefas
+            blir en faktor ×3,9 i stället för ×11,8 — se varningsrutan ovan.
+        </p>
+    </div>
+
+
+    <!-- ================================================================
+         KRAFTRINGENS LÖPANDE NÄTAVGIFT
+         ================================================================ -->
+    <div class="card">
+        <h2>2. Kraftringens löpande nätavgift – enfas 16 A vs trefas 63 A</h2>
+        <p>
+            Utöver engångsavgiften för säkringsändringen (35 875 kr inkl. moms, offert 3541)
+            tillkommer en <strong>löpande fast nätavgift</strong> som är kopplad till storleken på
+            huvudsäkringen — den betalas varje månad, oavsett hur många laddboxar som faktiskt är
+            i drift. Denna post finns i dagsläget inte med i <a href="ekonomisk_kalkyl.html">ekonomisk_kalkyl.html</a>.
+        </p>
+
+        <table>
+            <thead>
+                <tr><th>Abonnemang</th><th class="right">kr/månad</th><th class="right">kr/år</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Enfas 16 A (nuläge)</td><td class="right">620 kr</td><td class="right">7 440 kr</td></tr>
+                <tr><td>Trefas 63 A (efter uppgradering)</td><td class="right">2 780 kr</td><td class="right">33 360 kr</td></tr>
+                <tr class="diff"><td>Merkostnad per år</td><td class="right">+2 160 kr</td><td class="right">+25 920 kr</td></tr>
+            </tbody>
+        </table>
+
+        <p style="font-size:0.82rem; color:#a0aec0;">
+            Privattaxa inkl. moms, gäller fr.o.m. 2026-07-01 (Kraftringen, 2026a). Fast avgift
+            enligt säkringsstorlek — den variabla överföringsavgiften (öre/kWh) och energiskatten
+            tillkommer separat och beror på faktisk förbrukning.
+        </p>
+
+        <div class="info-box">
+            <strong>Att ta med till styrelsen:</strong> ca 26 000 kr/år i ny löpande kostnad är en
+            fast post oavsett antal laddboxar — den bör vägas in i den kollektiva/individuella
+            finansieringsmodellen i <a href="ekonomisk_kalkyl.html">ekonomisk kalkylen</a>, inte bara
+            engångsavgiften på 35 875 kr.
+        </div>
+    </div>
+
+
+    <!-- ================================================================
+         STYR- OCH REGLERUTRUSTNING
+         ================================================================ -->
+    <div class="card">
+        <h2>3. Styr- och reglerutrustning för dynamisk lastbalansering</h2>
+        <p>
+            Frågan "vad händer när 10 bilar vill ladda samtidigt men har olika behov" löses av
+            <strong>dynamisk lastbalansering (Dynamic Load Management, DLM)</strong>. Principen:
+        </p>
+        <ol style="padding-left: 20px; font-size: 0.92rem; color: #4a5568; margin-bottom: 10px;">
+            <li>En mätenhet vid huvudsäkringen läser av total strömförbrukning i realtid, sekund för sekund.</li>
+            <li>En styrenhet räknar ut ledig kapacitet mot taket (63 A).</li>
+            <li>Den lediga kapaciteten fördelas dynamiskt mellan de bilar som faktiskt laddar just nu — inte lika för alla, utan efter vad varje bil begär.</li>
+            <li>Nya strömgränser skickas löpande till varje laddbox, som anpassar sig inom sekunder.</li>
+        </ol>
+        <p>
+            Nästa natt, när bil A är den urladdade i stället för bil B, sker exakt samma
+            omfördelning automatiskt — systemet styr efter faktiskt behov varje natt, inte efter
+            en fast plan.
+        </p>
+
+        <h3>Märkeslåst vs märkesoberoende – den viktigaste skillnaden för er</h3>
+        <table>
+            <thead>
+                <tr><th>Egenskap</th><th>Märkeslåst (t.ex. Zaptec Sense)</th><th>Märkesoberoende (t.ex. Perific One/Max/Shield)</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Fungerar med</td>
+                    <td><span class="no">✗ Bara samma märke</span></td>
+                    <td><span class="yes">✓ Vilken laddbox som helst</span></td>
+                </tr>
+                <tr>
+                    <td>Kommunikation</td>
+                    <td>Proprietär (P1/HAN-port + eget protokoll)</td>
+                    <td>OCPP och/eller Modbus, eller boxens egna API/WiFi</td>
+                </tr>
+                <tr>
+                    <td>Passar "medlem väljer själv laddbox"</td>
+                    <td><span class="no">✗ Nej – låser hela samfälligheten till ett märke</span></td>
+                    <td><span class="yes">✓ Ja</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="info-box">
+            <strong>Bra utgångsläge:</strong> Laddboxkillarnas offert innehåller redan
+            <strong>Perific Shield/One</strong>, som är den märkesoberoende typen (Perific, 2026).
+            Be dem ändå skriftligt bekräfta exakt vilka andra märken än Zaptec som stöds i praktiken
+            — annars faller poängen med fritt val bort trots rätt utrustning på pappret.
+        </div>
+
+        <h3>Tekniska krav att ställa på styr- och reglerutrustningen (upp till 23 bilar)</h3>
+        <ul style="padding-left: 20px; font-size: 0.92rem; color: #4a5568;">
+            <li><strong>Märkesoberoende protokoll:</strong> OCPP 1.6J/2.0.1 Smart Charging och/eller Modbus/API — inte ett slutet ekosystem.</li>
+            <li><strong>Verklig dynamisk fördelning</strong>, inte statisk likadelning.</li>
+            <li><strong>Fasbalansering per fas</strong>, inte bara total ström.</li>
+            <li><strong>Failsafe:</strong> vid kommunikationsbortfall ska boxarna gå ner till en säker minimiström.</li>
+            <li><strong>Skalbarhet</strong> från 2 till 23 anslutna boxar utan ombyggnad.</li>
+            <li><strong>Individuell prioritering:</strong> möjlighet för varje medlem att ange behov (t.ex. "full kl 07") via app.</li>
+        </ul>
+
+        <h3>Tekniska krav att ställa på laddboxarna</h3>
+        <ul style="padding-left: 20px; font-size: 0.92rem; color: #4a5568;">
+            <li>Type 2 (Mennekes), IEC 62196-2 — EU-standard.</li>
+            <li><strong>OCPP-stöd är den enskilt viktigaste punkten</strong> — förutsättningen för att medlemmar fritt ska kunna välja märke.</li>
+            <li>MID-certifierad mätare för individuell debitering.</li>
+            <li>Justerbart min/max-strömintervall (typiskt 6–32 A) så styrenheten kan strypa ner boxen.</li>
+            <li>V2G/V2H-redo hårdvara (ISO 15118-20) som framtidssäkring.</li>
+        </ul>
+    </div>
+
+
+    <!-- ================================================================
+         V2G
+         ================================================================ -->
+    <div class="card">
+        <h2>4. V2G – att både ladda och ladda ur</h2>
+        <p>Två helt olika tekniska vägar finns idag:</p>
+
+        <table>
+            <thead>
+                <tr><th>Väg</th><th>Status 2026</th><th>Ungefärligt pris</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>DC-bidirektionell laddbox</strong><br><span style="font-size:0.82rem; color:#718096;">t.ex. Wallbox Quasar 2</span></td>
+                    <td><span class="yes">✓ Går att köpa och driftsätta i Sverige idag</span> — men bara med ett begränsat antal kompatibla bilmodeller (Wallbox, 2026)</td>
+                    <td>15 000–25 000 kr/enhet + installation</td>
+                </tr>
+                <tr>
+                    <td><strong>AC-bidirektionell, ISO 15118-20</strong><br><span style="font-size:0.82rem; color:#718096;">standarden Zaptec/Easee pekar mot</span></td>
+                    <td><span class="part">≈ Under utrullning</span> — EU-krav (AFIR) gör den obligatorisk för nya publika laddare fr.o.m. 2026-01-08 och privata laddare fr.o.m. 2027-01-01 (VGIC, 2026)</td>
+                    <td>Ej etablerat konsumentpris ännu</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p style="margin-top: 12px;">
+            Oavsett hårdvara krävs dessutom en <strong>aggregatortjänst</strong> som köper/säljer
+            flexibiliteten mot elnätet, och ett regelverk som tillåter återmatning från privata
+            anläggningar. Detta är <strong>inte etablerat i Sverige för hushåll/samfälligheter 2026</strong>.
+        </p>
+
+        <div class="warning-box">
+            <strong>Praktisk slutsats för styrelsemötet</strong>
+            Skriv gärna in "V2G/V2H-redo hårdvara" som krav i kravspecen mot leverantörer — det är
+            en rimlig framtidssäkring utan meravgift på de flesta moderna laddboxar. Men räkna inte
+            med intäkter från elnätsstöd 2026 — aggregatormarknaden för privatpersoner/samfälligheter
+            finns ännu inte i Sverige.
+        </div>
+    </div>
+
+
+    <!-- ================================================================
+         KÄLLFÖRTECKNING (Harvardstil, alfabetisk, annoterad)
+         ================================================================ -->
+    <footer>
+        <p><strong>Källor (Harvardstil):</strong></p>
+
+        <p>
+            Kraftringen (2026a) <em>Elnätsavgifter för säkringsabonnemang.</em>
+            Kraftringen Nät AB, Lund. Fr.o.m. 2026-07-01.
+            Tillgänglig:
+            <a href="https://www.kraftringen.se/foretag/elnat/elnatsavgifter/sakringsabonnemang/" target="_blank" rel="noopener">
+                https://www.kraftringen.se/foretag/elnat/elnatsavgifter/sakringsabonnemang/
+            </a>
+            <em>(Källa för de fasta månads-/årsavgifterna för enfas 16 A och trefas 63 A som används i tabellen ovan — hämtat både företags- och privatprislistan för jämförelse.)</em>
+        </p>
+
+        <p>
+            Kraftringen (2026b) <em>Offert 3541 – Säkringsändring, Långkatekesen 15,
+            Hjalmar Gullbergs Väg 2–46, 22466 Lund.</em>
+            Kraftringen Nät AB, Lund. Daterad 2026-04-27.
+            <em>(Engångsavgiften för själva säkringsändringen 16 A → 63 A; grunden för formeln P = √3 × 400 V × 63 A.)</em>
+        </p>
+
+        <p>
+            Perific (2026) <em>Perifics lastbalansering för Zaptec laddboxar</em> och
+            <em>Perific One/Max/Shield – produktöversikt.</em> Perific AB.
+            Tillgänglig:
+            <a href="https://perific.com/lastbalansering-zaptec" target="_blank" rel="noopener">
+                https://perific.com/lastbalansering-zaptec
+            </a>
+            <em>(Grund för avsnittet om märkesoberoende lastbalansering — Perific Shield ingår redan i Laddboxkillarnas offert.)</em>
+        </p>
+
+        <p>
+            VGIC – Vehicle-Grid Integration Council (2026) <em>Two Critical Links for V2G AC:
+            UL 1741 SC and ISO 15118-20 Amendment 1 Recently Published.</em>
+            Tillgänglig:
+            <a href="https://www.vgicouncil.org/articles/two-critical-links-for-v2g-ac" target="_blank" rel="noopener">
+                https://www.vgicouncil.org/articles/two-critical-links-for-v2g-ac
+            </a>
+            <em>(Källa för EU/AFIR-tidslinjen för ISO 15118-20 och bidirektionell AC-laddning.)</em>
+        </p>
+
+        <p>
+            Wallbox (2026) <em>Quasar 2 – V2H &amp; V2G Bidirectional EV Charger.</em> Wallbox Chargers S.L.
+            Tillgänglig:
+            <a href="https://wallbox.com/en_us/quasar-2-v2h-bidirectional-ev-charger" target="_blank" rel="noopener">
+                https://wallbox.com/en_us/quasar-2-v2h-bidirectional-ev-charger
+            </a>
+            <em>(Källa för status och prisbild för DC-bidirektionell V2G-laddning som redan går att köpa idag.)</em>
+        </p>
+
+        <p style="margin-top:10px; color:#cbd5e0;">
+            Skapad: 2026-08-23 &nbsp;|&nbsp;
+            Projekt: github.com/kentlundgren/Ovrigt/Hemma/laddboxar &nbsp;|&nbsp;
+            <a href="index.html">↩ Projektöversikt</a> &nbsp;|&nbsp;
+            <a href="kalkylator.html">⚡ Kapacitetskalkylator</a> &nbsp;|&nbsp;
+            <a href="ekonomisk_kalkyl.html">💰 Ekonomisk kalkyl</a>
+        </p>
+    </footer>
+
+</div><!-- /.container -->
+
+<a class="github-corner" href="https://github.com/kentlundgren/Ovrigt/tree/main/Hemma/laddboxar" target="_blank" rel="noopener">{ } GitHub</a>
+<button type="button" class="tech-corner" id="techBtn" aria-label="Tekniköversikt">&lt;/&gt; teknik</button>
+
+<div class="modal-overlay" id="techModal">
+  <div class="modal">
+    <button type="button" class="modal-close" id="techModalClose" aria-label="Stäng">×</button>
+    <h2>Hur den här sidan är byggd</h2>
+    <p class="modal-intro">Ren HTML/CSS, ingen extern ram eller byggtool, publicerad via GitHub Pages.</p>
+    <div class="tech-grid">
+      <div class="tech-card">
+        <h3>Inga bibliotek</h3>
+        <p>Ingen JavaScript-beroende för själva innehållet. Formel-tooltips är native <code>title</code>-attribut — fungerar utan att någon script laddas.</p>
+      </div>
+      <div class="tech-card">
+        <h3>Statisk sida</h3>
+        <p>Inga cookies, inget <code>localStorage</code>. Siffrorna på sidan är manuellt inhämtade från Kraftringens prislista och offert 3541, inte automatiskt uppdaterade.</p>
+      </div>
+      <div class="tech-card">
+        <h3>Ej verifierat: enfas/trefas nuläge</h3>
+        <p>Sidan förutsätter enfas 16 A idag enligt uppgift från styrelsen — flaggat i varningsrutan högst upp tills det bekräftats mot elcentral/faktura.</p>
+      </div>
+      <div class="tech-card">
+        <h3>Källor</h3>
+        <p>Kraftringens prislista (hämtad 2026-08-23), Kraftringen offert 3541, samt leverantörssidor för Perific/Zaptec/Wallbox — se källförteckningen.</p>
+      </div>
+    </div>
+    <div class="modal-foot">Källkod: <a href="https://github.com/kentlundgren/Ovrigt/tree/main/Hemma/laddboxar" target="_blank" rel="noopener">github.com/kentlundgren/Ovrigt/Hemma/laddboxar</a></div>
+  </div>
+</div>
+
+<script>
+document.getElementById('techBtn').addEventListener('click', function(){
+  document.getElementById('techModal').classList.add('show');
+});
+document.getElementById('techModalClose').addEventListener('click', function(){
+  document.getElementById('techModal').classList.remove('show');
+});
+document.getElementById('techModal').addEventListener('click', function(e){
+  if (e.target === this) this.classList.remove('show');
+});
+</script>
+
+</body>
+</html>

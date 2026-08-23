@@ -1,6 +1,12 @@
 # Laddboxar – Långkatekesens Samfällighetsförening
 
-_Version 1.0, 2026-05-21_
+_Version 1.1, 2026-08-23_
+
+---
+
+## 🗂️ Lokalt repo
+
+`C:\Users\kentl\OneDrive\AI\Claude\Ovrigt\Hemma\laddboxar`
 
 ---
 
@@ -14,6 +20,8 @@ _Version 1.0, 2026-05-21_
 | Kapacitetskalkylator (63 A) | [kalkylator.html – live](https://kentlundgren.github.io/Ovrigt/Hemma/laddboxar/kalkylator.html) |
 | Ekonomisk kalkyl | [ekonomisk_kalkyl.html – live](https://kentlundgren.github.io/Ovrigt/Hemma/laddboxar/ekonomisk_kalkyl.html) |
 | Zaptec Pro vs Easee Charge Pro | [Zaptec_Easee.html – live](https://kentlundgren.github.io/Ovrigt/Hemma/laddboxar/Zaptec_Easee.html) |
+| Offertanalys | [offertanalys.html – live](https://kentlundgren.github.io/Ovrigt/Hemma/laddboxar/offertanalys.html) |
+| Styrning, effekt & V2G (fördjupning) | [styrning_och_effekt.html – live](https://kentlundgren.github.io/Ovrigt/Hemma/laddboxar/styrning_och_effekt.html) |
 
 ---
 
@@ -37,8 +45,10 @@ AI-verktyg (Claude/Cursor) har använts som assistent – med Kent Lundgren som 
 | --- | -------- |
 | `index.html` | Projektöversikt: nyckeltal, parametrar, sammanfattning av laddarmodeller och V2G, källförteckning (Harvardstil) |
 | `kalkylator.html` | Interaktiv kapacitetskalkylator – visar effekt per bil beroende på antal anslutna bilar |
-|| `ekonomisk_kalkyl.html` | Ekonomisk kalkyl: offertj�mf�relse (Elento, Laddboxkillarna AB), totalkostnad och f�rdelning per garage |
-|| `Zaptec_Easee.html` | Detaljerad j�mf�relse: Zaptec Pro MID vs Easee Charge Pro, med recension och V2G-analys |
+| `ekonomisk_kalkyl.html` | Ekonomisk kalkyl: offertjämförelse (Elento, Laddboxkillarna AB), totalkostnad och fördelning per garage |
+| `Zaptec_Easee.html` | Detaljerad jämförelse: Zaptec Pro MID vs Easee Charge Pro, med recension och V2G-analys |
+| `offertanalys.html` | Offertanalys och rekommendation inför styrelsemöte 9 juni 2026: OCPP, V2G och prisjämförelse |
+| `styrning_och_effekt.html` | Fördjupning inför styrelsemöte 25 augusti 2026: effektberäkning enfas/trefas, Kraftringens löpande nätavgift, lastbalansering och V2G |
 
 ---
 
@@ -48,5 +58,6 @@ Repo: [kentlundgren/Ovrigt](https://github.com/kentlundgren/Ovrigt) → mapp `He
 
 ---
 
+_README v1.1, 2026-08-23 – tillagd: styrning_och_effekt.html, offertanalys.html i tabellerna, lokal sökväg (Regel 9)._
 _README v1.0, 2026-05-21_
 
