@@ -209,12 +209,10 @@ Korsreferenser: → index.html, → kalkylator.html, → ekonomisk_kalkyl.html
         <a href="ekonomisk_kalkyl.html">💰 Ekonomisk kalkyl</a>
     </div>
 
-    <div class="warning-box">
-        <strong>⚠️ Att verifiera innan styrelsemötet</strong>
-        Den här sidan utgår från att dagens huvudsäkring är <strong>enfas</strong> 16 A. Kontrollera
-        det mot elcentralen eller Kraftringens fakturaunderlag innan siffrorna nedan presenteras
-        för styrelsen — om säkringen i själva verket är trefas 16 A blir nulägeseffekten 11 kW
-        i stället för 3,7 kW (se uträkningen nedan).
+    <div class="info-box">
+        <strong>✓ Bekräftat</strong>
+        Dagens huvudsäkring är <strong>enfas 16 A</strong>, bekräftat av styrelsen 2026-08-23.
+        Nulägeseffekten är alltså 3,7 kW, inte 11 kW (se uträkningen nedan).
     </div>
 
 
@@ -249,9 +247,9 @@ Korsreferenser: → index.html, → kalkylator.html, → ekonomisk_kalkyl.html
 
         <p style="font-size:0.82rem; color:#a0aec0;">
             Håll muspekaren över <span class="hover-explain">ⓘ-texten</span> i respektive ruta för att se
-            fullständig uträkning. Om dagens säkring i stället är trefas 16 A blir nulägeseffekten
-            <strong>11,1 kW</strong> (P = √3 × 400 V × 16 A), och kapacitetsökningen till 63 A trefas
-            blir en faktor ×3,9 i stället för ×11,8 — se varningsrutan ovan.
+            fullständig uträkning. Den stora skillnaden mot en felaktig trefas-tolkning av samma
+            16 A (som skulle ge 11,1 kW och en kapacitetsökning på bara ×3,9) visar varför det var
+            viktigt att bekräfta enfas/trefas innan siffrorna gick till styrelsen.
         </p>
     </div>
 
@@ -599,8 +597,8 @@ Korsreferenser: → index.html, → kalkylator.html, → ekonomisk_kalkyl.html
         <p>Inga cookies, inget <code>localStorage</code>. Siffrorna på sidan är manuellt inhämtade från Kraftringens prislista och offert 3541, inte automatiskt uppdaterade.</p>
       </div>
       <div class="tech-card">
-        <h3>Ej verifierat: enfas/trefas nuläge</h3>
-        <p>Sidan förutsätter enfas 16 A idag enligt uppgift från styrelsen — flaggat i varningsrutan högst upp tills det bekräftats mot elcentral/faktura.</p>
+        <h3>Enfas/trefas nuläge – bekräftat</h3>
+        <p>Dagens huvudsäkring är enfas 16 A, bekräftat av styrelsen 2026-08-23 efter kontroll mot elcentral/faktura.</p>
       </div>
       <div class="tech-card">
         <h3>Källor</h3>
