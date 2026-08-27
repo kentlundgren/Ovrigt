@@ -14,7 +14,7 @@ Se [index.html](index.html) för fullständigt recept med historia, ingredienser
 steg-för-steg.
 
 ### Huvudingredienser
-- Strozzapreti (4 portioner)
+- 400 g strozzapreti (4 portioner)
 - 100 g pancetta eller guanciale, finhackad
 - 500 g nötfärs (eller 350 g nöt + 150 g fläsk)
 - Soffritto: 1 lök, 1 morot, 1 selleristjälk
