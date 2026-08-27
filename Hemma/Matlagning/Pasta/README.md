@@ -5,6 +5,7 @@ En samling klassiska italienska pastarätter kopplade till deras fascinerande hi
 ## Receptsamling
 
 - **[Strozzapreti (Prästdödaren)](strozzapreti/)** — En rustik pastarätt från Emilia-Romagna med en legend om hungrande präster
+- **[Strozzapreti med ragù](strozzapreti-ragu/)** — Samma pasta i långkokt tappning: en Bologna-lutande köttsås, plus en interaktiv handlingslista med kryssrutor att bocka av i affären
 - **[Spaghetti alla Carbonara](carbonara/)** — En romersk klassiker från mitten av 1900-talet med flera teorier om sitt ursprung
 - **[Penne all'Arrabbiata](arrabbiata/)** — En "arg" pastarätt från Rom, populär från 1950-60-talen
 

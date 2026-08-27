@@ -538,6 +538,154 @@ footer {
 }
 
 /* ========================================
+   INTERAKTIV HANDLINGSLISTA (kryssrutor)
+   Används på strozzapreti-ragu/index.html
+   ======================================== */
+
+.shop-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.shop-progress {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 600;
+}
+
+.shop-reset {
+  font-family: inherit;
+  font-size: 0.82rem;
+  color: var(--brand-primary);
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.shop-reset:hover {
+  background-color: var(--brand-primary);
+  color: var(--text-light);
+}
+
+.ingredients li .shop-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  cursor: pointer;
+}
+
+.ingredients li .shop-item input[type="checkbox"] {
+  margin-top: 0.35rem;
+  width: 1.05rem;
+  height: 1.05rem;
+  flex-shrink: 0;
+  accent-color: var(--brand-primary);
+  cursor: pointer;
+}
+
+.ingredients li .shop-item .shop-text {
+  flex: 1;
+}
+
+.ingredients li .shop-item input[type="checkbox"]:checked ~ .shop-text {
+  text-decoration: line-through;
+  color: #999;
+}
+
+.ingredient-extra {
+  margin: 0.4rem 0 0 1.65rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.ingredient-extra a {
+  color: var(--brand-primary);
+}
+
+.inline-btn {
+  font-family: inherit;
+  font-size: 0.82rem;
+  color: var(--brand-primary);
+  background-color: var(--bg-light);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 0.25rem 0.6rem;
+  cursor: pointer;
+  margin-top: 0.35rem;
+  transition: background-color 0.15s;
+}
+
+.inline-btn:hover {
+  background-color: #ececec;
+}
+
+/* Bildgalleri — pancetta */
+.pancetta-gallery {
+  display: none;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.75rem;
+  margin: 0.6rem 0 0 1.65rem;
+}
+
+.pancetta-gallery.show {
+  display: grid;
+}
+
+.pancetta-gallery figure {
+  margin: 0;
+  background-color: var(--bg-light);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.pancetta-gallery img {
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+  display: block;
+}
+
+.pancetta-gallery figcaption {
+  font-size: 0.72rem;
+  color: #888;
+  padding: 0.35rem 0.5rem;
+}
+
+.pancetta-gallery figcaption a {
+  color: #888;
+}
+
+/* Inline-not — chiliflakes/amatriciana */
+.chili-note {
+  display: none;
+  margin: 0.5rem 0 0 1.65rem;
+  padding: 0.75rem 1rem;
+  background-color: #fdf6ec;
+  border: 1px dashed var(--brand-accent);
+  border-radius: 6px;
+  font-size: 0.86rem;
+  line-height: 1.55;
+}
+
+.chili-note.show {
+  display: block;
+}
+
+.chili-note a {
+  color: var(--brand-primary);
+}
+
+/* ========================================
    PRINT CSS (A4 - Ensidig utskrift)
    ======================================== */
 
@@ -589,6 +737,27 @@ footer {
   .tech-corner,
   .modal-overlay {
     display: none !important;
+  }
+
+  /* Dölj interaktiva handlingslist-element vid utskrift */
+  .shop-toolbar,
+  .ingredient-extra,
+  .inline-btn,
+  .pancetta-gallery,
+  .chili-note {
+    display: none !important;
+  }
+
+  .ingredients li .shop-item input[type="checkbox"] {
+    -webkit-appearance: none;
+    appearance: none;
+    border: 1px solid var(--print-break);
+    background: transparent;
+  }
+
+  .ingredients li .shop-item input[type="checkbox"]:checked ~ .shop-text {
+    text-decoration: none;
+    color: var(--text-dark);
   }
 
   /* Header */

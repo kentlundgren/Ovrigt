@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Strozzapreti med ragù — Prästdödaren, långkokt</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <nav class="site-nav">
+    { O } <a href="https://kentlundgren.github.io/Ovrigt/">Ovrigt</a> /
+    <a href="../../../index.html">Hemma</a> /
+    <a href="../../index.html">Matlagning</a> /
+    <a href="../index.html">Pasta</a> /
+    <span>Strozzapreti med ragù</span>
+  </nav>
+
+  <div class="container">
+    <div class="recipe-header">
+      <h1>Strozzapreti med ragù</h1>
+      <p class="subtitle">Prästdödaren i långkokt tappning — en Bologna-lutande köttsås som gifts ihop med den skrovliga, handrullade pastan</p>
+    </div>
+
+    <img src="https://upload.wikimedia.org/wikipedia/commons/1/12/Strozzapreti_Pasta_-_2.jpg" alt="Strozzapreti serverad som färdig rätt" class="recipe-image">
+    <p class="photo-credit">Foto: HarshLight, <a href="https://commons.wikimedia.org/wiki/File:Strozzapreti_Pasta_-_2.jpg">Wikimedia Commons</a> (CC BY 2.0) — strozzapreti med pancetta, samma pasta som i receptet nedan</p>
+
+    <div class="history">
+      <h2>Historien bakom ragùn</h2>
+
+      <p>
+        Ordet <em>ragù</em> kommer inte, som man kan tro, från italienskan utan från franskans <em>ragoût</em> — ungefär "det som väcker aptiten". Det nådde Emilia-Romagna på sent 1700-tal, kanske i släptåg efter Napoleons fälttåg i norra Italien 1796. Och det finns inte <em>ett</em> ragù utan många: Bolognas är köttig och nästan tomatfri, mjukad med mjölk; Neapels dränker hela köttstycken i tomat och serverar köttet för sig efteråt. Receptet nedan lutar åt Bologna, men vänds ihop med strozzapreti i stället för tagliatelle — den skrovliga "prästdödaren" fångar en tjock ragù minst lika bra.
+      </p>
+
+      <p>
+        År 1982 lät <strong>Accademia Italiana della Cucina</strong> registrera och deponera ett officiellt recept på "klassisk ragù alla bolognese" hos handelskammaren i Bologna; en uppdaterad version deponerades 2023. Poängen med gesten var att markera avstånd från den internationella "spaghetti bolognese" — i Italien serveras ragù alla bolognese traditionellt aldrig med spaghetti, utan med färsk äggpasta som tagliatelle, eller i lasagne.
+      </p>
+
+      <p>
+        Det som skiljer en italiensk ragù från svensk köttfärssås är inte kryddorna utan tempot och proportionerna: en fint hackad <em>soffritto</em> (lök, morot, selleri) som får fräsa mjuk, förhållandevis lite tomat, en skvätt vin, och <strong>mjölk</strong> som rundar av syran och gör köttet mört. Sedan puttrar det i minst en och en halv timme, gärna tre. Såsen läggs heller aldrig som en klick ovanpå pastan — pasta och sås vänds ihop i pannan med en skvätt pastavatten de sista minuterna, så att strozzapretins veck blir fyllda av sås.
+      </p>
+
+      <p>
+        Den här sidan är den långsamma systern till <a href="../strozzapreti/index.html">prästdödaren i Amatriciana-stil</a>: samma handrullade pasta och samma familj (fläsk, tomat, pecorino), men där Amatriciana-versionen är klar på tjugo minuter med guanciale och chili, får den här sjuda i timmar. Chiliflingorna i ingredienslistan är en medveten brygga mellan de två — se noten vid den raden.
+      </p>
+    </div>
+
+    <div class="recipe-content">
+      <div class="ingredients">
+        <h3>Ingredienser <span style="font-weight:400; font-size:0.85rem; color:#666;">(4 portioner)</span></h3>
+
+        <div class="shop-toolbar">
+          <span class="shop-progress" id="shopProgress">0 / 12 ibockade</span>
+          <button type="button" class="shop-reset" id="shopReset">Rensa alla bockar</button>
+        </div>
+        <p style="font-size:0.82rem; color:#888; margin-bottom:0.75rem;">
+          Bocka av i affären — sidan minns dina bockar i den här webbläsaren tills du rensar dem.
+        </p>
+
+        <ul id="shopList">
+          <li>
+            <label class="shop-item"><input type="checkbox"><span class="shop-text"><strong>2 msk</strong> olivolja + en klick smör</span></label>
+          </li>
+          <li>
+            <label class="shop-item"><input type="checkbox"><span class="shop-text"><strong>1</strong> gul lök</span></label>
+          </li>
+          <li>
+            <label class="shop-item"><input type="checkbox"><span class="shop-text"><strong>1</strong> morot</span></label>
+          </li>
+          <li>
+            <label class="shop-item"><input type="checkbox"><span class="shop-text"><strong>1</strong> selleristjälk</span></label>
+          </li>
+          <li>
+            <label class="shop-item"><input type="checkbox"><span class="shop-text"><strong>100 g</strong> pancetta eller guanciale, finhackad</span></label>
+            <div class="ingredient-extra">
+              Köp i bit och hacka själv (<a href="https://handla.ica.se/produkt/2108577" target="_blank" rel="noopener">Bon Cena Pancetta 200 g, ICA</a>) eller färdigtärnad (<a href="https://handla.ica.se/produkt/2108578" target="_blank" rel="noopener">Tulip Pancetta tärnad 150 g, ICA</a>).<br>
+              <button type="button" class="inline-btn" id="pancettaBtn" aria-expanded="false">📷 Visa bilder på pancetta</button>
+            </div>
+            <div class="pancetta-gallery" id="pancettaGallery">
+              <figure>
+                <img alt="Hel, rullad pancetta i förpackning" data-src="https://upload.wikimedia.org/wikipedia/commons/a/a4/Pancetta.jpg">
+                <figcaption>Rullad (<em>arrotolata</em>). Foto: Nachoman-au, <a href="https://commons.wikimedia.org/wiki/File:Pancetta.jpg" target="_blank" rel="noopener">Wikimedia Commons</a> (CC BY-SA 3.0)</figcaption>
+              </figure>
+              <figure>
+                <img alt="Pancetta i bit" data-src="https://upload.wikimedia.org/wikipedia/commons/4/4f/Pancetta_2018.jpg">
+                <figcaption>I bit (<em>tesa</em>). Foto: Thomon, <a href="https://commons.wikimedia.org/wiki/File:Pancetta_2018.jpg" target="_blank" rel="noopener">Wikimedia Commons</a> (CC BY-SA 4.0)</figcaption>
+              </figure>
+              <figure>
+                <img alt="Tärnad pancetta" data-src="https://upload.wikimedia.org/wikipedia/commons/d/d4/Diced_Pancetta_%28CC%29_%2810141111784%29.jpg">
+                <figcaption>Tärnad — så den ska se ut i pannan. Foto: D. Sharon Pruitt, <a href="https://commons.wikimedia.org/wiki/File:Diced_Pancetta_(CC)_(10141111784).jpg" target="_blank" rel="noopener">Wikimedia Commons</a> (CC BY 2.0)</figcaption>
+              </figure>
+            </div>
+          </li>
+          <li>
+            <label class="shop-item"><input type="checkbox"><span class="shop-text"><strong>500 g</strong> nötfärs (eller 350 g nöt + 150 g fläsk)</span></label>
+          </li>
+          <li>
+            <label class="shop-item"><input type="checkbox"><span class="shop-text"><strong>1 dl</strong> vitt vin (eller rött)</span></label>
+          </li>
+          <li>
+            <label class="shop-item"><input type="checkbox"><span class="shop-text"><strong>2 msk</strong> tomatpuré</span></label>
+          </li>
+          <li>
+            <label class="shop-item"><input type="checkbox"><span class="shop-text"><strong>2 dl</strong> passata</span></label>
+            <div class="ingredient-extra">
+              T.ex. <a href="https://mutti-parma.com/se/produkter/passata/" target="_blank" rel="noopener">Mutti Passata</a> (passerade tomater).
+            </div>
+          </li>
+          <li>
+            <label class="shop-item"><input type="checkbox"><span class="shop-text"><strong>2–3 dl</strong> mjölk</span></label>
+          </li>
+          <li>
+            <label class="shop-item"><input type="checkbox"><span class="shop-text"><strong>Lagerblad</strong> + en nypa <strong>muskot</strong>, salt, nymalen svartpeppar</span></label>
+          </li>
+          <li>
+            <label class="shop-item"><input type="checkbox"><span class="shop-text"><strong>1 tsk</strong> chiliflingor</span></label>
+            <div class="ingredient-extra">
+              <button type="button" class="inline-btn" id="chiliBtn" aria-expanded="false">Varför chiliflingor? →</button>
+            </div>
+            <div class="chili-note" id="chiliNote">
+              Chiliflingor hör inte hemma i en klassisk ragù alla bolognese. De är med här som en medveten nick till <a href="../strozzapreti/index.html">prästdödaren i Amatriciana-stil</a> — den romerska rätten <a href="https://en.wikipedia.org/wiki/Amatriciana_sauce" target="_blank" rel="noopener">amatriciana</a> (guanciale, pecorino, tomat) har alltid en tydlig hetta från <em>peperoncino</em>. Tar du med chilin knyter du ihop de två prästdödar-varianterna: samma pasta, samma fläsk-och-tomat-familj, en gemensam eftersmak. Vill du ha den renodlade Bologna-versionen: hoppa över chilin.
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="instructions">
+        <h3>Gör så här</h3>
+        <ol>
+          <li><strong>Soffritto:</strong> Hacka lök, morot och selleri fint. Fräs mjukt i olivolja + smör på medellåg värme tillsammans med den finhackade pancettan, 8–10 min. Låt inte grönsakerna ta färg.</li>
+
+          <li><strong>Bryn färsen:</strong> Höj värmen, smula i färsen. Bryn tills all vätska kokat bort och köttet börjar fästa och få färg i botten — det är där smaken byggs.</li>
+
+          <li><strong>Vin:</strong> Häll i vinet, skrapa loss fond från botten, låt koka in nästan helt.</li>
+
+          <li><strong>Tomat:</strong> Rör ner tomatpurén och fräs 1–2 min. Tillsätt passatan.</li>
+
+          <li><strong>Mjölk + krydda:</strong> Häll i mjölken, lagerblad, en nypa muskot och ev. chiliflingorna. Sänk till lägsta möjliga sjudning.</li>
+
+          <li><strong>Långkok:</strong> Lock på glänt, minst 1,5 timme, gärna 3. Rör om då och då och spä med lite vatten eller mjölk om det blir torrt. Smaka av med salt och peppar <em>sist</em>.</li>
+
+          <li><strong>Pastan:</strong> Koka strozzapretin al dente i rikligt saltat vatten. Spara 1–1,5 dl pastavatten innan du häller av.</li>
+
+          <li><strong>Vänd ihop:</strong> Lägg pastan i pannan med ragùn, tillsätt en skvätt pastavatten och vänd runt på medelvärme 1–2 min tills såsen klistrar sig på pastan.</li>
+
+          <li><strong>Servera</strong> med riven parmesan eller pecorino. Ragù som fått vila i kylen till dagen efter är ännu godare.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="callout-box tomato-comparison-wrap">
+      <h3>Två vägval</h3>
+      <div class="tomato-comparison">
+        <div class="tomato-option">
+          <h4>Pancetta i bit eller färdigtärnad?</h4>
+          <ul>
+            <li><strong>I bit:</strong> billigare per kilo, du styr storleken på tärningarna, fastare tugga</li>
+            <li><strong>Färdigtärnad:</strong> snabbare, jämnare bitar, smälter något mer i soffritton</li>
+            <li>Guanciale (griskind) ger rundare, sötare fett än pancetta om du hittar den</li>
+          </ul>
+        </div>
+        <div class="tomato-option">
+          <h4>Bara nöt, eller nöt + fläsk?</h4>
+          <ul>
+            <li><strong>Bara nöt (500 g):</strong> renare köttsmak, enklare inköp</li>
+            <li><strong>350 g nöt + 150 g fläsk:</strong> närmare det klassiska bolognese-receptet — fläsket ger sötma och saftighet</li>
+            <li>Fläskfärs kan bytas mot smulad korv (salsiccia) för mer krydda</li>
+          </ul>
+        </div>
+      </div>
+      <p style="margin-top:1rem; font-size:0.92rem;">
+        <strong>Kort rekommendation:</strong> vardag → färdigtärnad pancetta + bara nöt. Helg → bit-pancetta du hackar själv + nöt/fläsk-blandning.
+      </p>
+    </div>
+
+    <div class="variations">
+      <h3>Ragù på andra sätt</h3>
+      <ul>
+        <li><strong>Napoletansk stil:</strong> byt färsen mot hela köttstycken (revben, fläsklägg, små oxrulader) och öka tomaten rejält. Sjud 3–5 timmar. Ät pastan med bara såsen först — köttet serveras som huvudrätt efteråt.</li>
+        <li><strong>Ragù bianco (vit ragù):</strong> hoppa över tomatpuré och passata helt. Mer vin och en skvätt buljong i stället. Ren och elegant, lyfter fram kött och soffritto.</li>
+        <li><strong>Vilt eller fågel:</strong> byt nötfärsen mot grovhackat vildsvin eller anka, vitt vin mot rött, och lägg i 3 enbär, en bit kanel och en msk mörk choklad de sista 10 minuterna. Höstlig och mörk — en klassisk partner till just strozzapreti och pappardelle.</li>
+        <li><strong>Snabb vardagsragù:</strong> samma grund men bara 30–40 min sjudning. Inte lika djup, men fullt duglig en tisdag.</li>
+        <li><strong>Utan kött (ragù finto, "falsk ragù"):</strong> dubbla soffritton, tillsätt finhackad svamp och/eller linser, och låt koka ihop tills det får ragù-konsistens.</li>
+      </ul>
+    </div>
+
+    <div class="build-on-note">
+      <strong>Bygg vidare:</strong> Vill du jämföra med snabbversionen, se <a href="../strozzapreti/index.html">prästdödaren i Amatriciana-stil</a> (guanciale, pecorino, chili — klar på tjugo minuter). För en grönsaksväg finns Köket.se:s <a href="https://www.koket.se/pasta-strozzapreti-alla-norma" target="_blank" rel="noopener">Strozzapreti alla Norma</a> med stekt aubergine och ricotta salata, och <a href="https://www.zeta.nu/recept/pasta-strozzapreti-med-italiensk-tomatsas/" target="_blank" rel="noopener">Zetas mildare tomatsåsvariant</a>.
+    </div>
+
+    <div class="sources">
+      <h3>Källor</h3>
+      <ol>
+        <li>Wikipedia. "Ragù". Hämtad 2026-08-27 från <a href="https://en.wikipedia.org/wiki/Rag%C3%B9">https://en.wikipedia.org/wiki/Ragù</a></li>
+
+        <li>Wikipedia. "Bolognese sauce". Hämtad 2026-08-27 från <a href="https://en.wikipedia.org/wiki/Bolognese_sauce">https://en.wikipedia.org/wiki/Bolognese_sauce</a></li>
+
+        <li>Wikipedia. "Strozzapreti". Hämtad 2026-08-27 från <a href="https://en.wikipedia.org/wiki/Strozzapreti">https://en.wikipedia.org/wiki/Strozzapreti</a></li>
+
+        <li>Wikipedia. "Amatriciana sauce". Hämtad 2026-08-27 från <a href="https://en.wikipedia.org/wiki/Amatriciana_sauce">https://en.wikipedia.org/wiki/Amatriciana_sauce</a></li>
+
+        <li>Mutti. "Passata" (produktsida). Hämtad 2026-08-27 från <a href="https://mutti-parma.com/se/produkter/passata/">https://mutti-parma.com/se/produkter/passata/</a></li>
+
+        <li>ICA. "Pancetta 200g Bon Cena" (produktsida). Hämtad 2026-08-27 från <a href="https://handla.ica.se/produkt/2108577">https://handla.ica.se/produkt/2108577</a></li>
+
+        <li>ICA. "Pancetta tärnad 150g Tulip" (produktsida). Hämtad 2026-08-27 från <a href="https://handla.ica.se/produkt/2108578">https://handla.ica.se/produkt/2108578</a></li>
+
+        <li>Nachoman-au. (2006). "Pancetta.jpg". Wikimedia Commons (CC BY-SA 3.0). Hämtad från <a href="https://commons.wikimedia.org/wiki/File:Pancetta.jpg">https://commons.wikimedia.org/wiki/File:Pancetta.jpg</a></li>
+
+        <li>Thomon. (2018). "Pancetta 2018.jpg". Wikimedia Commons (CC BY-SA 4.0). Hämtad från <a href="https://commons.wikimedia.org/wiki/File:Pancetta_2018.jpg">https://commons.wikimedia.org/wiki/File:Pancetta_2018.jpg</a></li>
+
+        <li>Pruitt, D. Sharon (Pink Sherbet Photography). (2013). "Diced Pancetta (CC).jpg". Wikimedia Commons (CC BY 2.0). Hämtad från <a href="https://commons.wikimedia.org/wiki/File:Diced_Pancetta_(CC)_(10141111784).jpg">https://commons.wikimedia.org/wiki/File:Diced_Pancetta_(CC)_(10141111784).jpg</a></li>
+
+        <li>HarshLight. "Strozzapreti Pasta - 2.jpg". Wikimedia Commons (CC BY 2.0). Hämtad från <a href="https://commons.wikimedia.org/wiki/File:Strozzapreti_Pasta_-_2.jpg">https://commons.wikimedia.org/wiki/File:Strozzapreti_Pasta_-_2.jpg</a></li>
+
+        <li>Köket.se. "Pasta Strozzapreti alla Norma" (variant, bygg vidare). Hämtad från <a href="https://www.koket.se/pasta-strozzapreti-alla-norma">https://www.koket.se/pasta-strozzapreti-alla-norma</a></li>
+
+        <li>Zeta. "Pasta Strozzapreti med italiensk tomatsås — Recept" (mildare variant, bygg vidare). Hämtad från <a href="https://www.zeta.nu/recept/pasta-strozzapreti-med-italiensk-tomatsas/">https://www.zeta.nu/recept/pasta-strozzapreti-med-italiensk-tomatsas/</a></li>
+      </ol>
+      <p style="margin-top:1rem; font-size:0.85rem; color:#666;">
+        Grundreceptet är sammanställt av Kent utifrån egna tester, i samtal med Claude (Anthropic). De regionala ragù-uppgifterna är verifierade mot källa 1 och 2 ovan.
+      </p>
+    </div>
+  </div>
+
+  <footer>
+    <p>En del av Matlagning-projektet i Ovrigt-repot</p>
+    <p><a href="../index.html">← Tillbaka till Pasta-samlingen</a></p>
+  </footer>
+
+  <a class="github-corner" href="https://github.com/kentlundgren/Ovrigt" target="_blank" rel="noopener">{ } GitHub</a>
+  <button type="button" class="tech-corner" id="techBtn" aria-label="Tekniköversikt">&lt;/&gt; teknik</button>
+
+  <div class="modal-overlay" id="techModal">
+    <div class="modal">
+      <button type="button" class="modal-close" id="techModalClose" aria-label="Stäng">×</button>
+      <h2>Hur den här sidan är byggd</h2>
+      <p class="modal-intro">Ingen extern ram eller byggtool — ren HTML, CSS och JavaScript, publicerad via GitHub Pages. Ingen inloggning, inget konto krävs.</p>
+      <div class="tech-grid">
+        <div class="tech-card">
+          <h3>Handlingslista med minne</h3>
+          <p>Kryssrutorna sparas i webbläsarens <code>localStorage</code> — bockarna finns kvar när du kommer till affären. Ingen data lämnar din enhet.</p>
+        </div>
+        <div class="tech-card">
+          <h3>Bilder som laddas vid klick</h3>
+          <p>Pancetta-bilderna har <code>data-src</code> och hämtas först när du trycker på "Visa bilder" — sidan laddar snabbt utan dem.</p>
+        </div>
+        <div class="tech-card">
+          <h3>Delad CSS</h3>
+          <p>All styling ligger i <code>../css/style.css</code>, med CSS-variabler i <code>:root</code>, gemensam med de andra recepten.</p>
+        </div>
+        <div class="tech-card">
+          <h3>Print-optimerad för A4</h3>
+          <p><code>@media print</code> döljer kryssrutornas verktygsrad, bildgalleriet och noterna — kvar blir ren ingredienslista och instruktioner på en A4-sida.</p>
+        </div>
+        <div class="tech-card">
+          <h3>Bilder med verifierad källa</h3>
+          <p>Alla bilder är hämtade från Wikimedia Commons via filens egen <code>File:</code>-sida — licens och fotograf kontrollerade, inte gissade.</p>
+        </div>
+      </div>
+      <div class="modal-foot">Källkod: <a href="https://github.com/kentlundgren/Ovrigt/tree/main/Hemma/Matlagning/Pasta/strozzapreti-ragu" target="_blank" rel="noopener">github.com/kentlundgren/Ovrigt/Hemma/Matlagning/Pasta/strozzapreti-ragu</a></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      // --- Handlingslista: spara bockar i localStorage ---
+      var STORAGE_KEY = 'strozzapreti-ragu-shop-v1';
+      var list = document.getElementById('shopList');
+      var boxes = list ? Array.prototype.slice.call(list.querySelectorAll('input[type="checkbox"]')) : [];
+      var progress = document.getElementById('shopProgress');
+
+      function load() {
+        try {
+          var saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+          boxes.forEach(function (box, i) { box.checked = !!saved[i]; });
+        } catch (e) { /* ignore */ }
+      }
+
+      function save() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(boxes.map(function (b) { return b.checked; })));
+        } catch (e) { /* ignore */ }
+      }
+
+      function updateProgress() {
+        var done = boxes.filter(function (b) { return b.checked; }).length;
+        if (progress) progress.textContent = done + ' / ' + boxes.length + ' ibockade';
+      }
+
+      boxes.forEach(function (box) {
+        box.addEventListener('change', function () { save(); updateProgress(); });
+      });
+
+      var reset = document.getElementById('shopReset');
+      if (reset) {
+        reset.addEventListener('click', function () {
+          boxes.forEach(function (b) { b.checked = false; });
+          save();
+          updateProgress();
+        });
+      }
+
+      load();
+      updateProgress();
+
+      // --- Pancetta-galleri: ladda bilder vid första klick ---
+      var pancettaBtn = document.getElementById('pancettaBtn');
+      var pancettaGallery = document.getElementById('pancettaGallery');
+      if (pancettaBtn && pancettaGallery) {
+        pancettaBtn.addEventListener('click', function () {
+          var showing = pancettaGallery.classList.toggle('show');
+          pancettaBtn.setAttribute('aria-expanded', showing ? 'true' : 'false');
+          pancettaBtn.textContent = showing ? '📷 Dölj bilder på pancetta' : '📷 Visa bilder på pancetta';
+          if (showing) {
+            pancettaGallery.querySelectorAll('img[data-src]').forEach(function (img) {
+              img.src = img.getAttribute('data-src');
+              img.removeAttribute('data-src');
+            });
+          }
+        });
+      }
+
+      // --- Chili-not ---
+      var chiliBtn = document.getElementById('chiliBtn');
+      var chiliNote = document.getElementById('chiliNote');
+      if (chiliBtn && chiliNote) {
+        chiliBtn.addEventListener('click', function () {
+          var showing = chiliNote.classList.toggle('show');
+          chiliBtn.setAttribute('aria-expanded', showing ? 'true' : 'false');
+        });
+      }
+
+      // --- Teknik-modal ---
+      document.getElementById('techBtn').addEventListener('click', function () {
+        document.getElementById('techModal').classList.add('show');
+      });
+      document.getElementById('techModalClose').addEventListener('click', function () {
+        document.getElementById('techModal').classList.remove('show');
+      });
+      document.getElementById('techModal').addEventListener('click', function (e) {
+        if (e.target === this) this.classList.remove('show');
+      });
+    })();
+  </script>
+</body>
+</html>
