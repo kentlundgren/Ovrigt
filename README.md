@@ -244,6 +244,41 @@ Cursor. Om båda gör det har du en dubbel-klon som bör redas ut.
 
 ---
 
+## 🌿 Grenar (branches) – vad är det, och varför finns de?
+
+En **branch** (gren) är en separat, parallell version av koden i samma repo –
+en kopia där ändringar kan göras utan att påverka `main` (huvudgrenen, den
+som GitHub Pages faktiskt publicerar från). Man kan ha hur många grenar som
+helst samtidigt; de slås ihop (**mergas**) till `main` när innehållet är klart
+och godkänt, eller så öppnas en **pull request (PR)** – ett förslag till
+sammanslagning som går att granska diff-rad-för-rad innan den mergas.
+
+**En feature-branch** är specifikt en gren skapad för *en avgränsad uppgift
+eller ett tema* (t.ex. "lägg till kalenderhändelse", en bugfix, en ny sida) –
+namnet syftar på att den bär en enskild "feature" (funktion/ändring), till
+skillnad från `main` som ska hålla den färdiga, driftsatta koden.
+
+### Grenen `claude/lagg-in-i-kalendern-9aipez` i det här repot
+
+- **Vem skapade den:** Claude (den här AI-sessionen), inte Kent manuellt.
+- **Varför:** När en Claude Code-session på webben/molnet ("Claude Code on the
+  web") kopplas till ett repo, tilldelar systemet automatiskt en egen
+  feature-branch för just den sessionen – namnet genereras av plattformen
+  utifrån sessionens första uppgift (här: "lägg in i kalendern", plus en
+  slumpad kod `9aipez` för att göra namnet unikt). Claude pushar sina commits
+  dit istället för direkt till `main`, så att ändringarna kan granskas innan
+  de blir en del av den publicerade sidan.
+- **Vad som ligger på den just nu:** regeln om initialer för personnamn samt
+  Lokalt repo-/Nested Git-repo-sektionerna i den här README:n (se
+  `git log` eller PR:en för fullständig historik).
+
+### Var du ser alla grenar
+
+- **Alla grenar i repot:** [github.com/kentlundgren/Ovrigt/branches](https://github.com/kentlundgren/Ovrigt/branches)
+- **Öppna pull requests:** [github.com/kentlundgren/Ovrigt/pulls](https://github.com/kentlundgren/Ovrigt/pulls)
+
+---
+
 ## GitHub
 
 Repo: [kentlundgren/Ovrigt](https://github.com/kentlundgren/Ovrigt)
