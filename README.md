@@ -1,6 +1,17 @@
 # Ovrigt – Kent Lundgrens övriga projekt
 
-_Version 1.6, 2026-08-10_
+_Version 1.7, 2026-09-02_
+
+---
+
+## 🗂️ Lokalt repo
+
+`C:\Users\kentl\OneDrive\Kent – Personligt\AI\Claude\Ovrigt`
+
+⚠️ Ligger nästlat inuti föräldramappen `...\AI\Claude\`, som **också är ett eget
+git-repo** — se avsnittet [Nested Git-repo](#️-nested-git-repo) längre ner för
+vad det innebär i praktiken och hur du verifierar vilken mapp som faktiskt är
+kopplad till `github.com/kentlundgren/Ovrigt`.
 
 ---
 
@@ -187,6 +198,52 @@ Se `KentLundgren/README.md` för fullständig beskrivning av innehåll och metod
 
 ---
 
+## ⚠️ Nested Git-repo
+
+Mappen `Ovrigt` ligger inuti en föräldramapp som **också** är ett eget git-repo:
+
+```
+C:\Users\kentl\OneDrive\Kent – Personligt\AI\Claude\   ← Föräldramapp (egen .git, egen CLAUDE.md/.gitignore)
+    ├── ArbetenSokta/
+    ├── ClaudeCowork/
+    ├── Ekonomi/                        ← Eget nästlat repo (remote: Ekonomi)
+    │   └── .git/
+    └── Ovrigt/                         ← DETTA repo (remote: Ovrigt)
+        └── .git/
+```
+
+(Bekräftat via skärmbild 2026-09-02: `.git`, `.gitignore` och en egen `CLAUDE.md`
+ligger direkt i `AI\Claude\`, separat från `Ovrigt`-undermappens eget innehåll.)
+
+**Osäkerhet värd att flagga:** Ekonomi-repots README beskriver föräldramappen
+`AI\Claude\` som att den har **remote: `Ovrigt`** på GitHub. Det stämmer dåligt
+överens med vad mappen faktiskt innehåller (fyra projektmappar — `ArbetenSokta`,
+`ClaudeCowork`, `Ekonomi`, `Ovrigt` — inte `Hemma/`, `Fritid/`, `index.html` som
+är det här repots faktiska innehåll). Sannolikt en felskrivning i Ekonomi-repots
+README, men **inte verifierat**. Kör detta för att få 100 % säkert svar:
+
+```powershell
+cd "C:\Users\kentl\OneDrive\Kent – Personligt\AI\Claude"
+git remote -v
+
+cd "C:\Users\kentl\OneDrive\Kent – Personligt\AI\Claude\Ovrigt"
+git remote -v
+```
+
+Den mapp som svarar med `github.com/kentlundgren/Ovrigt` är den du ska öppna i
+Cursor. Om båda gör det har du en dubbel-klon som bör redas ut.
+
+**Regel:** Öppna alltid `Ovrigt`-mappen direkt i Cursor – aldrig föräldramappen
+`AI\Claude\`. Verifiera remote med `git remote -v` om du är osäker.
+
+| Situation | Risk | Åtgärd |
+|-----------|------|---------|
+| Öppnar `AI\Claude` i Cursor | Arbetar mot fel repo | Öppna `Ovrigt`-mappen separat |
+| Glömmer committa efter redigering | Ändringar saknas i git-historik | Committa manuellt i Cursor |
+| Föräldra-repot visar `Ovrigt` som modified | Förvirring | Normalt – ignorera det |
+
+---
+
 ## GitHub
 
 Repo: [kentlundgren/Ovrigt](https://github.com/kentlundgren/Ovrigt)
@@ -195,4 +252,4 @@ Commit och push är alltid användarens (Kents) ansvar.
 
 ---
 
-_README v1.6, 2026-08-10_
+_README v1.7, 2026-09-02_
