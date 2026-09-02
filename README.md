@@ -1,6 +1,22 @@
 # Ovrigt – Kent Lundgrens övriga projekt
 
-_Version 1.6, 2026-08-10_
+_Version 1.8, 2026-09-02_
+
+---
+
+## 🗂️ Lokalt repo
+
+`C:\Users\kentl\OneDrive\AI\Claude\Ovrigt`
+
+Notera: i Utforskaren visas mappen som `...\OneDrive\Kent – Personligt\AI\Claude\Ovrigt`.
+"Kent – Personligt" är bara **visningsnamnet** på OneDrive-kontot — på disken
+heter mappen `C:\Users\kentl\OneDrive\`. Det är alltså samma mapp, inte två.
+
+Repot ligger nästlat inuti föräldramappen `...\AI\Claude\`. Fram till
+2026-09-02 var **även föräldramappen ett eget git-repo**, felaktigt kopplat mot
+`github.com/kentlundgren/Ovrigt` — det är nu uppstädat. Se avsnittet
+[Nested Git-repo](#️-nested-git-repo) längre ner för hela historien och hur du
+verifierar läget själv.
 
 ---
 
@@ -187,6 +203,140 @@ Se `KentLundgren/README.md` för fullständig beskrivning av innehåll och metod
 
 ---
 
+## ⚠️ Nested Git-repo
+
+### Först: hur hänger "lokalt git" och "GitHub" ihop?
+
+Ett **git-repo** är en mapp med en dold undermapp `.git/`. Den `.git/`-mappen
+innehåller hela historiken (alla commits) plus en adressbok över **remotes** —
+namngivna länkar till kopior av samma repo någon annanstans. Standard-remoten
+heter `origin`.
+
+- **GitHub** är bara en av dessa kopior — den som råkar ligga på en server och
+  som GitHub Pages publicerar från. Den är inte "sanningen", den är en peer.
+- `git clone <url>` skapar en lokal kopia av GitHub-repot, med `origin` redan
+  inställt på den URL:en.
+- `git push` skickar dina lokala commits **upp** till `origin`. `git pull`
+  hämtar andras commits **ner**. Mellan pushar lever din lokala historik och
+  GitHubs historik separata liv.
+- Två helt olika lokala mappar kan ha `origin` inställt på **samma**
+  GitHub-URL. Git hindrar dig inte. Det är då det blir rörigt.
+
+Kolla alltid vilket läge en mapp är i med:
+
+```powershell
+git remote -v      # vilken GitHub-URL är origin?
+git status         # ligger jag i fas med origin, eller före/efter?
+git log --oneline -5
+```
+
+### Vad som var fel här (upptäckt och åtgärdat 2026-09-02)
+
+Mappträdet såg ut så här:
+
+```
+C:\Users\kentl\OneDrive\AI\Claude\        ← föräldramapp
+    ├── .git/          ← ETT git-repo, origin = kentlundgren/Ovrigt   ❌ FEL
+    ├── CLAUDE.md      (vaktfil: "du är på fel nivå")
+    ├── .gitignore
+    ├── ArbetenSokta/  └─ .git/  origin = kentlundgren/ArbetenSokta   ✅
+    ├── ClaudeCowork/  └─ .git/  origin = kentlundgren/foreningar     ✅
+    ├── Ekonomi/       └─ .git/  origin = kentlundgren/Ekonomi        ✅
+    └── Ovrigt/        └─ .git/  origin = kentlundgren/Ovrigt         ✅  ← DETTA repo
+```
+
+Alltså: **två** lokala repon (`AI\Claude\` och `AI\Claude\Ovrigt\`) pekade
+båda på `github.com/kentlundgren/Ovrigt`. Men de delade ingen historik alls:
+
+- **`Ovrigt/` (denna mapp)** var — och är — den friska klonen. `git status`
+  sa "i fas med origin/main", arbetsträdet rent.
+- **`AI\Claude\` (föräldern)** var ett vilset, felkonfigurerat repo med en helt
+  egen historik (egen rot-commit, 9 commits) som **aldrig hade pushats någonstans**
+  och inte *kunde* pushas till Ovrigt-repot (icke-fast-forward, ingen gemensam
+  commit). Dess spårade filer var gamla, ofullständiga kopior av saker som redan
+  fanns färdiga och nyare här i `Ovrigt/`. Den enda synliga effekten var att
+  `git status` i föräldern felaktigt visade en massa av `Ovrigt/`s filer som
+  "modified".
+
+### Vad som gjordes
+
+Förälderns `.git/`-mapp **flyttades ut** ur mappträdet (inte raderad) till:
+
+```
+C:\Users\kentl\OneDrive\AI\_arkiv_stray_git_AI-Claude_2026-09-02\
+    ├── .git-fran-AI-Claude\           ← hela den flyttade .git-mappen
+    ├── stray-repo-komplett.bundle     ← samma historik som en enda fil (git bundle)
+    └── refs-i-stray-repot.txt
+```
+
+Efter det:
+
+- `AI\Claude\` är **inte längre ett git-repo** — bara en vanlig containermapp med
+  fyra projektmappar plus vaktfilen `CLAUDE.md` och `.gitignore`. Det är det
+  önskade läget (se `AI\Claude\CLAUDE.md`: "arbete sker aldrig direkt i denna mapp").
+- `AI\Claude\Ovrigt\` är nu **entydigt den enda lokala klonen** av
+  `kentlundgren/Ovrigt`.
+- Inget rördes på GitHub. Inget av värde gick förlorat (verifierat: alla filer i
+  stray-historiken fanns nyare här). Arkivet kan raderas när Kent känner sig trygg.
+
+### Verifiera själv
+
+```powershell
+cd "C:\Users\kentl\OneDrive\AI\Claude"
+git status
+#  → "fatal: not a git repository"  ✅ (så ska det vara nu)
+
+cd "C:\Users\kentl\OneDrive\AI\Claude\Ovrigt"
+git remote -v
+#  → origin  https://github.com/kentlundgren/Ovrigt.git   ✅
+git status
+#  → "Your branch is up to date with 'origin/main'"        ✅
+```
+
+### Regel framåt
+
+Öppna alltid **`Ovrigt`-mappen direkt** i Cursor — aldrig föräldern `AI\Claude\`.
+Om något känns fel: `git remote -v` + `git status` i den mapp du står i, innan
+du redigerar.
+
+---
+
+## 🌿 Grenar (branches) – vad är det, och varför finns de?
+
+En **branch** (gren) är en separat, parallell version av koden i samma repo –
+en kopia där ändringar kan göras utan att påverka `main` (huvudgrenen, den
+som GitHub Pages faktiskt publicerar från). Man kan ha hur många grenar som
+helst samtidigt; de slås ihop (**mergas**) till `main` när innehållet är klart
+och godkänt, eller så öppnas en **pull request (PR)** – ett förslag till
+sammanslagning som går att granska diff-rad-för-rad innan den mergas.
+
+**En feature-branch** är specifikt en gren skapad för *en avgränsad uppgift
+eller ett tema* (t.ex. "lägg till kalenderhändelse", en bugfix, en ny sida) –
+namnet syftar på att den bär en enskild "feature" (funktion/ändring), till
+skillnad från `main` som ska hålla den färdiga, driftsatta koden.
+
+### Grenen `claude/lagg-in-i-kalendern-9aipez` i det här repot
+
+- **Vem skapade den:** Claude (den här AI-sessionen), inte Kent manuellt.
+- **Varför:** När en Claude Code-session på webben/molnet ("Claude Code on the
+  web") kopplas till ett repo, tilldelar systemet automatiskt en egen
+  feature-branch för just den sessionen – namnet genereras av plattformen
+  utifrån sessionens första uppgift (här: "lägg in i kalendern", plus en
+  slumpad kod `9aipez` för att göra namnet unikt). Claude pushar sina commits
+  dit istället för direkt till `main`, så att ändringarna kan granskas innan
+  de blir en del av den publicerade sidan.
+- **Vad som ligger på den just nu:** regeln om initialer för personnamn,
+  Lokalt repo-/Nested Git-repo-sektionerna i den här README:n, samt
+  dokumentationen av att förälder-repot städats bort 2026-09-02 (se
+  `git log` eller PR:en för fullständig historik).
+
+### Var du ser alla grenar
+
+- **Alla grenar i repot:** [github.com/kentlundgren/Ovrigt/branches](https://github.com/kentlundgren/Ovrigt/branches)
+- **Öppna pull requests:** [github.com/kentlundgren/Ovrigt/pulls](https://github.com/kentlundgren/Ovrigt/pulls)
+
+---
+
 ## GitHub
 
 Repo: [kentlundgren/Ovrigt](https://github.com/kentlundgren/Ovrigt)
@@ -195,4 +345,4 @@ Commit och push är alltid användarens (Kents) ansvar.
 
 ---
 
-_README v1.6, 2026-08-10_
+_README v1.8, 2026-09-02_

@@ -3,8 +3,8 @@
 **Mapp:** `C:\Users\kentl\OneDrive\AI\Claude\Ovrigt`
 **Repo:** [kentlundgren/Ovrigt](https://github.com/kentlundgren/Ovrigt)
 **Live:** https://kentlundgren.github.io/Ovrigt/
-**Senast uppdaterad:** 2026-08-10
-**Version:** 1.2
+**Senast uppdaterad:** 2026-09-02
+**Version:** 1.3
 
 ---
 
@@ -117,6 +117,30 @@ Se även `kent-bygg-sidor`-skillens Regel 6 för fullständig teknik-modal-speci
 
 ---
 
+## 📌 Regel – Personnamn i GitHub-innehåll (initialer)
+
+I text som hamnar på GitHub (README:er, anteckningar, commit-meddelanden,
+issues m.m.) ska Claude vara försiktig med personnamn:
+
+- **Använd endast initialer** (t.ex. `ML` för Marcus Larsson) för personer som
+  nämns informellt i konversationen (kollegor, kontakter, styrelseledamöter,
+  m.fl.).
+- **Undantag:** fullständiga namn är okej om de bygger på en **formell,
+  offentlig källa** som redan innehåller namnet i klartext — t.ex.
+  domstolshandlingar, myndighetsbeslut, publicerade rapporter eller
+  nyhetsartiklar. Ange i så fall källan.
+- Gäller inte Kents eget namn (redan offentligt kopplat till hans egna repon).
+
+Regeln tillkom 2026-09-02 efter att ett namn skrivits ut i klartext i en
+sessionssammanfattning i `Vindkraft`-repot och behövde korrigeras till
+initialer i efterhand.
+
+**Regeln är tänkt att gälla övergripande** (alla Kents repon), inte bara
+Ovrigt — se även den globala filen `AI\Claude\CLAUDE.md`, dit den bör läggas
+in av en session med tillgång till Kents lokala OneDrive-mapp.
+
+---
+
 ## 📌 Regel – Commit och push
 
 **Kent commitar och pushar själv.** Claude commitar endast om Kent uttryckligen ber om det.
@@ -150,7 +174,10 @@ git push
   `</> teknik`-modal-knapp i nedre högra hörnet, på alla HTML-sidor i repot (inte bara
   interaktiva verktyg). Tillagd efter att `Hemma/Matlagning/Pasta/`-receptsidorna först
   byggdes med en boxig footer-knapp istället för det etablerade hörn-mönstret.
+- 2026-09-02 (v1.3): Ny regel — personnamn i GitHub-innehåll ska skrivas som
+  initialer, om inte namnet kommer från en formell offentlig källa. Tänkt att
+  gälla övergripande för alla repon, inte bara Ovrigt.
 
 ---
 
-_CLAUDE.md v1.2, 2026-08-10_
+_CLAUDE.md v1.3, 2026-09-02_
