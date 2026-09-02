@@ -1,17 +1,22 @@
 # Ovrigt – Kent Lundgrens övriga projekt
 
-_Version 1.7, 2026-09-02_
+_Version 1.8, 2026-09-02_
 
 ---
 
 ## 🗂️ Lokalt repo
 
-`C:\Users\kentl\OneDrive\Kent – Personligt\AI\Claude\Ovrigt`
+`C:\Users\kentl\OneDrive\AI\Claude\Ovrigt`
 
-⚠️ Ligger nästlat inuti föräldramappen `...\AI\Claude\`, som **också är ett eget
-git-repo** — se avsnittet [Nested Git-repo](#️-nested-git-repo) längre ner för
-vad det innebär i praktiken och hur du verifierar vilken mapp som faktiskt är
-kopplad till `github.com/kentlundgren/Ovrigt`.
+Notera: i Utforskaren visas mappen som `...\OneDrive\Kent – Personligt\AI\Claude\Ovrigt`.
+"Kent – Personligt" är bara **visningsnamnet** på OneDrive-kontot — på disken
+heter mappen `C:\Users\kentl\OneDrive\`. Det är alltså samma mapp, inte två.
+
+Repot ligger nästlat inuti föräldramappen `...\AI\Claude\`. Fram till
+2026-09-02 var **även föräldramappen ett eget git-repo**, felaktigt kopplat mot
+`github.com/kentlundgren/Ovrigt` — det är nu uppstädat. Se avsnittet
+[Nested Git-repo](#️-nested-git-repo) längre ner för hela historien och hur du
+verifierar läget själv.
 
 ---
 
@@ -200,47 +205,99 @@ Se `KentLundgren/README.md` för fullständig beskrivning av innehåll och metod
 
 ## ⚠️ Nested Git-repo
 
-Mappen `Ovrigt` ligger inuti en föräldramapp som **också** är ett eget git-repo:
+### Först: hur hänger "lokalt git" och "GitHub" ihop?
 
-```
-C:\Users\kentl\OneDrive\Kent – Personligt\AI\Claude\   ← Föräldramapp (egen .git, egen CLAUDE.md/.gitignore)
-    ├── ArbetenSokta/
-    ├── ClaudeCowork/
-    ├── Ekonomi/                        ← Eget nästlat repo (remote: Ekonomi)
-    │   └── .git/
-    └── Ovrigt/                         ← DETTA repo (remote: Ovrigt)
-        └── .git/
-```
+Ett **git-repo** är en mapp med en dold undermapp `.git/`. Den `.git/`-mappen
+innehåller hela historiken (alla commits) plus en adressbok över **remotes** —
+namngivna länkar till kopior av samma repo någon annanstans. Standard-remoten
+heter `origin`.
 
-(Bekräftat via skärmbild 2026-09-02: `.git`, `.gitignore` och en egen `CLAUDE.md`
-ligger direkt i `AI\Claude\`, separat från `Ovrigt`-undermappens eget innehåll.)
+- **GitHub** är bara en av dessa kopior — den som råkar ligga på en server och
+  som GitHub Pages publicerar från. Den är inte "sanningen", den är en peer.
+- `git clone <url>` skapar en lokal kopia av GitHub-repot, med `origin` redan
+  inställt på den URL:en.
+- `git push` skickar dina lokala commits **upp** till `origin`. `git pull`
+  hämtar andras commits **ner**. Mellan pushar lever din lokala historik och
+  GitHubs historik separata liv.
+- Två helt olika lokala mappar kan ha `origin` inställt på **samma**
+  GitHub-URL. Git hindrar dig inte. Det är då det blir rörigt.
 
-**Osäkerhet värd att flagga:** Ekonomi-repots README beskriver föräldramappen
-`AI\Claude\` som att den har **remote: `Ovrigt`** på GitHub. Det stämmer dåligt
-överens med vad mappen faktiskt innehåller (fyra projektmappar — `ArbetenSokta`,
-`ClaudeCowork`, `Ekonomi`, `Ovrigt` — inte `Hemma/`, `Fritid/`, `index.html` som
-är det här repots faktiska innehåll). Sannolikt en felskrivning i Ekonomi-repots
-README, men **inte verifierat**. Kör detta för att få 100 % säkert svar:
+Kolla alltid vilket läge en mapp är i med:
 
 ```powershell
-cd "C:\Users\kentl\OneDrive\Kent – Personligt\AI\Claude"
-git remote -v
-
-cd "C:\Users\kentl\OneDrive\Kent – Personligt\AI\Claude\Ovrigt"
-git remote -v
+git remote -v      # vilken GitHub-URL är origin?
+git status         # ligger jag i fas med origin, eller före/efter?
+git log --oneline -5
 ```
 
-Den mapp som svarar med `github.com/kentlundgren/Ovrigt` är den du ska öppna i
-Cursor. Om båda gör det har du en dubbel-klon som bör redas ut.
+### Vad som var fel här (upptäckt och åtgärdat 2026-09-02)
 
-**Regel:** Öppna alltid `Ovrigt`-mappen direkt i Cursor – aldrig föräldramappen
-`AI\Claude\`. Verifiera remote med `git remote -v` om du är osäker.
+Mappträdet såg ut så här:
 
-| Situation | Risk | Åtgärd |
-|-----------|------|---------|
-| Öppnar `AI\Claude` i Cursor | Arbetar mot fel repo | Öppna `Ovrigt`-mappen separat |
-| Glömmer committa efter redigering | Ändringar saknas i git-historik | Committa manuellt i Cursor |
-| Föräldra-repot visar `Ovrigt` som modified | Förvirring | Normalt – ignorera det |
+```
+C:\Users\kentl\OneDrive\AI\Claude\        ← föräldramapp
+    ├── .git/          ← ETT git-repo, origin = kentlundgren/Ovrigt   ❌ FEL
+    ├── CLAUDE.md      (vaktfil: "du är på fel nivå")
+    ├── .gitignore
+    ├── ArbetenSokta/  └─ .git/  origin = kentlundgren/ArbetenSokta   ✅
+    ├── ClaudeCowork/  └─ .git/  origin = kentlundgren/foreningar     ✅
+    ├── Ekonomi/       └─ .git/  origin = kentlundgren/Ekonomi        ✅
+    └── Ovrigt/        └─ .git/  origin = kentlundgren/Ovrigt         ✅  ← DETTA repo
+```
+
+Alltså: **två** lokala repon (`AI\Claude\` och `AI\Claude\Ovrigt\`) pekade
+båda på `github.com/kentlundgren/Ovrigt`. Men de delade ingen historik alls:
+
+- **`Ovrigt/` (denna mapp)** var — och är — den friska klonen. `git status`
+  sa "i fas med origin/main", arbetsträdet rent.
+- **`AI\Claude\` (föräldern)** var ett vilset, felkonfigurerat repo med en helt
+  egen historik (egen rot-commit, 9 commits) som **aldrig hade pushats någonstans**
+  och inte *kunde* pushas till Ovrigt-repot (icke-fast-forward, ingen gemensam
+  commit). Dess spårade filer var gamla, ofullständiga kopior av saker som redan
+  fanns färdiga och nyare här i `Ovrigt/`. Den enda synliga effekten var att
+  `git status` i föräldern felaktigt visade en massa av `Ovrigt/`s filer som
+  "modified".
+
+### Vad som gjordes
+
+Förälderns `.git/`-mapp **flyttades ut** ur mappträdet (inte raderad) till:
+
+```
+C:\Users\kentl\OneDrive\AI\_arkiv_stray_git_AI-Claude_2026-09-02\
+    ├── .git-fran-AI-Claude\           ← hela den flyttade .git-mappen
+    ├── stray-repo-komplett.bundle     ← samma historik som en enda fil (git bundle)
+    └── refs-i-stray-repot.txt
+```
+
+Efter det:
+
+- `AI\Claude\` är **inte längre ett git-repo** — bara en vanlig containermapp med
+  fyra projektmappar plus vaktfilen `CLAUDE.md` och `.gitignore`. Det är det
+  önskade läget (se `AI\Claude\CLAUDE.md`: "arbete sker aldrig direkt i denna mapp").
+- `AI\Claude\Ovrigt\` är nu **entydigt den enda lokala klonen** av
+  `kentlundgren/Ovrigt`.
+- Inget rördes på GitHub. Inget av värde gick förlorat (verifierat: alla filer i
+  stray-historiken fanns nyare här). Arkivet kan raderas när Kent känner sig trygg.
+
+### Verifiera själv
+
+```powershell
+cd "C:\Users\kentl\OneDrive\AI\Claude"
+git status
+#  → "fatal: not a git repository"  ✅ (så ska det vara nu)
+
+cd "C:\Users\kentl\OneDrive\AI\Claude\Ovrigt"
+git remote -v
+#  → origin  https://github.com/kentlundgren/Ovrigt.git   ✅
+git status
+#  → "Your branch is up to date with 'origin/main'"        ✅
+```
+
+### Regel framåt
+
+Öppna alltid **`Ovrigt`-mappen direkt** i Cursor — aldrig föräldern `AI\Claude\`.
+Om något känns fel: `git remote -v` + `git status` i den mapp du står i, innan
+du redigerar.
 
 ---
 
@@ -268,8 +325,9 @@ skillnad från `main` som ska hålla den färdiga, driftsatta koden.
   slumpad kod `9aipez` för att göra namnet unikt). Claude pushar sina commits
   dit istället för direkt till `main`, så att ändringarna kan granskas innan
   de blir en del av den publicerade sidan.
-- **Vad som ligger på den just nu:** regeln om initialer för personnamn samt
-  Lokalt repo-/Nested Git-repo-sektionerna i den här README:n (se
+- **Vad som ligger på den just nu:** regeln om initialer för personnamn,
+  Lokalt repo-/Nested Git-repo-sektionerna i den här README:n, samt
+  dokumentationen av att förälder-repot städats bort 2026-09-02 (se
   `git log` eller PR:en för fullständig historik).
 
 ### Var du ser alla grenar
@@ -287,4 +345,4 @@ Commit och push är alltid användarens (Kents) ansvar.
 
 ---
 
-_README v1.7, 2026-09-02_
+_README v1.8, 2026-09-02_
