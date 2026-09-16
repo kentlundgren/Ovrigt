@@ -1,8 +1,8 @@
 # CLAUDE.md – Laddboxar, Långkatekesens Samfällighetsförening
 
 **Mapp:** `Ovrigt/Hemma/laddboxar`
-**Senast uppdaterad:** 2026-05-21
-**Version:** 1.0
+**Senast uppdaterad:** 2026-09-15
+**Version:** 1.1
 
 ---
 
@@ -81,12 +81,28 @@ Bas-URL: `https://kentlundgren.github.io/Ovrigt/`
 Nya externa källor som citeras i `index.html` ska läggas till i källförteckningen
 längst ned i filen (Harvardstil).
 
+### 8. Länka tekniska begrepp och tjänster till källor
+
+När texten nämner ett tekniskt begrepp, en tjänst eller ett produktnamn som en
+läsare (styrelsemedlem, medlem) sannolikt vill veta mer om – t.ex. en betaltjänst
+(Charge X Monta), en tillverkarportal (Zaptecs egen portal), ett protokoll (OCPP),
+eller liknande – ska Claude länka begreppet inline till en relevant, verifierad
+källa (leverantörens egen sida, hjälpcenter eller motsvarande), inte bara nämna
+det i löptext utan länk. Källan läggs samtidigt till i källförteckningen enligt
+regel 7. Gäller framåt i hela projektet, inte bara vid enstaka tillfällen.
+
+**Bakgrund:** Tillagd 2026-09-15 efter att Kent bad om länkar för "Charge X Monta"
+och "Zaptecs egna portal" i den nya sektionen om ordförandens förslag, och
+uttryckligen bad att detta ska fortsätta göras genomgående i projektet eftersom
+det innehåller så många tekniska begrepp läsare vill kunna fördjupa sig i.
+
 ---
 
 ## Viktiga tekniska fakta att hålla i minnet
 
 - Samfälligheten har **23 garage**
-- Nuvarande säkring: **16 A (11 kW)** → uppgradering till **63 A (43,5 kW)** planeras
+- Nuvarande säkring: **enfas 16 A (≈ 3,7 kW)** → uppgradering till **63 A trefas (43,5 kW)**
+  planeras (bekräftat av styrelsen 2026-08-23, se `styrning_och_effekt.html`)
 - Formel: P = √3 × 400 V × 63 A ≈ **43 670 W ≈ 43,5 kW**
 - Aktuellt behov: **2 laddboxar** (maj 2026), förväntat växande
 - Rekommenderad princip: **Make-Ready** – dra kabel till alla 23 garage vid första installationen
@@ -94,4 +110,13 @@ längst ned i filen (Harvardstil).
 
 ---
 
-_CLAUDE.md v1.0 · 2026-05-21_
+## Uppdateringslogg
+
+- 2026-05-21 (v1.0): Skapad.
+- 2026-09-15 (v1.1): Ny regel 8 — länka tekniska begrepp/tjänster till källor
+  inline, genomgående i projektet. Rättade även en kvarvarande felaktig uppgift
+  (16 A "11 kW" → korrekt enfas ≈3,7 kW, se `styrning_och_effekt.html`).
+
+---
+
+_CLAUDE.md v1.1 · 2026-09-15_
